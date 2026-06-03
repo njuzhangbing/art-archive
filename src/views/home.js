@@ -103,7 +103,7 @@ export default function home(root) {
       clear(wall)
       items.forEach(([k, v]) => wall.append(h("div", { class: "num" }, h("div", { class: "num__v", "data-to": v }, "0"), h("div", { class: "num__k" }, k))))
       wall.querySelectorAll(".num__v").forEach((el) => countUp(el, +el.dataset.to, { trigger: el }))
-    } catch { /* leave blank */ }
+    } catch (e) { void e }
   }
 
   return { destroy: clearScroll }
