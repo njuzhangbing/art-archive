@@ -1,6 +1,7 @@
 import { clear } from "./lib/dom.js"
 import { pageWipe } from "./lib/anim.js"
 import { syncNav } from "./components/nav.js"
+import { session } from "./lib/store.js"
 
 let table = []
 let outlet = null
@@ -8,7 +9,7 @@ let active = null
 let booted = false
 
 export function defineRoutes(list) {
-  table = list.map((r) => ({ ...compile(r.p), load: r.view, tag: r.tag }))
+  table = list.map((r) => ({ ...compile(r.p), load: r.view, tag: r.tag, guard: !!r.guard }))
 }
 
 export function mountOutlet(node) { outlet = node }
@@ -36,6 +37,10 @@ function match() {
 
 async function paint() {
   const hit = match()
+  if (hit && hit.r.guard && !session.me) {
+    history.replaceState({}, "", "/login")
+    return paint()
+  }
   let mod = null
   if (hit) {
     try { mod = await hit.r.load() } catch (e) { console.error("view load failed", e) }

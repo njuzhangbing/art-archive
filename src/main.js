@@ -19,9 +19,9 @@ mountToasts()
 
 defineRoutes([
   { p: "/", tag: "主页", view: () => import("./views/home.js") },
-  { p: "/projects", tag: "项目", view: () => import("./views/projects.js") },
-  { p: "/projects/:id", tag: "档案", view: () => import("./views/project-detail.js") },
-  { p: "/activity", tag: "活动", view: () => import("./views/stats.js") },
+  { p: "/projects", tag: "项目", guard: true, view: () => import("./views/projects.js") },
+  { p: "/projects/:id", tag: "档案", guard: true, view: () => import("./views/project-detail.js") },
+  { p: "/activity", tag: "活动", guard: true, view: () => import("./views/stats.js") },
   { p: "/me", tag: "个人", view: () => import("./views/profile.js") },
   { p: "/login", tag: "登录", view: () => import("./views/auth.js") }
 ])
