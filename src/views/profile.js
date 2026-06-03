@@ -5,6 +5,8 @@ import { toast } from "../components/toast.js"
 import { go } from "../router.js"
 import { reveal } from "../lib/anim.js"
 import { fmtAgo, fmtDate } from "../lib/fmt.js"
+import { heatmap } from "../components/heatmap.js"
+import { projectCard } from "../components/project-card.js"
 
 export default function profile(root) {
   if (!session.me) { root.append(wall()); reveal([...root.firstChild.children], { y: 24, stagger: 0.06 }); return {} }
@@ -16,9 +18,32 @@ export default function profile(root) {
   function render() {
     const me = session.me
     clear(view)
-    view.append(header(me), settings(me))
+    view.append(header(me), settings(me), mineBlock())
     if (isAdmin()) view.append(adminBlock())
     reveal([...view.children], { y: 26, stagger: 0.06 })
+  }
+
+  function mineBlock() {
+    const projWrap = h("div", { class: "grid-cards" }, h("div", { class: "muted mono tiny" }, "加载中…"))
+    const heatWrap = h("div", {}, h("div", { class: "muted mono tiny" }, "加载中…"))
+    const box = h("section", { class: "mine" },
+      h("div", { class: "section__head" }, h("div", {}, h("span", { class: "kicker" }, "Mine / 我的档案"))),
+      projWrap,
+      h("div", { class: "panel", style: "margin-top:22px" }, h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Contribution / 我的贡献")), heatWrap)
+    )
+    loadMine(projWrap, heatWrap)
+    return box
+  }
+
+  async function loadMine(projWrap, heatWrap) {
+    try {
+      const r = await api.get("/api/projects?mine=1")
+      clear(projWrap)
+      if (!r.projects.length) projWrap.append(h("div", { class: "empty" }, h("div", { class: "mono" }, "你还没有项目"), h("a", { class: "btn btn--red", href: "/projects", "data-link": "1", style: "margin-top:14px" }, "去新建")))
+      else r.projects.slice(0, 6).forEach((p, i) => { p.no = i + 1; projWrap.append(projectCard(p)) })
+    } catch (e) { clear(projWrap); projWrap.append(h("div", { class: "muted mono tiny" }, e.message)) }
+    try { const s = await api.get("/api/stats"); clear(heatWrap); heatWrap.append(heatmap(s.myDaily || {})) }
+    catch (e) { clear(heatWrap); heatWrap.append(h("div", { class: "muted mono tiny" }, e.message)) }
   }
 
   function header(me) {
