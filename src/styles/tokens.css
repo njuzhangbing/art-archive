@@ -1,0 +1,42 @@
+:root {
+  --ink: #0E0E0E;
+  --ink-soft: #2a2a26;
+  --paper: #F2EFE6;
+  --paper-2: #E7E2D2;
+  --paper-3: #DAD4C0;
+  --white: #FFFFFF;
+
+  --red: #E2231A;
+  --red-deep: #A8140D;
+
+  --aleph: #D7263D;
+  --waw: #6A2C9C;
+  --he: #F0A202;
+  --teth: #1B6CA8;
+  --zayin: #2A9D4A;
+
+  --line: #0E0E0E;
+  --hair: rgba(14, 14, 14, 0.18);
+
+  --maxw: 1320px;
+  --gut: clamp(16px, 3.2vw, 44px);
+  --bar-h: 70px;
+
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --ease-hard: cubic-bezier(.76, 0, .12, 1);
+  --ease-back: cubic-bezier(.34, 1.56, .64, 1);
+
+  --font-disp: "Archivo Black", "Noto Sans SC", system-ui, sans-serif;
+  --font-serif: "Noto Serif SC", serif;
+  --font-body: "Noto Sans SC", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  --font-mono: "Space Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --shadow-block: 8px 8px 0 var(--ink);
+  --shadow-block-red: 8px 8px 0 var(--red);
+}
+
+[data-grade="ALEPH"] { --grade: var(--aleph); }
+[data-grade="WAW"] { --grade: var(--waw); }
+[data-grade="HE"] { --grade: var(--he); }
+[data-grade="TETH"] { --grade: var(--teth); }
+[data-grade="ZAYIN"] { --grade: var(--zayin); }
