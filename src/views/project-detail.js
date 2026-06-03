@@ -4,6 +4,7 @@ import { gradeOf } from "../lib/grades.js"
 import { projectFormModal } from "../components/project-form.js"
 import { uploadModal } from "../components/uploader.js"
 import { assetStage } from "../components/viewer.js"
+import { diffModal } from "../components/diff.js"
 import { toast } from "../components/toast.js"
 import { go } from "../router.js"
 import { reveal, clearScroll } from "../lib/anim.js"
@@ -50,6 +51,7 @@ export default function projectDetail(root, params) {
     const g = gradeOf(project.grade)
     const acts = h("div", { class: "pd__acts" },
       canEdit ? h("button", { class: "btn btn--red", onClick: startUpload }, "上传更新") : null,
+      versions.length >= 2 ? h("button", { class: "btn btn--sm btn--ghost", onClick: openDiff }, "版本对比") : null,
       canEdit ? h("button", { class: "btn btn--sm", onClick: edit }, "编辑") : null,
       canEdit ? h("button", { class: "btn btn--sm btn--danger", onClick: del }, "删除") : null
     )
@@ -80,7 +82,10 @@ export default function projectDetail(root, params) {
       h("div", { class: "pd__stagebar" },
         h("span", { class: "badge", "data-grade": project.grade }, h("span", { class: "badge__dot" }), "v" + numberOf(v.id) + (head ? " · 最新" : " · 历史")),
         h("span", { class: "mono tiny muted pd__stagemsg" }, v.message),
-        !head ? h("button", { class: "btn btn--sm", onClick: () => { viewingId = headId; render() } }, "回到最新") : null
+        h("div", { class: "pd__stageacts" },
+          !head ? h("button", { class: "btn btn--sm", onClick: () => { viewingId = headId; render() } }, "回到最新") : null,
+          (!head && canEdit) ? h("button", { class: "btn btn--sm btn--red", onClick: () => doRollback(v) }, "回滚到此版") : null
+        )
       ),
       assetStage(v)
     )
@@ -123,16 +128,29 @@ export default function projectDetail(root, params) {
   }
 
   function startUpload() {
-    uploadModal({
-      project,
-      onDone: async () => {
-        const vr = await api.get("/api/projects/" + params.id + "/versions")
-        versions = vr.versions
-        headId = vr.headVersionId
-        viewingId = headId
-        render()
-      }
-    })
+    uploadModal({ project, onDone: reloadVersions })
+  }
+
+  function openDiff() {
+    diffModal({ project, versions })
+  }
+
+  async function reloadVersions() {
+    const vr = await api.get("/api/projects/" + params.id + "/versions")
+    versions = vr.versions
+    headId = vr.headVersionId
+    viewingId = headId
+    render()
+  }
+
+  async function doRollback(v) {
+    if (!confirm("回滚到 v" + numberOf(v.id) + "？将基于该版本生成一个新版本，历史不会被删除")) return
+    try {
+      await api.post("/api/projects/" + project.id + "/rollback", { vid: v.id })
+      toast("已回滚，已生成新版本", "ok")
+      await reloadVersions()
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    } catch (err) { toast(err.message || "回滚失败", "bad") }
   }
 
   function edit() {

@@ -110,7 +110,35 @@
 .modal__x { width: 34px; height: 34px; border: 3px solid var(--ink); font-family: var(--font-mono); font-size: 14px; display: grid; place-items: center; }
 .modal__x:hover { background: var(--red); color: #fff; }
 .modal__body { padding: 22px 20px 24px; }
+.modal__card--wide { max-width: 940px; }
 .pform .field { margin-bottom: 16px; }
+
+/* ---- diff viewer ---- */
+.diff { display: flex; flex-direction: column; gap: 14px; }
+.diff__bar { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.diff__pick { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.diff__pick .select { min-width: 0; }
+.diff__pick select { max-width: 220px; }
+.diff__modes { display: flex; gap: 6px; margin-left: auto; }
+.diff__modes .chip { padding: 7px 12px; }
+.diff__stage { background: repeating-conic-gradient(var(--paper-2) 0% 25%, var(--white) 0% 50%) 50% / 22px 22px; border: 3px solid var(--ink); min-height: 220px; display: grid; place-items: center; overflow: hidden; }
+.diff__stage img { max-height: 62vh; }
+.diff__side { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+.diff__side figure { position: relative; border-right: 3px solid var(--ink); }
+.diff__side figure:last-child { border-right: 0; }
+.diff__side img { width: 100%; display: block; }
+.diff__side figcaption { position: absolute; left: 0; bottom: 0; background: var(--ink); color: var(--paper); padding: 3px 9px; }
+.diff__cmp { position: relative; width: 100%; user-select: none; touch-action: none; cursor: ew-resize; }
+.diff__cmpBase { width: 100%; display: block; }
+.diff__cmpA { position: absolute; top: 0; left: 0; height: 100%; width: 50%; overflow: hidden; }
+.diff__cmpA img { position: absolute; top: 0; left: 0; height: 100%; max-width: none; object-fit: cover; }
+.diff__handle { position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; background: var(--red); transform: translateX(-50%); pointer-events: none; }
+.diff__handle::after { content: "↔"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background: var(--red); color: #fff; border: 3px solid var(--ink); display: grid; place-items: center; font-size: 14px; }
+.diff__onion { position: relative; width: 100%; }
+.diff__onion img { width: 100%; display: block; }
+.diff__onA { position: absolute; inset: 0; }
+.diff__ctl { display: flex; align-items: center; gap: 10px; padding: 12px 4px; }
+.diff__range { flex: 1; accent-color: var(--red); }
 
 /* ---- projects library ---- */
 .projects { padding: clamp(24px, 4vw, 48px) var(--gut) 90px; }
@@ -156,7 +184,8 @@
 .pd__stagebar { display: flex; align-items: center; gap: 14px; border: 3px solid var(--ink); border-bottom: 0; padding: 12px 16px; background: var(--ink); color: var(--paper); flex-wrap: wrap; }
 .pd__stagebar .badge { background: var(--paper); }
 .pd__stagemsg { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .75; }
-.pd__stagebar .btn { margin-left: auto; background: var(--paper); }
+.pd__stageacts { margin-left: auto; display: flex; gap: 8px; }
+.pd__stagebar .btn { background: var(--paper); }
 .stage { border: 3px solid var(--ink); background: var(--white); }
 .stage__view { display: grid; grid-template-columns: minmax(0, 1fr) 300px; }
 .stage__main { background: repeating-conic-gradient(var(--paper-2) 0% 25%, var(--white) 0% 50%) 50% / 24px 24px; min-height: 320px; display: grid; place-items: center; padding: 16px; border-right: 3px solid var(--ink); }
