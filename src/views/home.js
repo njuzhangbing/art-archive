@@ -1,22 +1,12 @@
-import { h } from "../lib/dom.js"
+import { h, clear } from "../lib/dom.js"
 import { GRADES } from "../lib/grades.js"
 import { reveal, entrance, scrollReveal, countUp, clearScroll, gsap, tame } from "../lib/anim.js"
 import { projectCard } from "../components/project-card.js"
-
-const sampleWorks = [
-  { id: "demo-a", no: 1, title: "锈红广场的清晨", grade: "ALEPH", tags: ["油画", "城市"], versions: 7, updatedAt: Date.now() - 3600e3 * 5, author: "muye" },
-  { id: "demo-b", no: 2, title: "齿轮与白鸽", grade: "WAW", tags: ["插画"], versions: 4, updatedAt: Date.now() - 86400e3 * 2, author: "kira" },
-  { id: "demo-c", no: 3, title: "黄昏电报", grade: "HE", tags: ["速涂", "概念"], versions: 12, updatedAt: Date.now() - 86400e3 * 1, author: "muye" },
-  { id: "demo-d", no: 4, title: "蓝图练习 No.18", grade: "TETH", tags: ["线稿"], versions: 2, updatedAt: Date.now() - 3600e3 * 30, author: "lou" },
-  { id: "demo-e", no: 5, title: "苔原的呼吸", grade: "ZAYIN", tags: ["风景", "水彩"], versions: 5, updatedAt: Date.now() - 86400e3 * 6, author: "kira" },
-  { id: "demo-f", no: 6, title: "无题构成", grade: "WAW", tags: ["拼贴"], versions: 9, updatedAt: Date.now() - 86400e3 * 9, author: "lou" }
-]
+import { session } from "../lib/store.js"
+import { api } from "../lib/api.js"
 
 function hero() {
   const bg = h("div", { class: "hero__bg" }, h("i", { class: "hb1" }), h("i", { class: "hb2" }), h("i", { class: "hb3" }), h("i", { class: "hb4" }))
-  const bars = GRADES.map((g) =>
-    h("div", { "data-grade": g.key }, g.key, h("small", {}, g.zh + " · " + g.note))
-  )
   return h("section", { class: "hero" },
     bg,
     h("div", { class: "wrap" },
@@ -36,7 +26,7 @@ function hero() {
         ),
         h("div", { class: "hero__index rv" }, h("span", { class: "hero__index__g" }, "天"))
       ),
-      h("div", { class: "gradebar rv" }, ...bars)
+      h("div", { class: "gradebar rv" }, ...GRADES.map((g) => h("div", { "data-grade": g.key }, g.key, h("small", {}, g.zh + " · " + g.note))))
     )
   )
 }
@@ -45,60 +35,38 @@ function ladder() {
   return h("section", { class: "section" },
     h("div", { class: "wrap" },
       h("div", { class: "section__head" },
-        h("div", {},
-          h("span", { class: "kicker" }, "Classification / 分级体系"),
-          h("h2", { class: "h-section", style: "margin-top:14px" }, "风险等级，自高至低")
-        ),
+        h("div", {}, h("span", { class: "kicker" }, "Classification / 分级体系"), h("h2", { class: "h-section", style: "margin-top:14px" }, "风险等级，自高至低")),
         h("p", { class: "lede" }, "借自 Project Moon 的五阶风险标记——每件作品依其分量被收入相应层级，颜色贯穿全库。")
       ),
       h("div", { class: "glist" },
-        ...GRADES.map((g, i) =>
-          h("div", { class: "grow", "data-grade": g.key },
-            h("div", { class: "grow__rank" }, String(i + 1).padStart(2, "0")),
-            h("div", { class: "grow__name" }, g.key, h("span", {}, g.zh + " · " + g.note)),
-            h("div", { class: "grow__bar" })
-          )
-        )
+        ...GRADES.map((g, i) => h("div", { class: "grow", "data-grade": g.key },
+          h("div", { class: "grow__rank" }, String(i + 1).padStart(2, "0")),
+          h("div", { class: "grow__name" }, g.key, h("span", {}, g.zh + " · " + g.note)),
+          h("div", { class: "grow__bar" })
+        ))
       )
     )
   )
 }
 
-function works() {
-  return h("section", { class: "section", style: "padding-top:0" },
+export default function home(root) {
+  const works = h("div", { class: "grid-cards" })
+  const wall = h("div", { class: "numwall" })
+
+  const worksSec = h("section", { class: "section", style: "padding-top:0" },
     h("div", { class: "wrap" },
       h("div", { class: "section__head" },
-        h("div", {},
-          h("span", { class: "kicker" }, "Recent / 最近收录"),
-          h("h2", { class: "h-section", style: "margin-top:14px" }, "档案预览")
-        ),
-        h("span", { class: "note" }, "示例数据 ·", h("b", {}, "DEMO"), "· 项目板块上线后替换")
+        h("div", {}, h("span", { class: "kicker" }, "Recent / 最近收录"), h("h2", { class: "h-section", style: "margin-top:14px" }, "档案预览")),
+        h("a", { class: "btn btn--sm btn--ghost", href: "/projects", "data-link": "1" }, "查看全部 →")
       ),
-      h("div", { class: "grid-cards" }, ...sampleWorks.map(projectCard))
+      works
     )
   )
-}
-
-function wall() {
-  const stats = [
-    { k: "Works / 作品", v: 128 },
-    { k: "Commits / 提交", v: 1426 },
-    { k: "Layers / 图层", v: 9032 },
-    { k: "Members / 成员", v: 6 }
-  ]
-  const nums = stats.map((s) =>
-    h("div", { class: "num" }, h("div", { class: "num__v", "data-to": s.v }, "0"), h("div", { class: "num__k" }, s.k))
+  const wallSec = h("section", { class: "section", style: "padding-top:0" },
+    h("div", { class: "wrap" }, h("span", { class: "kicker", style: "margin-bottom:20px;display:inline-flex" }, "Ledger / 总账"), wall)
   )
-  return h("section", { class: "section", style: "padding-top:0" },
-    h("div", { class: "wrap" },
-      h("span", { class: "kicker", style: "margin-bottom:20px;display:inline-flex" }, "Ledger / 总账"),
-      h("div", { class: "numwall" }, ...nums)
-    )
-  )
-}
 
-export default function home(root) {
-  const view = h("div", { class: "page page--home" }, hero(), h("hr", { class: "rule rule--thick" }), ladder(), works(), wall())
+  const view = h("div", { class: "page page--home" }, hero(), h("hr", { class: "rule rule--thick" }), ladder(), worksSec, wallSec)
   root.append(view)
 
   reveal(view.querySelectorAll(".hero .rv"), { stagger: 0.09, y: 50 })
@@ -107,8 +75,36 @@ export default function home(root) {
     gsap.to(view.querySelector(".hero__index__g"), { y: -16, duration: 2.4, ease: "sine.inOut", repeat: -1, yoyo: true })
   }
   scrollReveal(view, ".grow")
-  scrollReveal(view, ".grid-cards .card", { y: 60 })
-  view.querySelectorAll(".num__v").forEach((el) => countUp(el, +el.dataset.to, { trigger: el }))
+
+  if (session.me) hydrate()
+  else gate()
+
+  function gate() {
+    clear(works)
+    works.append(h("div", { class: "empty", style: "grid-column:1/-1" },
+      h("div", { class: "mono" }, "登录后浏览全部档案"),
+      h("a", { class: "btn btn--red btn--lg", href: "/login", "data-link": "1", style: "margin-top:16px" }, "登录 / 注册")
+    ))
+    wall.append(...[["EST.", "MMXXVI"], ["GRADES", "5"], ["ENGINE", "NETLIFY"], ["STORE", "BLOBS"]].map(([k, v]) =>
+      h("div", { class: "num" }, h("div", { class: "num__v", style: "font-size:clamp(28px,4vw,52px)" }, v), h("div", { class: "num__k" }, k))))
+  }
+
+  async function hydrate() {
+    try {
+      const r = await api.get("/api/projects")
+      clear(works)
+      if (!r.projects.length) works.append(h("div", { class: "empty", style: "grid-column:1/-1" }, h("div", { class: "mono" }, "档案库还空着"), h("a", { class: "btn btn--red", href: "/projects", "data-link": "1", style: "margin-top:14px" }, "+ 新建第一个项目")))
+      else r.projects.slice(0, 6).forEach((p, i) => { p.no = i + 1; works.append(projectCard(p)) })
+      scrollReveal(view, ".grid-cards .card", { y: 60 })
+    } catch { clear(works) }
+    try {
+      const s = await api.get("/api/stats")
+      const items = [["Works / 作品", s.totals.projects], ["Commits / 提交", s.totals.versions], ["Layers / 图层", s.totals.layers], ["Members / 成员", s.totals.members]]
+      clear(wall)
+      items.forEach(([k, v]) => wall.append(h("div", { class: "num" }, h("div", { class: "num__v", "data-to": v }, "0"), h("div", { class: "num__k" }, k))))
+      wall.querySelectorAll(".num__v").forEach((el) => countUp(el, +el.dataset.to, { trigger: el }))
+    } catch { /* leave blank */ }
+  }
 
   return { destroy: clearScroll }
 }
