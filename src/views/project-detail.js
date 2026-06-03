@@ -2,6 +2,8 @@ import { h, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { gradeOf } from "../lib/grades.js"
 import { projectFormModal } from "../components/project-form.js"
+import { uploadModal } from "../components/uploader.js"
+import { assetStage } from "../components/viewer.js"
 import { toast } from "../components/toast.js"
 import { go } from "../router.js"
 import { reveal, clearScroll } from "../lib/anim.js"
@@ -10,14 +12,22 @@ import { fmtAgo, fmtDate } from "../lib/fmt.js"
 export default function projectDetail(root, params) {
   const view = h("div", { class: "wrap pdetail" }, h("div", { class: "muted mono", style: "padding:70px 0" }, "加载中…"))
   root.append(view)
+
   let project = null
+  let versions = []
+  let headId = null
   let canEdit = false
+  let viewingId = null
 
   async function boot() {
     try {
-      const r = await api.get("/api/projects/" + params.id)
-      project = r.project
-      canEdit = r.canEdit
+      const pr = await api.get("/api/projects/" + params.id)
+      project = pr.project
+      canEdit = pr.canEdit
+      const vr = await api.get("/api/projects/" + params.id + "/versions")
+      versions = vr.versions
+      headId = vr.headVersionId
+      viewingId = headId
       render()
     } catch (err) {
       clear(view)
@@ -25,16 +35,21 @@ export default function projectDetail(root, params) {
     }
   }
 
+  const numberOf = (id) => { const i = versions.findIndex((v) => v.id === id); return i < 0 ? 0 : versions.length - i }
+  const current = () => versions.find((v) => v.id === viewingId) || versions[0] || null
+
   function render() {
     clear(view)
-    view.append(header(), body())
-    reveal([...view.children], { y: 24, stagger: 0.08 })
+    view.append(header())
+    if (versions.length) view.append(stageBlock(), timelineBlock())
+    else view.append(emptyBlock())
+    reveal([...view.children], { y: 24, stagger: 0.07 })
   }
 
   function header() {
     const g = gradeOf(project.grade)
     const acts = h("div", { class: "pd__acts" },
-      h("button", { class: "btn btn--red", onClick: () => toast("上传更新将在 P3 上线", "info") }, "上传更新"),
+      canEdit ? h("button", { class: "btn btn--red", onClick: startUpload }, "上传更新") : null,
       canEdit ? h("button", { class: "btn btn--sm", onClick: edit }, "编辑") : null,
       canEdit ? h("button", { class: "btn btn--sm btn--danger", onClick: del }, "删除") : null
     )
@@ -49,7 +64,7 @@ export default function projectDetail(root, params) {
             h("span", {}, "@" + project.author),
             h("span", { class: "dotsep" }, "建于 " + fmtDate(project.createdAt)),
             h("span", { class: "dotsep" }, "更新 " + fmtAgo(project.updatedAt)),
-            h("span", { class: "dotsep" }, "v" + project.versions)
+            h("span", { class: "dotsep" }, "v" + versions.length)
           )
         ),
         acts
@@ -58,13 +73,66 @@ export default function projectDetail(root, params) {
     )
   }
 
-  function body() {
+  function stageBlock() {
+    const v = current()
+    const head = v.id === headId
+    return h("section", { class: "pd__stage" },
+      h("div", { class: "pd__stagebar" },
+        h("span", { class: "badge", "data-grade": project.grade }, h("span", { class: "badge__dot" }), "v" + numberOf(v.id) + (head ? " · 最新" : " · 历史")),
+        h("span", { class: "mono tiny muted pd__stagemsg" }, v.message),
+        !head ? h("button", { class: "btn btn--sm", onClick: () => { viewingId = headId; render() } }, "回到最新") : null
+      ),
+      assetStage(v)
+    )
+  }
+
+  function timelineBlock() {
+    return h("section", { class: "pd__time" },
+      h("div", { class: "section__head" }, h("div", {}, h("span", { class: "kicker" }, "History / 版本时间轴"), h("h2", { class: "pd__h2 serif" }, "变更记录"))),
+      h("div", { class: "timeline" }, ...versions.map(timeNode))
+    )
+  }
+
+  function timeNode(v) {
+    const n = numberOf(v.id)
+    const cover = (v.assets || []).find((a) => a.id === v.coverAssetId) || (v.assets || [])[0]
+    const on = v.id === viewingId
+    const card = h("button", { class: "tnode__card" },
+      cover ? h("div", { class: "tnode__th" }, cover.kind === "video" ? h("div", { class: "sthumb__v mono" }, "▶") : h("img", { src: cover.previewUrl || cover.posterUrl || cover.originalUrl, loading: "lazy", alt: "" })) : null,
+      h("div", { class: "tnode__body" },
+        h("div", { class: "tnode__top" }, h("b", { class: "mono" }, "v" + n), v.id === headId ? h("span", { class: "badge badge--fill", "data-grade": project.grade, style: "padding:2px 7px" }, "HEAD") : null),
+        h("div", { class: "tnode__msg" }, v.message),
+        h("div", { class: "tnode__meta mono tiny muted" }, "@" + v.author, h("span", { class: "dotsep" }, fmtAgo(v.createdAt)), h("span", { class: "dotsep" }, (v.assets || []).length + " 文件"))
+      )
+    )
+    card.addEventListener("click", () => { viewingId = v.id; render(); window.scrollTo({ top: 0, behavior: "smooth" }) })
+    return h("div", { class: "tnode" + (on ? " tnode--on" : "") + (v.id === headId ? " tnode--head" : "") },
+      h("div", { class: "tnode__rail" }, h("span", { class: "tnode__dot" })),
+      card
+    )
+  }
+
+  function emptyBlock() {
     return h("section", { class: "pd__body" },
       h("div", { class: "empty" },
         h("div", { class: "mono" }, "尚无版本"),
-        h("p", { class: "mono tiny muted", style: "margin-top:10px" }, "上传首个作品即创建 v1（上传管线 P3 上线）")
+        h("p", { class: "mono tiny muted", style: "margin:10px 0 18px" }, "上传首个作品即创建 v1"),
+        canEdit ? h("button", { class: "btn btn--red btn--lg", onClick: startUpload }, "上传首个版本") : h("span", { class: "mono tiny muted" }, "仅作者或管理员可上传")
       )
     )
+  }
+
+  function startUpload() {
+    uploadModal({
+      project,
+      onDone: async () => {
+        const vr = await api.get("/api/projects/" + params.id + "/versions")
+        versions = vr.versions
+        headId = vr.headVersionId
+        viewingId = headId
+        render()
+      }
+    })
   }
 
   function edit() {

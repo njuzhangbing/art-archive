@@ -132,3 +132,76 @@
 .pd__desc { font-family: var(--font-serif); font-size: clamp(16px, 2vw, 21px); line-height: 1.5; max-width: 70ch; margin-top: 22px; }
 .pd__acts { display: flex; gap: 8px; flex-wrap: wrap; }
 .pd__body { margin-top: 24px; }
+
+/* ---- uploader ---- */
+.drop { border: 3px dashed var(--hair); background: var(--white); cursor: pointer; transition: border-color .2s, background .2s; }
+.drop[data-over="1"] { border-color: var(--red); background: var(--paper-2); }
+.drop__in { padding: 34px 20px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.drop__in b { font-size: 22px; }
+.uplist { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; max-height: 280px; overflow: auto; }
+.uprow { display: flex; align-items: center; gap: 12px; border: 2px solid var(--hair); padding: 8px; }
+.uprow__th { width: 46px; height: 46px; flex: none; border: 2px solid var(--ink); overflow: hidden; background: var(--paper-2); }
+.uprow__th img { width: 100%; height: 100%; object-fit: cover; }
+.uprow__ico { width: 100%; height: 100%; display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+.uprow[data-kind="psd"] .uprow__ico { background: var(--waw); color: #fff; }
+.uprow[data-kind="video"] .uprow__ico { background: var(--teth); color: #fff; }
+.uprow__info { flex: 1; min-width: 0; }
+.uprow__name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.uprow__status { white-space: nowrap; color: var(--ink-soft); }
+.uprow__x { width: 26px; height: 26px; border: 2px solid var(--hair); flex: none; }
+.uprow__x:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+/* ---- stage / viewer ---- */
+.pd__stage { margin-top: 28px; }
+.pd__stagebar { display: flex; align-items: center; gap: 14px; border: 3px solid var(--ink); border-bottom: 0; padding: 12px 16px; background: var(--ink); color: var(--paper); flex-wrap: wrap; }
+.pd__stagebar .badge { background: var(--paper); }
+.pd__stagemsg { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .75; }
+.pd__stagebar .btn { margin-left: auto; background: var(--paper); }
+.stage { border: 3px solid var(--ink); background: var(--white); }
+.stage__view { display: grid; grid-template-columns: minmax(0, 1fr) 300px; }
+.stage__main { background: repeating-conic-gradient(var(--paper-2) 0% 25%, var(--white) 0% 50%) 50% / 24px 24px; min-height: 320px; display: grid; place-items: center; padding: 16px; border-right: 3px solid var(--ink); }
+.stage__img { max-width: 100%; max-height: 64vh; object-fit: contain; }
+.stage__vid { max-width: 100%; max-height: 64vh; }
+.stage__side { padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.stage__meta { display: flex; flex-wrap: wrap; gap: 6px 10px; color: var(--ink-soft); }
+.stage__strip { display: flex; gap: 8px; padding: 12px; border: 3px solid var(--ink); border-top: 0; overflow-x: auto; }
+.sthumb { width: 62px; height: 62px; flex: none; border: 3px solid var(--ink); overflow: hidden; position: relative; background: var(--paper-2); }
+.sthumb img { width: 100%; height: 100%; object-fit: cover; }
+.sthumb__v { width: 100%; height: 100%; display: grid; place-items: center; background: var(--teth); color: #fff; }
+.sthumb__tag { position: absolute; left: 0; bottom: 0; background: var(--waw); color: #fff; font-size: 8px; padding: 1px 4px; }
+.sthumb[data-on="1"] { outline: 3px solid var(--red); outline-offset: -3px; }
+@media (max-width: 860px) { .stage__view { grid-template-columns: 1fr; } .stage__main { border-right: 0; border-bottom: 3px solid var(--ink); } }
+
+/* ---- psd layers ---- */
+.layers { margin-top: 10px; border-top: 3px solid var(--ink); padding-top: 12px; }
+.layers__head { margin-bottom: 10px; }
+.layers__list { display: flex; flex-direction: column; gap: 6px; max-height: 360px; overflow: auto; }
+.lrow { display: flex; align-items: center; gap: 10px; border: 2px solid var(--hair); padding: 5px 8px; }
+.lrow img { width: 34px; height: 34px; object-fit: cover; border: 2px solid var(--ink); background: var(--paper-2); flex: none; }
+.lrow__noimg { width: 34px; height: 34px; display: grid; place-items: center; border: 2px solid var(--hair); flex: none; }
+.lrow__name { flex: 1; min-width: 0; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lrow__op { flex: none; color: var(--ink-soft); }
+.lrow--off { opacity: .45; }
+
+/* ---- version timeline ---- */
+.pd__time { margin-top: 44px; }
+.pd__h2 { font-family: var(--font-serif); font-weight: 900; font-size: clamp(24px, 3vw, 40px); margin-top: 10px; }
+.timeline { position: relative; }
+.tnode { display: grid; grid-template-columns: 30px 1fr; gap: 10px; }
+.tnode__rail { position: relative; display: flex; justify-content: center; }
+.tnode__rail::before { content: ""; position: absolute; top: 0; bottom: 0; width: 3px; background: var(--ink); }
+.tnode:first-child .tnode__rail::before { top: 18px; }
+.tnode:last-child .tnode__rail::before { bottom: auto; height: 18px; }
+.tnode__dot { width: 14px; height: 14px; background: var(--paper); border: 3px solid var(--ink); margin-top: 14px; position: relative; z-index: 1; }
+.tnode--on .tnode__dot { background: var(--red); }
+.tnode--head .tnode__dot { background: var(--ink); }
+.tnode__card { display: flex; gap: 14px; text-align: left; width: 100%; border: 3px solid var(--ink); background: var(--white); padding: 10px; margin-bottom: 14px; transition: transform .16s var(--ease-hard), box-shadow .16s; }
+.tnode__card:hover { transform: translateX(3px); box-shadow: -4px 4px 0 var(--red); }
+.tnode--on .tnode__card { box-shadow: -5px 5px 0 var(--ink); }
+.tnode__th { width: 84px; height: 64px; flex: none; border: 2px solid var(--ink); overflow: hidden; background: var(--paper-2); }
+.tnode__th img { width: 100%; height: 100%; object-fit: cover; }
+.tnode__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.tnode__top { display: flex; align-items: center; gap: 10px; }
+.tnode__top b { font-size: 16px; }
+.tnode__msg { font-family: var(--font-serif); font-size: 16px; font-weight: 600; }
+.tnode__meta { display: flex; flex-wrap: wrap; gap: 4px 8px; }
