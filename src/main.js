@@ -10,10 +10,10 @@ import { session } from "./lib/store.js"
 import { api } from "./lib/api.js"
 
 const app = document.getElementById("app")
-const shell = h("div", { class: "shell has-ticker" })
+const shell = h("div", { class: "shell" })
 const main = h("main")
 shell.append(main, footer())
-app.append(buildNav(), ticker(), shell)
+app.append(buildNav(), shell)
 mountOutlet(main)
 mountToasts()
 
@@ -32,12 +32,6 @@ app.setAttribute("data-boot", "1")
 async function probe() {
   try { const me = await api.get("/api/me"); session.set(me && me.user) }
   catch { session.set(null) }
-}
-
-function ticker() {
-  const items = ["长生天计划", "ARCHIVE OF WORKS", "ALEPH / WAW / HE / TETH / ZAYIN", "版本存档 · 变更可视化 · 回滚", "构成主义 · MMXXVI"]
-  const run = items.concat(items).map((t) => h("span", { html: t.replace(/(ALEPH|WAW|HE|TETH|ZAYIN)/g, "<b>$1</b>") }))
-  return h("div", { class: "ticker" }, h("div", { class: "ticker__run" }, ...run))
 }
 
 function footer() {

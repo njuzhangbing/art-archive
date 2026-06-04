@@ -9,7 +9,7 @@ export function projectFormModal({ project, onSaved }) {
   let grade = (project && project.grade) || "ZAYIN"
 
   const gradeBtns = GRADES.map((g) =>
-    h("button", { type: "button", "data-grade": g.key, "data-on": g.key === grade ? "1" : "0", title: g.zh },
+    h("button", { type: "button", "data-grade": g.key, "data-on": g.key === grade ? "1" : "0" },
       h("span", { class: "swatch" }), g.key)
   )
   gradeBtns.forEach((b) => b.addEventListener("click", () => {

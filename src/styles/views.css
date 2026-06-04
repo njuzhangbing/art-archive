@@ -187,6 +187,34 @@
 a.rankrow__main:hover b { color: var(--red); }
 .rankrow__main .mono.tiny { margin-left: auto; flex: none; }
 
+/* ---- home: quote wall ---- */
+.hero--quote { padding-block: clamp(40px, 7vw, 96px) clamp(36px, 6vw, 72px); }
+.hero--quote .wrap { position: relative; z-index: 2; max-width: 1120px; }
+.quote__wrap { margin-top: 22px; }
+.quote { font-family: var(--font-serif); font-weight: 900; font-size: clamp(30px, 5.2vw, 66px); line-height: 1.12; letter-spacing: -.01em; max-width: 22ch; }
+.quote::before { content: "“"; color: var(--red); }
+.quote::after { content: "”"; color: var(--red); }
+.quote__by { margin-top: 18px; font-size: 12px; letter-spacing: .16em; color: var(--ink-soft); }
+.hero__row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 26px; }
+.reroll { background: var(--ink); color: var(--paper); }
+.reroll:hover { background: var(--red); }
+.streak { display: flex; gap: 10px; flex-wrap: wrap; }
+.chipi { display: inline-flex; align-items: center; gap: 7px; border: 2px solid var(--ink); padding: 6px 11px; background: var(--white); font-weight: 700; letter-spacing: .04em; }
+.chipi b { font-size: 13px; }
+.hero--quote .hero__cta { margin-top: 24px; }
+.gradestrip { display: flex; margin-top: 30px; border: 3px solid var(--ink); box-shadow: var(--shadow-block); max-width: 760px; }
+.gradestrip > div { flex: 1; padding: 12px 8px; text-align: center; color: #fff; background: var(--grade); border-right: 3px solid var(--ink); font-family: var(--font-mono); font-weight: 700; font-size: 12px; letter-spacing: .12em; }
+.gradestrip > div:last-child { border-right: 0; }
+.hgap { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---- home: guided empty ---- */
+.guide { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.guide__steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; max-width: 780px; }
+.gstep { display: flex; gap: 12px; align-items: flex-start; border: 3px solid var(--ink); background: var(--white); padding: 14px; text-align: left; }
+.gstep__n { font-family: var(--font-disp); font-size: 26px; color: var(--red); line-height: 1; flex: none; }
+.gstep b { display: block; font-family: var(--font-serif); font-size: 18px; margin-bottom: 4px; }
+@media (max-width: 680px) { .guide__steps { grid-template-columns: 1fr; } }
+
 /* ---- projects library ---- */
 .projects { padding: clamp(24px, 4vw, 48px) var(--gut) 90px; }
 .projects .section__head { margin-bottom: 6px; }

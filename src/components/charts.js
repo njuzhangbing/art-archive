@@ -7,7 +7,7 @@ export function gradeBars(grades) {
     ...GRADES.map((g) => {
       const n = grades[g.key] || 0
       return h("div", { class: "gbar", "data-grade": g.key },
-        h("div", { class: "gbar__name mono" }, g.key, h("span", {}, g.zh)),
+        h("div", { class: "gbar__name mono" }, g.key),
         h("div", { class: "gbar__track" }, h("div", { class: "gbar__fill", style: "width:" + Math.round((n / max) * 100) + "%" })),
         h("div", { class: "gbar__n mono" }, n)
       )

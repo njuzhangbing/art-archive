@@ -1,6 +1,5 @@
 import { h, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
-import { gradeOf } from "../lib/grades.js"
 import { projectFormModal } from "../components/project-form.js"
 import { uploadModal } from "../components/uploader.js"
 import { assetStage } from "../components/viewer.js"
@@ -48,7 +47,6 @@ export default function projectDetail(root, params) {
   }
 
   function header() {
-    const g = gradeOf(project.grade)
     const acts = h("div", { class: "pd__acts" },
       canEdit ? h("button", { class: "btn btn--red", onClick: startUpload }, "上传更新") : null,
       versions.length >= 2 ? h("button", { class: "btn btn--sm btn--ghost", onClick: openDiff }, "版本对比") : null,
@@ -59,7 +57,7 @@ export default function projectDetail(root, params) {
       h("div", { class: "pd__crumb mono" }, h("a", { href: "/projects", "data-link": "1" }, "项目库"), " / ", project.grade),
       h("div", { class: "pd__top" },
         h("div", { class: "pd__id" },
-          h("div", { class: "badge badge--fill", "data-grade": project.grade }, h("span", { class: "badge__dot" }), project.grade + " · " + g.zh),
+          h("div", { class: "badge badge--fill", "data-grade": project.grade }, h("span", { class: "badge__dot" }), project.grade),
           h("h1", { class: "pd__title serif" }, project.title),
           project.tags && project.tags.length ? h("div", { class: "tagrow", style: "margin-top:14px" }, ...project.tags.map((t) => h("span", { class: "tag" }, t))) : null,
           h("div", { class: "pd__meta mono" },
