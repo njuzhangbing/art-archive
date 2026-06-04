@@ -18,6 +18,7 @@ export default function projectDetail(root, params) {
   let headId = null
   let canEdit = false
   let viewingId = null
+  let charMap = {}
 
   async function boot() {
     try {
@@ -28,11 +29,27 @@ export default function projectDetail(root, params) {
       versions = vr.versions
       headId = vr.headVersionId
       viewingId = headId
+      if ((project.characters || []).length) {
+        const cr = await api.get("/api/characters").catch(() => ({ characters: [] }))
+        cr.characters.forEach((c) => { charMap[c.id] = c })
+      }
       render()
     } catch (err) {
       clear(view)
       view.append(notFound(err))
     }
+  }
+
+  function charRow() {
+    const ids = (project.characters || []).filter((id) => charMap[id])
+    if (!ids.length) return null
+    return h("div", { class: "pd__chars" },
+      h("span", { class: "mono tiny muted" }, "涉及角色"),
+      ...ids.map((id) => {
+        const c = charMap[id]
+        return h("a", { class: "cpchip", "data-grade": c.grade, href: "/characters/" + c.id, "data-link": "1" }, c.code ? h("span", { class: "mono tiny" }, c.code) : null, c.name)
+      })
+    )
   }
 
   const numberOf = (id) => { const i = versions.findIndex((v) => v.id === id); return i < 0 ? 0 : versions.length - i }
@@ -69,7 +86,8 @@ export default function projectDetail(root, params) {
         ),
         acts
       ),
-      project.desc ? h("p", { class: "pd__desc" }, project.desc) : null
+      project.desc ? h("p", { class: "pd__desc" }, project.desc) : null,
+      charRow()
     )
   }
 

@@ -11,8 +11,13 @@ function digest(p) {
     versions: (p.versionIds || []).length,
     coverUrl: p.coverKey ? "/media/" + p.coverKey : null,
     headVersionId: p.headVersionId || null,
+    characters: p.characters || [],
     createdAt: p.createdAt, updatedAt: p.updatedAt
   }
+}
+
+function cleanCharRefs(raw) {
+  return (Array.isArray(raw) ? raw : []).filter((x) => typeof x === "string").slice(0, 40)
 }
 
 function tidyTags(raw) {
@@ -37,6 +42,8 @@ export default async (req, context) => {
       const idx = await projects.list({ prefix: "project/" })
       let rows = (await Promise.all(idx.blobs.map((b) => projects.getJSON(b.key)))).filter(Boolean)
       if (url.searchParams.get("mine") === "1") rows = rows.filter((p) => p.ownerId === me.id)
+      const ch = url.searchParams.get("character")
+      if (ch) rows = rows.filter((p) => (p.characters || []).includes(ch))
       rows.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
       return json({ projects: rows.map(digest) })
     }
@@ -51,7 +58,7 @@ export default async (req, context) => {
       const p = {
         id: pid, ownerId: me.id, ownerHandle: me.handle,
         title: title.slice(0, 80), desc: String(body.desc || "").slice(0, 500),
-        grade, tags: tidyTags(body.tags),
+        grade, tags: tidyTags(body.tags), characters: cleanCharRefs(body.characters),
         headVersionId: null, versionIds: [], coverKey: null,
         createdAt: now, updatedAt: now
       }
@@ -78,6 +85,7 @@ export default async (req, context) => {
     if (typeof body.desc === "string") p.desc = body.desc.slice(0, 500)
     if (GRADE_KEYS.includes(body.grade)) p.grade = body.grade
     if (body.tags !== undefined) p.tags = tidyTags(body.tags)
+    if (body.characters !== undefined) p.characters = cleanCharRefs(body.characters)
     p.updatedAt = new Date().toISOString()
     await projects.setJSON("project/" + id, p)
     return json({ project: digest(p) })
