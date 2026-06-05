@@ -24,7 +24,7 @@ export default function characters(root) {
   const searchBox = h("input", { placeholder: "搜索角色名 / 编号…", "aria-label": "搜索" })
   searchBox.addEventListener("input", (e) => { q = e.target.value.trim().toLowerCase(); paint() })
 
-  const grid = h("div", { class: "grid-cards grid-cards--char" })
+  const grid = h("div", { class: "charlist" })
   const count = h("span", { class: "mono tiny muted pcount" }, "")
 
   const head = h("div", { class: "section__head" },
