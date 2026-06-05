@@ -1,6 +1,6 @@
 import { parsePsd } from "./psd.js"
 
-const CHUNK = 3 * 1024 * 1024
+const CHUNK = 5 * 1024 * 1024
 const DIRECT_MAX = 4 * 1024 * 1024
 
 function rand() { return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2, 6) }

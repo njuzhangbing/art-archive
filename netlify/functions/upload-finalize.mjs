@@ -2,6 +2,9 @@ import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
 import { currentUser } from "./_lib/auth.mjs"
 
+const MAX_MB = Number(process.env.MAX_UPLOAD_MB) || 64
+const MAX_BYTES = MAX_MB * 1024 * 1024
+
 export default async (req) => {
   if (req.method !== "POST") return oops("方法不允许", 405)
   const me = await currentUser(req)
@@ -21,7 +24,7 @@ export default async (req) => {
     slices.push(new Uint8Array(part))
     total += part.byteLength
   }
-  if (total > 12 * 1024 * 1024) return oops("文件超过 12MB", 413)
+  if (total > MAX_BYTES) return oops("文件超过 " + MAX_MB + "MB 上限", 413)
 
   const merged = new Uint8Array(total)
   let off = 0
