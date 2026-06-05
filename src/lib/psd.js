@@ -22,6 +22,15 @@ function walk(nodes, sink) {
   }
 }
 
+export async function psdToPng(file, max = 2000) {
+  const buf = await file.arrayBuffer()
+  const psd = readPsd(buf, { skipThumbnail: true, skipLayerImageData: true })
+  if (!psd.canvas) throw new Error("PSD 缺少合成图，请在 PS 以「最大兼容」重存")
+  const c = shrink(psd.canvas, max) || psd.canvas
+  const blob = await toBlob(c, "image/png")
+  return { blob, w: psd.width || c.width, h: psd.height || c.height }
+}
+
 export async function parsePsd(file) {
   const buf = await file.arrayBuffer()
   const psd = readPsd(buf, { skipThumbnail: true })

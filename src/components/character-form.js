@@ -5,7 +5,8 @@ import { openModal } from "./modal.js"
 import { GRADES } from "../lib/grades.js"
 import { DAMAGE } from "../lib/damage.js"
 import { PERSONA } from "../lib/persona.js"
-import { buildAsset } from "../lib/upload.js"
+import { buildAsset, kindOf } from "../lib/upload.js"
+import { psdToPng } from "../lib/psd.js"
 
 export function characterFormModal({ character, onSaved }) {
   const editing = !!character
@@ -24,15 +25,38 @@ export function characterFormModal({ character, onSaved }) {
   const dmgBtns = DAMAGE.map((d) => h("button", { type: "button", class: "dmgpick__b", "data-dmg": d.key, "data-on": d.key === damage ? "1" : "0" }, h("img", { src: d.icon, alt: d.label }), h("span", { class: "mono tiny" }, d.label)))
   dmgBtns.forEach((b) => b.addEventListener("click", () => { damage = b.dataset.dmg; dmgBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0")) }))
 
-  const fileInput = h("input", { type: "file", multiple: true, accept: "image/*", style: "display:none" })
+  const fileInput = h("input", { type: "file", multiple: true, accept: "image/*,.psd,image/vnd.adobe.photoshop", style: "display:none" })
   const porGrid = h("div", { class: "porgrid" })
 
-  function addFiles(files) { for (const f of files) slots.push({ type: "file", file: f, url: URL.createObjectURL(f) }); renderPortraits() }
+  async function addFiles(files) {
+    for (const f of files) {
+      if (kindOf(f) === "psd") {
+        const slot = { type: "converting" }
+        slots.push(slot); renderPortraits()
+        try {
+          const { blob } = await psdToPng(f)
+          const png = new File([blob], f.name.replace(/\.psd$/i, "") + ".png", { type: "image/png" })
+          slot.type = "file"; slot.file = png; slot.url = URL.createObjectURL(png)
+        } catch (err) {
+          slots.splice(slots.indexOf(slot), 1)
+          toast("PSD 转换失败" + (err && err.message ? "：" + err.message : ""), "bad")
+        }
+        renderPortraits()
+      } else {
+        slots.push({ type: "file", file: f, url: URL.createObjectURL(f) })
+        renderPortraits()
+      }
+    }
+  }
   fileInput.addEventListener("change", () => { if (fileInput.files.length) addFiles([...fileInput.files]); fileInput.value = "" })
 
   function renderPortraits() {
     clear(porGrid)
     slots.forEach((s, i) => {
+      if (s.type === "converting") {
+        porGrid.append(h("div", { class: "porth porth--conv" }, h("div", { class: "porth__conv mono" }, "PSD", h("span", {}, "转换中…"))))
+        return
+      }
       const cover = i === 0
       porGrid.append(h("div", { class: "porth" + (cover ? " porth--cover" : "") },
         h("img", { src: s.url }),
@@ -79,6 +103,7 @@ export function characterFormModal({ character, onSaved }) {
     const grab = (n) => (form.querySelector("[name=" + n + "]") || {}).value || ""
     const name = grab("name").trim()
     if (!name) { toast("请填写角色名", "bad"); return }
+    if (slots.some((s) => s.type === "converting")) { toast("PSD 还在转换中，请稍候", "info"); return }
     let code = grab("code").trim()
     if (experimental && code) code = "E" + code.slice(1)
     if (code && !/^[A-Za-z]-\d{2}-\d{2}$/.test(code)) toast("编号建议格式 X-xx-xx，已按原样保存", "info")
