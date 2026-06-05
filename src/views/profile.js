@@ -6,6 +6,7 @@ import { go } from "../router.js"
 import { reveal } from "../lib/anim.js"
 import { fmtAgo, fmtDate } from "../lib/fmt.js"
 import { heatmap } from "../components/heatmap.js"
+import { planDialog } from "../components/plan-dialog.js"
 import { projectCard } from "../components/project-card.js"
 
 export default function profile(root) {
@@ -42,8 +43,17 @@ export default function profile(root) {
       if (!r.projects.length) projWrap.append(h("div", { class: "empty" }, h("div", { class: "mono" }, "你还没有项目"), h("a", { class: "btn btn--red", href: "/projects", "data-link": "1", style: "margin-top:14px" }, "去新建")))
       else r.projects.slice(0, 6).forEach((p, i) => { p.no = i + 1; projWrap.append(projectCard(p)) })
     } catch (e) { clear(projWrap); projWrap.append(h("div", { class: "muted mono tiny" }, e.message)) }
-    try { const s = await api.get("/api/stats"); clear(heatWrap); heatWrap.append(heatmap(s.myDaily || {})) }
-    catch (e) { clear(heatWrap); heatWrap.append(h("div", { class: "muted mono tiny" }, e.message)) }
+    renderHeat(heatWrap)
+  }
+
+  async function renderHeat(heatWrap) {
+    try {
+      const [s, pl] = await Promise.all([api.get("/api/stats"), api.get("/api/plans")])
+      const daily = s.myDaily || {}
+      const plans = pl.plans || {}
+      clear(heatWrap)
+      heatWrap.append(heatmap(daily, { future: 14, plans, onPickDay: (date) => planDialog({ date, onSaved: () => renderHeat(heatWrap) }) }))
+    } catch (e) { clear(heatWrap); heatWrap.append(h("div", { class: "muted mono tiny" }, e.message)) }
   }
 
   function header(me) {

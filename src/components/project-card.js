@@ -1,10 +1,12 @@
 import { h } from "../lib/dom.js"
 import { fmtAgo } from "../lib/fmt.js"
+import { starButton } from "./star-button.js"
 
 export function projectCard(p) {
   const cover = p.coverUrl
     ? h("div", { class: "card__cover" }, h("img", { src: p.coverUrl, alt: p.title, loading: "lazy" }))
     : h("div", { class: "card__cover card__cover--empty" }, h("span", { class: "mono" }, "未着色 / NO COVER"))
+  cover.append(h("div", { class: "card__star" }, starButton(p)))
 
   const tags = (p.tags && p.tags.length)
     ? h("div", { class: "tagrow" }, ...p.tags.slice(0, 4).map((t) => h("span", { class: "tag" }, t)))

@@ -6,7 +6,8 @@ import { projectFormModal } from "../components/project-form.js"
 import { session } from "../lib/store.js"
 import { api } from "../lib/api.js"
 import { toast } from "../components/toast.js"
-import { quoteFor } from "../lib/quotes.js"
+import { greetingFor } from "../lib/greeting.js"
+import { planDialog } from "../components/plan-dialog.js"
 import { go } from "../router.js"
 
 const DAY = 86400000
@@ -33,22 +34,13 @@ export default function home(root) {
   const byEl = h("div", { class: "quote__by mono" })
   const streakEl = h("div", { class: "streak" })
 
-  function roll() {
-    const q = quoteFor(name)
-    const apply = () => {
-      quoteEl.textContent = q.text
-      byEl.textContent = q.by ? "—— " + q.by : (me ? "@" + me.handle + " · 长生天计划" : "长生天计划 · 创作者语录")
-    }
-    if (tame) { apply(); return }
-    gsap.to([quoteEl, byEl], {
-      autoAlpha: 0, y: 10, duration: 0.16, onComplete() {
-        apply()
-        gsap.to([quoteEl, byEl], { autoAlpha: 1, y: 0, duration: 0.45, ease: "expo.out", stagger: 0.06 })
-      }
-    })
+  function greet() {
+    const g = greetingFor(name)
+    clear(quoteEl)
+    quoteEl.append(g.greet + "，", h("em", {}, g.name), "，", g.tail)
+    byEl.textContent = me ? "@" + me.handle + " · 长生天计划" : "长生天计划"
   }
 
-  const reroll = h("button", { class: "btn btn--sm reroll", onClick: roll }, "换一句 ↻")
   const cta = h("div", { class: "hero__cta rv" },
     me ? h("button", { class: "btn btn--red btn--block", onClick: newProject }, "+ 新建项目")
       : h("a", { class: "btn btn--red btn--block", href: "/login", "data-link": "1" }, "登录 / 注册"),
@@ -58,9 +50,9 @@ export default function home(root) {
   const hero = h("section", { class: "hero hero--quote" },
     h("div", { class: "hero__bg" }, h("i", { class: "hb1" }), h("i", { class: "hb2" }), h("i", { class: "hb3" })),
     h("div", { class: "wrap" },
-      h("span", { class: "kicker rv" }, "长生天计划 · 创作者语录"),
+      h("span", { class: "kicker rv" }, "长生天计划 · 今日"),
       h("div", { class: "quote__wrap rv" }, quoteEl, byEl),
-      h("div", { class: "hero__row rv" }, reroll, streakEl),
+      h("div", { class: "hero__row rv" }, streakEl),
       cta,
       h("div", { class: "gradestrip rv" }, ...GRADES.map((g) => h("div", { "data-grade": g.key }, g.key)))
     )
@@ -81,10 +73,20 @@ export default function home(root) {
   const wallSec = h("section", { class: "section", style: "padding-top:0" }, h("div", { class: "wrap" },
     h("span", { class: "kicker", style: "display:inline-flex;margin-bottom:20px" }, "Ledger / 总账"), wall))
 
-  const view = h("div", { class: "page page--home" }, hero, h("hr", { class: "rule rule--thick" }), recentSec, wallSec)
+  const todayStr = ymd(new Date())
+  const planList = h("div", { class: "todayplan__list" })
+  const planSec = me ? h("section", { class: "section todayplan", style: "padding-top:0" }, h("div", { class: "wrap" },
+    h("div", { class: "section__head" },
+      h("div", {}, h("span", { class: "kicker" }, "Today / 今日计划"), h("h2", { class: "h-section", style: "margin-top:12px" }, "今天画什么")),
+      h("button", { class: "btn btn--sm", onClick: () => planDialog({ date: todayStr, onSaved: loadToday }) }, "规划今日")
+    ),
+    planList
+  )) : null
+
+  const view = h("div", { class: "page page--home" }, hero, h("hr", { class: "rule rule--thick" }), planSec, recentSec, wallSec)
   root.append(view)
 
-  roll()
+  greet()
   reveal(view.querySelectorAll(".hero .rv"), { stagger: 0.08, y: 40 })
   if (!tame) entrance(view.querySelectorAll(".hero__bg i"), { scale: 0.6, autoAlpha: 0, duration: 1.1, ease: "expo.out", stagger: 0.1, delay: 0.1 })
 
@@ -124,7 +126,38 @@ export default function home(root) {
     } catch { clear(recentGrid) }
   }
 
+  function planItem(it) {
+    const done = it.done
+    let label
+    if (it.kind === "version") label = "上传《" + (it.projectTitle || "项目") + "》的新版本"
+    else if (it.kind === "images") label = "上传 " + it.count + " 张图片" + (it.progress != null && !done ? "（已传 " + it.progress + "）" : "")
+    else label = it.text
+    return h("div", { class: "tpi" + (done ? " tpi--done" : "") },
+      h("span", { class: "tpi__mk" }, done ? "✓" : (it.kind === "manual" ? "○" : "◇")),
+      h("span", { class: "tpi__t" }, label),
+      it.kind !== "manual" ? h("span", { class: "tpi__auto mono tiny" }, "自动") : null)
+  }
+
+  async function loadToday() {
+    if (!me) return
+    try {
+      const r = await api.get("/api/plans?date=" + todayStr)
+      const items = r.plan.items || []
+      clear(planList)
+      if (!items.length) {
+        planList.append(h("div", { class: "todayplan__empty" },
+          h("span", { class: "mono tiny muted" }, "今天还没有计划"),
+          h("button", { class: "btn btn--sm btn--red", onClick: () => planDialog({ date: todayStr, onSaved: loadToday }) }, "+ 立个目标")))
+        return
+      }
+      const dn = items.filter((x) => x.done).length
+      planList.append(h("div", { class: "todayplan__bar mono tiny" }, "已完成 " + dn + " / " + items.length))
+      items.forEach((it) => planList.append(planItem(it)))
+    } catch { clear(planList) }
+  }
+
   async function hydrate() {
+    loadToday()
     await loadRecent()
     try {
       const s = await api.get("/api/stats")

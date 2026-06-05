@@ -4,7 +4,7 @@ import { currentUser } from "./_lib/auth.mjs"
 
 const GRADE_KEYS = ["ALEPH", "WAW", "HE", "TETH", "ZAYIN"]
 
-function digest(p) {
+function digest(p, me, starredSet) {
   return {
     id: p.id, title: p.title, desc: p.desc, grade: p.grade, tags: p.tags || [],
     ownerId: p.ownerId, author: p.ownerHandle,
@@ -12,6 +12,9 @@ function digest(p) {
     coverUrl: p.coverKey ? "/media/" + p.coverKey : null,
     headVersionId: p.headVersionId || null,
     characters: p.characters || [],
+    starCount: p.starCount || 0,
+    starred: starredSet ? starredSet.has(p.id) : false,
+    isOwn: me ? p.ownerId === me.id : false,
     createdAt: p.createdAt, updatedAt: p.updatedAt
   }
 }
@@ -45,7 +48,11 @@ export default async (req, context) => {
       const ch = url.searchParams.get("character")
       if (ch) rows = rows.filter((p) => (p.characters || []).includes(ch))
       rows.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
-      return json({ projects: rows.map(digest) })
+      const starIdx = await store("stars").list({ prefix: "star/" })
+      const mineStar = new Set()
+      const tail = "/" + me.id
+      for (const b of starIdx.blobs) if (b.key.endsWith(tail)) mineStar.add(b.key.slice(5, b.key.length - tail.length))
+      return json({ projects: rows.map((p) => digest(p, me, mineStar)) })
     }
     if (req.method === "POST") {
       let body
@@ -63,7 +70,7 @@ export default async (req, context) => {
         createdAt: now, updatedAt: now
       }
       await projects.setJSON("project/" + pid, p)
-      return json({ project: digest(p) })
+      return json({ project: digest(p, me) })
     }
     return oops("方法不允许", 405)
   }
@@ -72,7 +79,8 @@ export default async (req, context) => {
   if (!p) return oops("项目不存在", 404)
 
   if (req.method === "GET") {
-    return json({ project: digest(p), canEdit: p.ownerId === me.id || me.role === "admin" })
+    const starred = !!(await store("stars").getJSON("star/" + id + "/" + me.id))
+    return json({ project: digest(p, me, starred ? new Set([id]) : null), canEdit: p.ownerId === me.id || me.role === "admin" })
   }
 
   const owns = p.ownerId === me.id || me.role === "admin"
@@ -88,7 +96,7 @@ export default async (req, context) => {
     if (body.characters !== undefined) p.characters = cleanCharRefs(body.characters)
     p.updatedAt = new Date().toISOString()
     await projects.setJSON("project/" + id, p)
-    return json({ project: digest(p) })
+    return json({ project: digest(p, me) })
   }
 
   if (req.method === "DELETE") {
@@ -105,6 +113,8 @@ export default async (req, context) => {
       }
       await versions.delete("version/" + id + "/" + vid)
     }
+    const starIdx = await store("stars").list({ prefix: "star/" + id + "/" })
+    for (const b of starIdx.blobs) await store("stars").delete(b.key)
     await projects.delete("project/" + id)
     return json({ ok: true })
   }

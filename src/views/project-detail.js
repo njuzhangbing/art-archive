@@ -4,6 +4,7 @@ import { projectFormModal } from "../components/project-form.js"
 import { uploadModal } from "../components/uploader.js"
 import { assetStage } from "../components/viewer.js"
 import { diffModal } from "../components/diff.js"
+import { starButton } from "../components/star-button.js"
 import { toast } from "../components/toast.js"
 import { go } from "../router.js"
 import { reveal, clearScroll } from "../lib/anim.js"
@@ -65,6 +66,7 @@ export default function projectDetail(root, params) {
 
   function header() {
     const acts = h("div", { class: "pd__acts" },
+      starButton(project),
       canEdit ? h("button", { class: "btn btn--red", onClick: startUpload }, "上传更新") : null,
       versions.length >= 2 ? h("button", { class: "btn btn--sm btn--ghost", onClick: openDiff }, "版本对比") : null,
       canEdit ? h("button", { class: "btn btn--sm", onClick: edit }, "编辑") : null,

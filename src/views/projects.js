@@ -29,7 +29,8 @@ export default function projects(root) {
     h("option", { value: "recent" }, "最近更新"),
     h("option", { value: "grade" }, "分级 高→低"),
     h("option", { value: "name" }, "名称 A–Z"),
-    h("option", { value: "versions" }, "版本最多")
+    h("option", { value: "versions" }, "版本最多"),
+    h("option", { value: "stars" }, "收藏最多")
   )
   sortSel.addEventListener("change", (e) => { sort = e.target.value; paint() })
 
@@ -61,6 +62,7 @@ export default function projects(root) {
     else if (sort === "grade") rows.sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || (a.updatedAt < b.updatedAt ? 1 : -1))
     else if (sort === "name") rows.sort((a, b) => String(a.title).localeCompare(String(b.title), "zh"))
     else if (sort === "versions") rows.sort((a, b) => (b.versions || 0) - (a.versions || 0))
+    else if (sort === "stars") rows.sort((a, b) => (b.starCount || 0) - (a.starCount || 0) || (a.updatedAt < b.updatedAt ? 1 : -1))
 
     clear(grid)
     count.textContent = rows.length + " / " + all.length + " 项"
