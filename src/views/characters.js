@@ -4,6 +4,7 @@ import { GRADES, gradeRank } from "../lib/grades.js"
 import { DAMAGE } from "../lib/damage.js"
 import { characterCard } from "../components/character-card.js"
 import { characterFormModal } from "../components/character-form.js"
+import { personaBanners } from "../components/persona-banners.js"
 import { reveal } from "../lib/anim.js"
 import { toast } from "../components/toast.js"
 
@@ -12,6 +13,9 @@ export default function characters(root) {
   const pickG = new Set()
   const pickD = new Set()
   let q = ""
+  let persona = null
+
+  const banners = personaBanners((key) => { persona = persona === key ? null : key; banners.sync(persona); paint() }, () => persona)
 
   const gchips = GRADES.map((g) => h("button", { class: "chip", "data-grade": g.key, "data-on": "0" }, h("span", { class: "chip__dot" }), g.key))
   gchips.forEach((c) => c.addEventListener("click", () => { toggle(pickG, c.getAttribute("data-grade"), c); paint() }))
@@ -37,13 +41,14 @@ export default function characters(root) {
     h("div", { class: "chiprow" }, ...dchips)
   )
 
-  const view = h("div", { class: "wrap characters" }, head, bar, count, grid)
+  const view = h("div", { class: "wrap characters" }, head, banners, bar, count, grid)
   root.append(view)
 
   function create() { characterFormModal({ onSaved: (c) => { all.unshift(c); paint() } }) }
 
   function paint() {
     let rows = all.slice()
+    if (persona) rows = rows.filter((c) => (c.persona || "FULL") === persona)
     if (pickG.size) rows = rows.filter((c) => pickG.has(c.grade))
     if (pickD.size) rows = rows.filter((c) => pickD.has(c.damage))
     if (q) rows = rows.filter((c) => (c.name + " " + (c.code || "")).toLowerCase().includes(q))
@@ -62,7 +67,7 @@ export default function characters(root) {
   }
 
   async function boot() {
-    reveal([head, bar], { y: 20, stagger: 0.08 })
+    reveal([head, banners, bar], { y: 20, stagger: 0.08 })
     try { const r = await api.get("/api/characters"); all = r.characters; paint() }
     catch (err) { toast(err.message || "加载失败", "bad"); grid.append(empty()) }
   }

@@ -1,6 +1,7 @@
 import { h, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { damageOf } from "../lib/damage.js"
+import { personaOf } from "../lib/persona.js"
 import { characterFormModal } from "../components/character-form.js"
 import { mdToHtml } from "../lib/markdown.js"
 import { toast } from "../components/toast.js"
@@ -52,7 +53,9 @@ export default function characterDetail(root, params) {
         h("div", { class: "cd__badges" },
           h("span", { class: "badge badge--fill", "data-grade": c.grade }, h("span", { class: "badge__dot" }), c.grade),
           c.code ? h("span", { class: "badge ccode-badge mono" }, c.code) : null,
-          h("span", { class: "dmgbadge", "data-dmg": c.damage }, h("img", { src: d.icon, alt: d.label }), h("b", {}, d.label))
+          h("span", { class: "dmgbadge", "data-dmg": c.damage }, h("img", { src: d.icon, alt: d.label }), h("b", {}, d.label)),
+          h("span", { class: "badge ptag-badge mono" }, personaOf(c.persona).label),
+          c.experimental ? h("span", { class: "expbadge mono" }, "实验性实体") : null
         ),
         h("h1", { class: "cd__name serif" }, c.name),
         h("div", { class: "cd__meta mono" }, "@" + c.owner, h("span", { class: "dotsep" }, "更新 " + fmtAgo(c.updatedAt)), h("span", { class: "dotsep" }, projects.length + " 个项目")),

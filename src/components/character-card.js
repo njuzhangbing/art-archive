@@ -1,5 +1,6 @@
 import { h } from "../lib/dom.js"
 import { damageOf } from "../lib/damage.js"
+import { personaOf } from "../lib/persona.js"
 
 function excerpt(md, n = 130) {
   if (!md) return ""
@@ -16,7 +17,7 @@ function excerpt(md, n = 130) {
 export function characterCard(c) {
   const d = damageOf(c.damage)
   const ex = excerpt(c.body)
-  return h("a", { class: "ccard", "data-grade": c.grade, href: "/characters/" + c.id, "data-link": "1" },
+  return h("a", { class: "ccard" + (c.experimental ? " ccard--exp" : ""), "data-grade": c.grade, href: "/characters/" + c.id, "data-link": "1" },
     h("div", { class: "ccard__por" },
       c.coverUrl ? h("img", { src: c.coverUrl, loading: "lazy", alt: c.name }) : h("div", { class: "ccard__noimg mono" }, "无立绘"),
       h("img", { class: "ccard__dmg", src: d.icon, alt: d.label, title: "Damage · " + d.label })
@@ -24,7 +25,9 @@ export function characterCard(c) {
     h("div", { class: "ccard__main" },
       h("div", { class: "ccard__top" },
         h("span", { class: "badge", "data-grade": c.grade, style: "padding:2px 7px" }, c.grade),
-        c.code ? h("span", { class: "mono tiny ccode" }, c.code) : null
+        c.code ? h("span", { class: "mono tiny ccode" }, c.code) : null,
+        h("span", { class: "ptag mono tiny" }, personaOf(c.persona).label),
+        c.experimental ? h("span", { class: "expbadge mono tiny" }, "实验性实体") : null
       ),
       h("h3", { class: "ccard__name serif" }, c.name),
       h("p", { class: "ccard__ex" + (ex ? "" : " muted") }, ex || "词条尚未编写"),
