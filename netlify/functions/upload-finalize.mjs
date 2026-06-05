@@ -2,7 +2,7 @@ import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
 import { currentUser } from "./_lib/auth.mjs"
 
-const MAX_MB = Number(process.env.MAX_UPLOAD_MB) || 64
+const MAX_MB = Number(process.env.MAX_UPLOAD_MB) || 128
 const MAX_BYTES = MAX_MB * 1024 * 1024
 
 export default async (req) => {
