@@ -12,11 +12,17 @@ export function kindOf(file) {
   return "image"
 }
 
+async function whyFail(r, where) {
+  const e = await r.json().catch(() => null)
+  return new Error((e && e.error) ? (where + "：" + e.error) : (where + "失败 " + r.status))
+}
+
 async function putBlob(blob, contentType) {
   const size = blob.size
+  const mb = (size / 1048576).toFixed(1)
   if (size <= DIRECT_MAX) {
     const r = await fetch("/api/upload", { method: "POST", headers: { "content-type": contentType || blob.type || "application/octet-stream" }, body: blob })
-    if (!r.ok) throw new Error("上传失败 (" + r.status + ")")
+    if (!r.ok) throw await whyFail(r, "上传(" + mb + "MB)")
     return (await r.json()).key
   }
   const uid = rand()
@@ -24,10 +30,10 @@ async function putBlob(blob, contentType) {
   for (let i = 0; i < parts; i++) {
     const slice = blob.slice(i * CHUNK, (i + 1) * CHUNK)
     const r = await fetch("/api/upload-chunk?uid=" + uid + "&n=" + i, { method: "POST", body: slice })
-    if (!r.ok) throw new Error("分块上传失败 (" + r.status + ")")
+    if (!r.ok) throw await whyFail(r, "分块 " + (i + 1) + "/" + parts)
   }
   const fin = await fetch("/api/upload-finalize", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uid, parts, contentType: contentType || blob.type }) })
-  if (!fin.ok) throw new Error("合并失败 (" + fin.status + ")")
+  if (!fin.ok) throw await whyFail(fin, "合并(" + mb + "MB)")
   return (await fin.json()).key
 }
 
