@@ -117,7 +117,41 @@ export default function profile(root) {
     )
     const cols = box.querySelector(".admin__cols")
     cols.append(usersPanel(), invitesPanel())
+    box.append(reportsPanel())
     return box
+  }
+
+  function reportsPanel() {
+    const list = h("div", { class: "rows" }, h("div", { class: "muted mono tiny" }, "加载中…"))
+    const panel = h("div", { class: "panel", style: "margin-top:20px" }, h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Reports / 举报")), list)
+    const load = async () => {
+      try {
+        const { reports } = await api.get("/api/reports")
+        clear(list)
+        if (!reports.length) { list.append(h("div", { class: "muted mono tiny" }, "暂无举报")); return }
+        reports.forEach((r) => list.append(reportRow(r, load)))
+      } catch (e) { clear(list); list.append(h("div", { class: "muted mono tiny" }, e.message)) }
+    }
+    load()
+    return panel
+  }
+
+  function reportRow(r, reload) {
+    const link = r.kind === "project" ? "/projects/" + r.targetId : r.kind === "character" ? "/characters/" + r.targetId : "/blog/" + r.targetId
+    const kindLabel = { project: "项目", character: "角色", post: "文章" }[r.kind] || r.kind
+    const act = async (fn) => { try { await fn(); reload() } catch (e) { toast(e.message || "失败", "bad") } }
+    return h("div", { class: "urow urow--rep" },
+      h("div", { class: "urow__who" },
+        h("span", { class: "badge", "data-grade": r.resolved ? "ZAYIN" : "ALEPH" }, h("span", { class: "badge__dot" }), r.resolved ? "已处理" : "待处理"),
+        h("a", { class: "mono", href: link, "data-link": "1" }, kindLabel + "《" + (r.targetTitle || r.targetId) + "》")
+      ),
+      r.reason ? h("div", { class: "urow__reason mono tiny muted" }, "原因：" + r.reason) : null,
+      h("span", { class: "mono tiny muted" }, "by @" + r.byHandle),
+      h("div", { class: "urow__btns" },
+        h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/reports/" + r.id, { resolved: !r.resolved })) }, r.resolved ? "重开" : "标记处理"),
+        h("button", { class: "btn btn--sm btn--danger", onClick: () => act(() => api.del("/api/reports/" + r.id)) }, "删")
+      )
+    )
   }
 
   function usersPanel() {

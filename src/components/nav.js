@@ -5,7 +5,8 @@ const LINKS = [
   { path: "/", i: "00", label: "主页" },
   { path: "/projects", i: "01", label: "项目" },
   { path: "/activity", i: "02", label: "活动" },
-  { path: "/characters", i: "03", label: "角色" }
+  { path: "/characters", i: "03", label: "角色" },
+  { path: "/blog", i: "04", label: "博客" }
 ]
 
 export function buildNav() {

@@ -6,10 +6,16 @@ function safeUrl(u) {
   return /^(https?:\/\/|\/|mailto:|data:image\/)/i.test(u) ? u : "#"
 }
 
+function linkTag(text, url) {
+  const u = safeUrl(url)
+  if (u.startsWith("/")) return '<a href="' + u + '" data-link="1">' + text + "</a>"
+  return '<a href="' + u + '" target="_blank" rel="noopener">' + text + "</a>"
+}
+
 function inline(s) {
   return s
     .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (m, a, u) => '<img alt="' + a + '" src="' + safeUrl(u) + '">')
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, u) => '<a href="' + safeUrl(u) + '" target="_blank" rel="noopener">' + t + "</a>")
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, u) => linkTag(t, u))
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")

@@ -3,6 +3,8 @@ import { api } from "../lib/api.js"
 import { damageOf } from "../lib/damage.js"
 import { personaOf } from "../lib/persona.js"
 import { characterFormModal } from "../components/character-form.js"
+import { reportButton } from "../components/report-button.js"
+import { session } from "../lib/store.js"
 import { mdToHtml } from "../lib/markdown.js"
 import { toast } from "../components/toast.js"
 import { go } from "../router.js"
@@ -59,7 +61,10 @@ export default function characterDetail(root, params) {
         ),
         h("h1", { class: "cd__name serif" }, c.name),
         h("div", { class: "cd__meta mono" }, "@" + c.owner, h("span", { class: "dotsep" }, "更新 " + fmtAgo(c.updatedAt)), h("span", { class: "dotsep" }, projects.length + " 个项目")),
-        canEdit ? h("div", { class: "cd__acts" }, h("button", { class: "btn btn--sm", onClick: edit }, "编辑信息"), h("button", { class: "btn btn--sm btn--danger", onClick: del }, "删除")) : null
+        h("div", { class: "cd__acts" },
+          canEdit ? h("button", { class: "btn btn--sm", onClick: edit }, "编辑信息") : null,
+          canEdit ? h("button", { class: "btn btn--sm btn--danger", onClick: del }, "删除") : null,
+          (session.me && c.ownerId !== session.me.id) ? reportButton({ kind: "character", id: c.id, title: c.name }) : null)
       )
     )
   }

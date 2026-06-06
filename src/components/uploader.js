@@ -18,11 +18,20 @@ export function uploadModal({ project, onDone }) {
   )
   const listEl = h("div", { class: "uplist" })
   const msg = h("input", { class: "input", name: "message", placeholder: "本次更新说明，如：完成线稿上色" })
+  const presets = ["草稿", "线稿", "色草", "光影", "成图", "修订"].map((p) => {
+    const c = h("button", { class: "msgpreset mono", type: "button" }, p)
+    c.addEventListener("click", () => { msg.value = p; msg.focus() })
+    return c
+  })
   const submit = h("button", { class: "btn btn--red btn--lg", type: "button", style: "width:100%", disabled: true }, "提交更新")
 
   const body = h("div", { class: "stack" },
     drop, listEl,
-    h("label", { class: "field", style: "margin-top:6px" }, h("span", { class: "field__label" }, "更新说明 / MESSAGE"), msg),
+    h("div", { class: "field", style: "margin-top:6px" },
+      h("span", { class: "field__label" }, "更新说明 / MESSAGE"),
+      h("div", { class: "msgpresets" }, ...presets),
+      msg
+    ),
     submit
   )
   const modal = openModal(project.versions ? "Update / 上传更新" : "First / 上传首个版本", body)
