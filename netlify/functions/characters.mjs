@@ -77,7 +77,7 @@ export default async (req, context) => {
     const involved = prows
       .filter((p) => (p.characters || []).includes(id))
       .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
-      .map((p) => ({ id: p.id, title: p.title, grade: p.grade, coverUrl: p.coverKey ? "/media/" + p.coverKey : null }))
+      .map((p) => ({ id: p.id, title: p.title, grade: p.grade, coverUrl: p.coverKey ? "/media/" + p.coverKey : null, author: p.ownerHandle, desc: (p.desc || "").slice(0, 160) }))
     return json({ character: digest(c), projects: involved, canEdit: c.ownerId === me.id || me.role === "admin" })
   }
 

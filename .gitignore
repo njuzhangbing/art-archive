@@ -5,3 +5,5 @@ dist
 .DS_Store
 *.local
 npm-debug.log*
+deno.lock
+start.command

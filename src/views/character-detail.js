@@ -4,6 +4,7 @@ import { damageOf } from "../lib/damage.js"
 import { personaOf } from "../lib/persona.js"
 import { characterFormModal } from "../components/character-form.js"
 import { reportButton } from "../components/report-button.js"
+import { investigationBoard } from "../components/investigation-board.js"
 import { session } from "../lib/store.js"
 import { mdToHtml } from "../lib/markdown.js"
 import { toast } from "../components/toast.js"
@@ -108,17 +109,10 @@ export default function characterDetail(root, params) {
 
   function involved() {
     return h("section", { class: "cd__proj" },
-      h("div", { class: "section__head" }, h("div", {}, h("span", { class: "kicker" }, "Appears in / 涉及项目"), h("h2", { class: "pd__h2 serif" }, "出场作品"))),
+      h("div", { class: "section__head" }, h("div", {}, h("span", { class: "kicker" }, "Appears in / 涉及项目"), h("h2", { class: "pd__h2 serif" }, "出场作品")), projects.length ? h("span", { class: "mono tiny muted" }, projects.length + " 份案卷") : null),
       projects.length
-        ? h("div", { class: "chargrid" }, ...projects.map(projMini))
+        ? investigationBoard({ character: { name: c.name, code: c.code, grade: c.grade, img: (c.portraits && c.portraits[0] ? c.portraits[0].url : c.coverUrl) }, projects })
         : h("div", { class: "empty" }, h("div", { class: "mono" }, "暂未关联项目"), h("p", { class: "mono tiny muted", style: "margin-top:8px" }, "在项目的「新建 / 编辑」里勾选此角色即可双向关联"))
-    )
-  }
-
-  function projMini(p) {
-    return h("a", { class: "pmini", "data-grade": p.grade, href: "/projects/" + p.id, "data-link": "1" },
-      h("div", { class: "pmini__cv" }, p.coverUrl ? h("img", { src: p.coverUrl, loading: "lazy", alt: "" }) : h("span", { class: "mono tiny muted" }, "NO COVER")),
-      h("div", { class: "pmini__t" }, h("span", { class: "badge", "data-grade": p.grade, style: "padding:2px 6px" }, p.grade), h("b", {}, p.title))
     )
   }
 
