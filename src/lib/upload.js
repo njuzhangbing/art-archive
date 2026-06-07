@@ -41,11 +41,12 @@ async function shove(url, opts, where) {
   throw last || new Error(where + "失败")
 }
 
-async function putBlob(blob, contentType) {
+async function putBlob(blob, contentType, onDelta) {
   const size = blob.size
   const mb = (size / 1048576).toFixed(1)
   if (size <= DIRECT_MAX) {
     const r = await shove("/api/upload", { method: "POST", headers: { "content-type": contentType || blob.type || "application/octet-stream" }, body: blob }, "上传(" + mb + "MB)")
+    onDelta && onDelta(size)
     return (await r.json()).key
   }
   const uid = rand()
@@ -53,6 +54,7 @@ async function putBlob(blob, contentType) {
   for (let i = 0; i < parts; i++) {
     const slice = blob.slice(i * CHUNK, (i + 1) * CHUNK)
     await shove("/api/upload-chunk?uid=" + uid + "&n=" + i, { method: "POST", body: slice }, "分块 " + (i + 1) + "/" + parts)
+    onDelta && onDelta(slice.size)
   }
   const fin = await shove("/api/upload-finalize", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uid, parts, contentType: contentType || blob.type }) }, "合并(" + mb + "MB)")
   return (await fin.json()).key
@@ -101,16 +103,19 @@ function videoPoster(file) {
   })
 }
 
-export async function buildAsset(file, step = () => {}) {
+export async function buildAsset(file, step = () => {}, onProgress = () => {}) {
   const id = "a_" + rand().slice(0, 8)
   const kind = kindOf(file)
+  let sent = 0
+  const span = Math.max(file.size, 1)
+  const bump = (d) => { sent += d; onProgress(Math.min(sent / span, 1)) }
 
   if (kind === "psd") {
     step("解析 PSD…")
     let parsed = null
     try { parsed = await parsePsd(file) } catch { parsed = null }
     step("上传源文件…")
-    const originalKey = await putBlob(file, "image/vnd.adobe.photoshop")
+    const originalKey = await putBlob(file, "image/vnd.adobe.photoshop", bump)
     let previewKey = null
     const layers = []
     if (parsed) {
@@ -129,7 +134,7 @@ export async function buildAsset(file, step = () => {}) {
     let posterKey = null, dims = { w: 0, h: 0 }
     try { const p = await videoPoster(file); posterKey = await putBlob(p.blob, "image/webp"); dims = { w: p.w, h: p.h } } catch {}
     step("上传视频…")
-    const originalKey = await putBlob(file, file.type || "video/mp4")
+    const originalKey = await putBlob(file, file.type || "video/mp4", bump)
     return { id, kind, filename: file.name, originalKey, posterKey, w: dims.w, h: dims.h, bytes: file.size }
   }
 
@@ -137,6 +142,6 @@ export async function buildAsset(file, step = () => {}) {
   let previewKey = null, dims = { w: 0, h: 0 }
   try { const p = await imagePreview(file); previewKey = await putBlob(p.blob, "image/webp"); dims = { w: p.w, h: p.h } } catch {}
   step("上传原图…")
-  const originalKey = await putBlob(file, file.type || "image/png")
+  const originalKey = await putBlob(file, file.type || "image/png", bump)
   return { id, kind, filename: file.name, originalKey, previewKey: previewKey || originalKey, w: dims.w, h: dims.h, bytes: file.size }
 }

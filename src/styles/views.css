@@ -565,7 +565,7 @@ a.rankrow__main:hover b { color: var(--red); }
 .drop__in { padding: 34px 20px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
 .drop__in b { font-size: 22px; }
 .uplist { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; max-height: 280px; overflow: auto; }
-.uprow { display: flex; align-items: center; gap: 12px; border: 2px solid var(--hair); padding: 8px; }
+.uprow { position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; border: 2px solid var(--hair); padding: 8px 8px 10px; }
 .uprow__th { width: 46px; height: 46px; flex: none; border: 2px solid var(--ink); overflow: hidden; background: var(--paper-2); }
 .uprow__th img { width: 100%; height: 100%; object-fit: cover; }
 .uprow__ico { width: 100%; height: 100%; display: grid; place-items: center; font-size: 11px; font-weight: 700; }
@@ -576,6 +576,14 @@ a.rankrow__main:hover b { color: var(--red); }
 .uprow__status { white-space: nowrap; color: var(--ink-soft); }
 .uprow__x { width: 26px; height: 26px; border: 2px solid var(--hair); flex: none; }
 .uprow__x:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.uprow__stat { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+.uprow__pct { color: var(--ink); font-weight: 700; min-width: 30px; text-align: right; }
+.uprow[data-done="1"] .uprow__pct { color: var(--zayin); }
+.upbar { position: absolute; left: 0; bottom: 0; height: 3px; width: 0%; background: var(--red); transition: width .3s var(--ease); }
+.uprow[data-done="1"] .upbar { background: var(--zayin); }
+.upoverall { position: relative; margin-top: 12px; height: 22px; border: 3px solid var(--ink); background: var(--paper-2); overflow: hidden; }
+.upoverall__fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: var(--red); transition: width .3s var(--ease); }
+.upoverall__txt { position: absolute; inset: 0; display: grid; place-items: center; font-size: 11px; font-weight: 700; letter-spacing: .1em; color: #fff; mix-blend-mode: difference; }
 
 /* ---- stage / viewer ---- */
 .pd__stage { margin-top: 28px; }
