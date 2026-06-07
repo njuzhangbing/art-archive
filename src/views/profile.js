@@ -117,8 +117,46 @@ export default function profile(root) {
     )
     const cols = box.querySelector(".admin__cols")
     cols.append(usersPanel(), invitesPanel())
-    box.append(reportsPanel())
+    box.append(reportsPanel(), backupPanel())
     return box
+  }
+
+  function backupPanel() {
+    const fileIn = h("input", { type: "file", accept: "application/json,.json", style: "display:none" })
+    const status = h("span", { class: "mono tiny muted" })
+    async function pullDown() {
+      status.textContent = "导出中…"
+      try {
+        const res = await fetch("/api/admin/backup", { credentials: "same-origin" })
+        if (!res.ok) throw new Error("导出失败 " + res.status)
+        const blob = await res.blob()
+        const url = URL.createObjectURL(blob)
+        const a = h("a", { href: url, download: "changshengtian-backup-" + new Date().toISOString().slice(0, 10) + ".json" })
+        document.body.append(a); a.click(); a.remove(); URL.revokeObjectURL(url)
+        status.textContent = "已下载备份（" + (blob.size / 1024).toFixed(0) + " KB）"
+      } catch (e) { status.textContent = ""; toast(e.message || "导出失败", "bad") }
+    }
+    fileIn.addEventListener("change", async () => {
+      const f = fileIn.files[0]; fileIn.value = ""
+      if (!f) return
+      if (!confirm("导入备份「" + f.name + "」？\n将按记录合并写入（同 key 覆盖，不会删除现有数据）。")) return
+      status.textContent = "导入中…"
+      try {
+        const parcel = JSON.parse(await f.text())
+        const r = await api.post("/api/admin/backup", parcel)
+        status.textContent = "已合并 " + r.merged + " 条记录"
+        toast("导入完成，合并 " + r.merged + " 条", "ok")
+      } catch (e) { status.textContent = ""; toast(e.message || "导入失败（文件过大或格式不符）", "bad") }
+    })
+    return h("div", { class: "panel", style: "margin-top:20px" },
+      h("div", { class: "panel__head" },
+        h("span", { class: "kicker" }, "Backup / 数据备份"),
+        h("div", { style: "display:flex;gap:8px" },
+          h("button", { class: "btn btn--sm btn--red", onClick: pullDown }, "下载备份"),
+          h("button", { class: "btn btn--sm", onClick: () => fileIn.click() }, "导入合并"))),
+      h("div", { class: "rows" },
+        h("p", { class: "mono tiny muted", style: "line-height:1.6" }, "把全部项目 / 版本 / 角色 / 博客 / 计划 / 收藏 / 举报 / 成员 / 邀请的记录导出为一个 JSON。导入时按记录合并（同 key 覆盖，不删现有）。含成员密码哈希，请妥善保管；不含图片二进制（图片存于 Blobs，随存储持久保留）。"),
+        status, fileIn))
   }
 
   function reportsPanel() {

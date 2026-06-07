@@ -5,6 +5,7 @@ import { currentUser } from "./_lib/auth.mjs"
 const GRADE_KEYS = ["ALEPH", "WAW", "HE", "TETH", "ZAYIN"]
 const DAMAGE = ["RED", "WHITE", "BLACK", "PALE"]
 const PERSONA = ["FULL", "SEMI"]
+const MIMICRY = ["MALE", "FEMALE", "HERM", "NONE", "UNKNOWN"]
 
 function lockCode(raw, experimental) {
   let code = String(raw || "").trim().slice(0, 24)
@@ -16,6 +17,7 @@ function digest(c) {
   return {
     id: c.id, name: c.name, code: c.code, grade: c.grade, damage: c.damage,
     persona: c.persona || "FULL", experimental: !!c.experimental,
+    mimicry: c.mimicry || "",
     owner: c.ownerHandle, ownerId: c.ownerId,
     coverUrl: c.coverKey ? "/media/" + c.coverKey : null,
     portraits: (c.portraits || []).map((p) => ({ id: p.id, key: p.key, url: "/media/" + p.key, w: p.w, h: p.h, filename: p.filename })),
@@ -56,6 +58,7 @@ export default async (req, context) => {
         grade: GRADE_KEYS.includes(b.grade) ? b.grade : "ZAYIN",
         damage: DAMAGE.includes(b.damage) ? b.damage : "RED",
         persona: PERSONA.includes(b.persona) ? b.persona : "FULL",
+        mimicry: MIMICRY.includes(b.mimicry) ? b.mimicry : "",
         experimental,
         body: String(b.body || "").slice(0, 20000),
         portraits, coverKey: portraits[0] ? portraits[0].key : null,
@@ -88,6 +91,7 @@ export default async (req, context) => {
     try { b = await req.json() } catch { return oops("请求体无效") }
     if (typeof b.name === "string" && b.name.trim()) c.name = b.name.trim().slice(0, 80)
     if (PERSONA.includes(b.persona)) c.persona = b.persona
+    if (typeof b.mimicry === "string") c.mimicry = MIMICRY.includes(b.mimicry) ? b.mimicry : ""
     if (typeof b.experimental === "boolean") c.experimental = b.experimental
     if (typeof b.code === "string") c.code = lockCode(b.code, c.experimental)
     else if (b.experimental === true) c.code = lockCode(c.code, true)

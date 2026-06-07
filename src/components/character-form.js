@@ -5,6 +5,7 @@ import { openModal } from "./modal.js"
 import { GRADES } from "../lib/grades.js"
 import { DAMAGE } from "../lib/damage.js"
 import { PERSONA } from "../lib/persona.js"
+import { MIMICRY } from "../lib/mimicry.js"
 import { buildAsset, kindOf } from "../lib/upload.js"
 import { psdToPng } from "../lib/psd.js"
 
@@ -13,11 +14,16 @@ export function characterFormModal({ character, onSaved }) {
   let grade = (character && character.grade) || "ZAYIN"
   let damage = (character && character.damage) || "RED"
   let persona = (character && character.persona) || "FULL"
+  let mimicry = (character && character.mimicry) || ""
   let experimental = !!(character && character.experimental)
   let slots = editing ? (character.portraits || []).map((p) => ({ type: "have", key: p.key, url: p.url, w: p.w, h: p.h, filename: p.filename })) : []
 
   const personaBtns = PERSONA.map((p) => h("button", { type: "button", class: "perpick__b", "data-key": p.key, "data-on": p.key === persona ? "1" : "0" }, h("b", {}, p.label), h("span", { class: "mono tiny" }, p.en)))
   personaBtns.forEach((b) => b.addEventListener("click", () => { persona = b.dataset.key; personaBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0")) }))
+
+  const mimOpts = [{ key: "", label: "？？？" }, ...MIMICRY]
+  const mimBtns = mimOpts.map((m) => h("button", { type: "button", class: "perpick__b", "data-key": m.key, "data-on": m.key === mimicry ? "1" : "0" }, h("b", {}, m.label)))
+  mimBtns.forEach((b) => b.addEventListener("click", () => { mimicry = b.dataset.key; mimBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0")) }))
 
   const gradeBtns = GRADES.map((g) => h("button", { type: "button", "data-grade": g.key, "data-on": g.key === grade ? "1" : "0" }, h("span", { class: "swatch" }), g.key))
   gradeBtns.forEach((b) => b.addEventListener("click", () => { grade = b.dataset.grade; gradeBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0")) }))
@@ -89,6 +95,7 @@ export function characterFormModal({ character, onSaved }) {
     h("label", { class: "field" }, h("span", { class: "field__label" }, "角色名 / NAME"), h("input", { class: "input", name: "name", value: (character && character.name) || "", maxlength: "80", placeholder: "角色名", autofocus: true })),
     h("label", { class: "field" }, h("span", { class: "field__label" }, "编号 / CODE（X-xx-xx）"), codeInput, codeHint),
     h("div", { class: "field" }, h("span", { class: "field__label" }, "拟人化 / PERSONA"), h("div", { class: "perpick" }, ...personaBtns)),
+    h("div", { class: "field" }, h("span", { class: "field__label" }, "拟态性别 / MIMICRY（不选则显示 ？？？）"), h("div", { class: "perpick" }, ...mimBtns)),
     h("div", { class: "field" }, expToggle),
     h("div", { class: "field" }, h("span", { class: "field__label" }, "分级 / GRADE"), h("div", { class: "gradepick" }, ...gradeBtns)),
     h("div", { class: "field" }, h("span", { class: "field__label" }, "伤害类型 / DAMAGE"), h("div", { class: "dmgpick" }, ...dmgBtns)),
@@ -119,7 +126,7 @@ export function characterFormModal({ character, onSaved }) {
         }
       }
       const portraits = slots.map((s) => ({ key: s.key, w: s.w, h: s.h, filename: s.filename })).filter((s) => s.key)
-      const payload = { name, code, grade, damage, persona, experimental, portraits, coverKey: portraits[0] ? portraits[0].key : null }
+      const payload = { name, code, grade, damage, persona, mimicry, experimental, portraits, coverKey: portraits[0] ? portraits[0].key : null }
       const r = editing ? await api.patch("/api/characters/" + character.id, payload) : await api.post("/api/characters", payload)
       toast(editing ? "已保存" : "角色已建立", "ok")
       modal.close()

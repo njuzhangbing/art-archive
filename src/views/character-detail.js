@@ -2,6 +2,7 @@ import { h, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { damageOf } from "../lib/damage.js"
 import { personaOf } from "../lib/persona.js"
+import { mimicryLabel } from "../lib/mimicry.js"
 import { characterFormModal } from "../components/character-form.js"
 import { reportButton } from "../components/report-button.js"
 import { investigationBoard } from "../components/investigation-board.js"
@@ -58,6 +59,7 @@ export default function characterDetail(root, params) {
           c.code ? h("span", { class: "badge ccode-badge mono" }, c.code) : null,
           h("span", { class: "dmgbadge", "data-dmg": c.damage }, h("img", { src: d.icon, alt: d.label }), h("b", {}, d.label)),
           h("span", { class: "badge ptag-badge mono" }, personaOf(c.persona).label),
+          h("span", { class: "badge mim-badge mono" }, "拟态 " + mimicryLabel(c.mimicry)),
           c.experimental ? h("span", { class: "expbadge mono" }, "实验性实体") : null
         ),
         h("h1", { class: "cd__name serif" }, c.name),

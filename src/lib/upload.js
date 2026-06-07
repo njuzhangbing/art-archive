@@ -1,7 +1,10 @@
 import { parsePsd } from "./psd.js"
 
-const CHUNK = 5 * 1024 * 1024
-const DIRECT_MAX = 4 * 1024 * 1024
+const CHUNK = 1_000_000
+const DIRECT_MAX = 1_000_000
+const TRIES = 4
+
+function nap(ms) { return new Promise((done) => setTimeout(done, ms)) }
 
 function rand() { return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2, 6) }
 
@@ -13,27 +16,45 @@ export function kindOf(file) {
 }
 
 async function whyFail(r, where) {
-  const e = await r.json().catch(() => null)
-  return new Error((e && e.error) ? (where + "：" + e.error) : (where + "失败 " + r.status))
+  let msg = ""
+  try { const e = await r.clone().json(); if (e && e.error) msg = e.error } catch {}
+  if (!msg) { try { msg = (await r.text()).trim().slice(0, 140) } catch {} }
+  return new Error(msg ? (where + "：" + msg) : (where + "失败 " + r.status))
+}
+
+async function shove(url, opts, where) {
+  let last
+  for (let attempt = 1; attempt <= TRIES; attempt++) {
+    let r
+    try {
+      r = await fetch(url, opts)
+    } catch (e) {
+      last = e instanceof Error ? e : new Error(String(e))
+      if (attempt < TRIES) { await nap(500 * attempt); continue }
+      throw new Error(where + "：网络中断，文件没传到服务器（" + (last.message || "fetch failed") + "）")
+    }
+    if (r.ok) return r
+    if (r.status > 0 && r.status < 500) throw await whyFail(r, where)
+    last = await whyFail(r, where)
+    if (attempt < TRIES) await nap(500 * attempt)
+  }
+  throw last || new Error(where + "失败")
 }
 
 async function putBlob(blob, contentType) {
   const size = blob.size
   const mb = (size / 1048576).toFixed(1)
   if (size <= DIRECT_MAX) {
-    const r = await fetch("/api/upload", { method: "POST", headers: { "content-type": contentType || blob.type || "application/octet-stream" }, body: blob })
-    if (!r.ok) throw await whyFail(r, "上传(" + mb + "MB)")
+    const r = await shove("/api/upload", { method: "POST", headers: { "content-type": contentType || blob.type || "application/octet-stream" }, body: blob }, "上传(" + mb + "MB)")
     return (await r.json()).key
   }
   const uid = rand()
   const parts = Math.ceil(size / CHUNK)
   for (let i = 0; i < parts; i++) {
     const slice = blob.slice(i * CHUNK, (i + 1) * CHUNK)
-    const r = await fetch("/api/upload-chunk?uid=" + uid + "&n=" + i, { method: "POST", body: slice })
-    if (!r.ok) throw await whyFail(r, "分块 " + (i + 1) + "/" + parts)
+    await shove("/api/upload-chunk?uid=" + uid + "&n=" + i, { method: "POST", body: slice }, "分块 " + (i + 1) + "/" + parts)
   }
-  const fin = await fetch("/api/upload-finalize", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uid, parts, contentType: contentType || blob.type }) })
-  if (!fin.ok) throw await whyFail(fin, "合并(" + mb + "MB)")
+  const fin = await shove("/api/upload-finalize", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ uid, parts, contentType: contentType || blob.type }) }, "合并(" + mb + "MB)")
   return (await fin.json()).key
 }
 
