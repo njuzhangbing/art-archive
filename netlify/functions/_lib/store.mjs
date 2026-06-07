@@ -66,7 +66,7 @@ function diskStore(name) {
 function cloudStore(name) {
   let pending
   const grab = async () => {
-    if (!pending) pending = import("@netlify/blobs").then((m) => m.getStore(name))
+    if (!pending) pending = import("@netlify/blobs").then((m) => m.getStore({ name, consistency: "strong" }))
     return pending
   }
   return {
