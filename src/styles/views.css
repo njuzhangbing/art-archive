@@ -449,6 +449,24 @@ a.rankrow__main:hover b { color: var(--red); }
 .refrow { text-align: left; border: 2px solid var(--hair); padding: 10px 12px; font-weight: 700; transition: background .14s, color .14s, border-color .14s; }
 .refrow:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
+/* ---- marginalia: 注释上标 / 引用片签 + 悬浮展开面 ---- */
+.margwrap { position: relative; display: inline; }
+sup.anno { color: var(--red); font-weight: 700; font-family: var(--font-mono); cursor: pointer; padding: 0 1px; }
+sup.anno:hover, sup.anno:focus { color: var(--ink); outline: none; }
+.quoteref { display: inline-flex; align-items: center; font-family: var(--font-mono); font-size: .8em; font-weight: 700; background: var(--ink); color: var(--paper); padding: 0 6px; margin: 0 1px; cursor: pointer; vertical-align: baseline; transition: background .14s; }
+.quoteref:hover, .quoteref:focus { background: var(--red); outline: none; }
+.margpanel { position: absolute; z-index: 60; width: 0; height: 4px; overflow: hidden; background: var(--white); border: 3px solid var(--ink); box-shadow: 7px 7px 0 var(--ink); opacity: 0; visibility: hidden; text-align: left; }
+.margpanel.on { opacity: 1; visibility: visible; }
+.margpanel__in { padding: 13px 15px; width: max-content; max-width: min(340px, 84vw); }
+.margnote { font-family: var(--font-serif); font-size: 14px; line-height: 1.6; color: var(--ink); white-space: pre-wrap; }
+.margpanel--quote .margpanel__in { padding: 0; width: min(360px, 86vw); max-width: min(360px, 86vw); }
+.margpanel__scroll { max-height: 260px; overflow-y: auto; padding: 14px 16px; }
+.qsrc { font-family: var(--font-serif); font-size: 14px; line-height: 1.8; white-space: pre-wrap; color: var(--ink-soft); }
+mark.qhl { position: relative; background: transparent; color: var(--ink); font-weight: 700; padding: 0 1px; }
+.qhl__ink { position: absolute; left: -1px; right: -1px; top: 0; bottom: 0; background: #F5E13C; transform: scaleX(0); transform-origin: left center; z-index: 0; mix-blend-mode: multiply; }
+.qhl__t { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .qhl__ink { transform: scaleX(1); } }
+
 /* ---- reports ---- */
 .urow--rep { align-items: flex-start; }
 .urow__reason { flex-basis: 100%; }

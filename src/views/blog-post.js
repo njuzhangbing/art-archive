@@ -1,6 +1,7 @@
 import { h, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { mdToHtml } from "../lib/markdown.js"
+import { hydrateMarginalia } from "../lib/marginalia.js"
 import { postFormModal } from "../components/post-form.js"
 import { reportButton } from "../components/report-button.js"
 import { commentsSection } from "../components/comments.js"
@@ -27,6 +28,7 @@ export default function blogPost(root, params) {
     const lvl = levelOf(post.level)
     const bodyEl = h("article", { class: "wiki blogpost__body" })
     bodyEl.innerHTML = mdToHtml(post.body || "")
+    hydrateMarginalia(bodyEl)
 
     view.append(
       h("div", { class: "blogpost__crumb mono" },

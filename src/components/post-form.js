@@ -6,6 +6,7 @@ import { mdToHtml } from "../lib/markdown.js"
 import { buildAsset } from "../lib/upload.js"
 import { session } from "../lib/store.js"
 import { LEVELS } from "../lib/announce.js"
+import { hydrateMarginalia, encodeQuote } from "../lib/marginalia.js"
 
 function insertAt(ta, text) {
   const s = ta.selectionStart, e = ta.selectionEnd
@@ -23,7 +24,7 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
   const ta = h("textarea", { class: "textarea wikied", placeholder: "用 Markdown 写作…\n\n# 标题\n**加粗** *斜体* > 引用 - 列表\n用上方按钮插入图片 / 引用项目 / 引用角色" })
   ta.value = (post && post.body) || ""
   const preview = h("div", { class: "wiki" })
-  const sync = () => { preview.innerHTML = mdToHtml(ta.value) || '<p class="muted">预览…</p>' }
+  const sync = () => { preview.innerHTML = mdToHtml(ta.value) || '<p class="muted">预览…</p>'; hydrateMarginalia(preview) }
   ta.addEventListener("input", sync)
 
   const imgInput = h("input", { type: "file", accept: "image/*", style: "display:none" })
@@ -50,10 +51,44 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
     })
   }
 
+  function annDialog() {
+    const noteTa = h("textarea", { class: "textarea", rows: "4", placeholder: "注释内容（呈现为上标数字 ¹，悬浮展开）" })
+    const ins = h("button", { class: "btn btn--red", type: "button" }, "插入注释")
+    const m = openModal("插入注释", h("div", { class: "stack" }, noteTa, h("div", { style: "display:flex;justify-content:flex-end" }, ins)))
+    setTimeout(() => noteTa.focus(), 30)
+    ins.addEventListener("click", () => {
+      const note = noteTa.value.trim().replace(/\s+/g, " ").replace(/[\][]/g, "")
+      if (!note) { toast("注释不能为空", "bad"); return }
+      insertAt(ta, "[[注:" + note + "]]")
+      m.close()
+    })
+  }
+
+  function quoteDialog() {
+    const srcTa = h("textarea", { class: "textarea", rows: "8", placeholder: "粘贴一整段原文，然后在框里选中要高亮的部分" })
+    let sel = { a: 0, b: 0 }
+    const track = () => { sel = { a: srcTa.selectionStart, b: srcTa.selectionEnd } }
+    ;["keyup", "mouseup", "select"].forEach((ev) => srcTa.addEventListener(ev, track))
+    const ins = h("button", { class: "btn btn--red", type: "button" }, "插入引用")
+    const m = openModal("插入引用", h("div", { class: "stack" }, srcTa, h("div", { class: "mono tiny muted" }, "在上面选中要高亮的文字，再点插入"), h("div", { style: "display:flex;justify-content:flex-end" }, ins)))
+    setTimeout(() => srcTa.focus(), 30)
+    ins.addEventListener("click", () => {
+      const s = srcTa.value
+      if (!s.trim()) { toast("请填入原文", "bad"); return }
+      let a = sel.a, b = sel.b
+      if (a > b) { const t = a; a = b; b = t }
+      if (a === b) { toast("请在原文里选中要高亮的部分", "bad"); return }
+      insertAt(ta, "[[引:" + encodeQuote({ s, a, b }) + "]]")
+      m.close()
+    })
+  }
+
   const toolbar = h("div", { class: "ptoolbar" },
     h("button", { class: "btn btn--sm", type: "button", onClick: () => imgInput.click() }, "＋ 插入图片"),
     h("button", { class: "btn btn--sm", type: "button", onClick: () => pickRef("项目", "/api/projects", "projects", (x) => "[《" + x.title + "》](/projects/" + x.id + ")", (x) => x.title) }, "＠ 引用项目"),
     h("button", { class: "btn btn--sm", type: "button", onClick: () => pickRef("角色", "/api/characters", "characters", (x) => "[" + x.name + "](/characters/" + x.id + ")", (x) => x.name + (x.code ? " · " + x.code : "")) }, "＠ 引用角色"),
+    h("button", { class: "btn btn--sm", type: "button", onClick: annDialog }, "＋ 注释"),
+    h("button", { class: "btn btn--sm", type: "button", onClick: quoteDialog }, "＋ 引用"),
     imgInput
   )
 

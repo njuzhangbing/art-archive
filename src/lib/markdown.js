@@ -13,12 +13,17 @@ function linkTag(text, url) {
 }
 
 function inline(s) {
-  return s
+  const slots = []
+  const stash = (html) => { slots.push(html); return "xMRGz" + (slots.length - 1) + "zMRGx" }
+  s = s
+    .replace(/\[\[引:([A-Za-z0-9+/=]+)\]\]/g, (m, d) => stash('<span class="quoteref" data-q="' + d + '" tabindex="0">引</span>'))
+    .replace(/\[\[注:([^\]]*)\]\]/g, (m, t) => stash('<sup class="anno" data-note="' + t.trim() + '" tabindex="0"></sup>'))
     .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (m, a, u) => '<img alt="' + a + '" src="' + safeUrl(u) + '">')
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, u) => linkTag(t, u))
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")
+  return s.replace(/xMRGz(\d+)zMRGx/g, (m, i) => slots[+i])
 }
 
 export function mdToHtml(src) {
