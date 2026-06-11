@@ -451,10 +451,10 @@ a.rankrow__main:hover b { color: var(--red); }
 
 /* ---- marginalia: 注释上标 / 引用片签 + 悬浮展开面 ---- */
 .margwrap { position: relative; display: inline; }
-sup.anno { color: var(--red); font-weight: 700; font-family: var(--font-mono); cursor: pointer; padding: 0 1px; }
+sup.anno { color: var(--red); font-weight: 700; font-family: var(--font-mono); font-size: .72em; cursor: pointer; padding: 0 1px; transition: color .12s; }
 sup.anno:hover, sup.anno:focus { color: var(--ink); outline: none; }
-.quoteref { display: inline-flex; align-items: center; font-family: var(--font-mono); font-size: .8em; font-weight: 700; background: var(--ink); color: var(--paper); padding: 0 6px; margin: 0 1px; cursor: pointer; vertical-align: baseline; transition: background .14s; }
-.quoteref:hover, .quoteref:focus { background: var(--red); outline: none; }
+sup.anno.qref { color: var(--teth); }
+sup.anno.qref:hover, sup.anno.qref:focus { color: var(--ink); }
 .margpanel { position: absolute; z-index: 60; width: 0; height: 4px; overflow: hidden; background: var(--white); border: 3px solid var(--ink); box-shadow: 7px 7px 0 var(--ink); opacity: 0; visibility: hidden; text-align: left; }
 .margpanel.on { opacity: 1; visibility: visible; }
 .margpanel__in { padding: 13px 15px; width: max-content; max-width: min(340px, 84vw); }

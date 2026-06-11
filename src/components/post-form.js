@@ -6,7 +6,7 @@ import { mdToHtml } from "../lib/markdown.js"
 import { buildAsset } from "../lib/upload.js"
 import { session } from "../lib/store.js"
 import { LEVELS } from "../lib/announce.js"
-import { hydrateMarginalia, encodeQuote } from "../lib/marginalia.js"
+import { hydrateMarginalia, encodeQuote, encodeNote } from "../lib/marginalia.js"
 
 function insertAt(ta, text) {
   const s = ta.selectionStart, e = ta.selectionEnd
@@ -57,9 +57,9 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
     const m = openModal("插入注释", h("div", { class: "stack" }, noteTa, h("div", { style: "display:flex;justify-content:flex-end" }, ins)))
     setTimeout(() => noteTa.focus(), 30)
     ins.addEventListener("click", () => {
-      const note = noteTa.value.trim().replace(/\s+/g, " ").replace(/[\][]/g, "")
+      const note = noteTa.value.trim()
       if (!note) { toast("注释不能为空", "bad"); return }
-      insertAt(ta, "[[注:" + note + "]]")
+      insertAt(ta, "[[注:" + encodeNote(note) + "]]")
       m.close()
     })
   }
