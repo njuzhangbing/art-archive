@@ -12,6 +12,7 @@ import { toast } from "../components/toast.js"
 import { go } from "../router.js"
 import { reveal, clearScroll } from "../lib/anim.js"
 import { fmtAgo } from "../lib/fmt.js"
+import { authorLink } from "../components/author.js"
 
 export default function characterDetail(root, params) {
   const view = h("div", { class: "wrap cdetail" }, h("div", { class: "muted mono", style: "padding:70px 0" }, "加载中…"))
@@ -63,7 +64,7 @@ export default function characterDetail(root, params) {
           c.experimental ? h("span", { class: "expbadge mono" }, "实验性实体") : null
         ),
         h("h1", { class: "cd__name serif" }, c.name),
-        h("div", { class: "cd__meta mono" }, "@" + c.owner, h("span", { class: "dotsep" }, "更新 " + fmtAgo(c.updatedAt)), h("span", { class: "dotsep" }, projects.length + " 个项目")),
+        h("div", { class: "cd__meta mono" }, authorLink(c.owner), h("span", { class: "dotsep" }, "更新 " + fmtAgo(c.updatedAt)), h("span", { class: "dotsep" }, projects.length + " 个项目")),
         h("div", { class: "cd__acts" },
           canEdit ? h("button", { class: "btn btn--sm", onClick: edit }, "编辑信息") : null,
           canEdit ? h("button", { class: "btn btn--sm btn--danger", onClick: del }, "删除") : null,

@@ -11,6 +11,7 @@ import { levelOf, LEVELS } from "../lib/announce.js"
 import { go } from "../router.js"
 import { reveal, clearScroll } from "../lib/anim.js"
 import { fmtDate, fmtAgo } from "../lib/fmt.js"
+import { authorLink } from "../components/author.js"
 
 export default function blogPost(root, params) {
   const view = h("div", { class: "wrap blogpost" }, h("div", { class: "muted mono", style: "padding:70px 0" }, "加载中…"))
@@ -40,7 +41,7 @@ export default function blogPost(root, params) {
           post.pinned ? h("span", { class: "blogrow__pin mono tiny" }, "置顶") : null,
           post.hidden ? h("span", { class: "blogrow__pin blogrow__pin--hide mono tiny" }, "已隐藏") : null),
         h("h1", { class: "blogpost__title serif" }, post.title),
-        h("div", { class: "blogpost__meta mono" }, "@" + post.author, h("span", { class: "dotsep" }, fmtDate(post.createdAt))),
+        h("div", { class: "blogpost__meta mono" }, authorLink(post.author), h("span", { class: "dotsep" }, fmtDate(post.createdAt))),
         isAnn ? readRow() : null,
         acts()
       ),
@@ -65,7 +66,7 @@ export default function blogPost(root, params) {
     try {
       const r = await api.get("/api/posts/" + post.id + "/reads")
       const rows = r.readers.length
-        ? r.readers.map((x) => h("div", { class: "readers__row mono" }, "@" + x.handle, h("span", { class: "tiny muted" }, fmtAgo(x.at))))
+        ? r.readers.map((x) => h("div", { class: "readers__row mono" }, authorLink(x.handle, { avatar: false }), h("span", { class: "tiny muted" }, fmtAgo(x.at))))
         : [h("div", { class: "muted mono tiny" }, "还没有人已读")]
       openModal("已读名单 · " + r.count + " 人", h("div", { class: "readers" }, ...rows))
     } catch (e) { toast(e.message || "加载失败", "bad") }

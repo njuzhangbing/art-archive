@@ -20,11 +20,13 @@ export function buildNav() {
   const me = h("div", { class: "topbar__me" })
   const drawMe = (u) => {
     clear(me)
-    me.append(
-      u
-        ? h("a", { class: "btn btn--sm", href: "/me", "data-link": "1" }, "@" + (u.handle || "me"))
-        : h("a", { class: "btn btn--sm btn--red", href: "/login", "data-link": "1" }, "登录/注册")
-    )
+    if (u) {
+      const av = h("span", { class: "navavatar" }, (u.handle || "?").slice(0, 1).toUpperCase())
+      if (u.avatarKey) { av.style.backgroundImage = "url(/media/" + u.avatarKey + ")"; av.classList.add("has") }
+      me.append(h("a", { class: "btn btn--sm navme", href: "/me", "data-link": "1" }, av, h("span", {}, "@" + (u.handle || "me"))))
+    } else {
+      me.append(h("a", { class: "btn btn--sm btn--red", href: "/login", "data-link": "1" }, "登录/注册"))
+    }
   }
   session.sub(drawMe)
   drawMe(session.me)

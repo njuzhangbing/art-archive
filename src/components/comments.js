@@ -2,6 +2,7 @@ import { h, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { toast } from "./toast.js"
 import { fmtAgo } from "../lib/fmt.js"
+import { authorLink } from "./author.js"
 
 function atHtml(s) {
   const esc = String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -28,7 +29,7 @@ export function commentsSection(postId) {
       catch (e) { toast(e.message || "删除失败", "bad") }
     })
     return h("div", { class: "cmrow" },
-      h("div", { class: "cmrow__head" }, h("b", { class: "mono" }, "@" + c.author), h("span", { class: "mono tiny muted" }, fmtAgo(c.createdAt)), del),
+      h("div", { class: "cmrow__head" }, authorLink(c.author), h("span", { class: "mono tiny muted" }, fmtAgo(c.createdAt)), del),
       h("div", { class: "cmrow__body", html: atHtml(c.body) })
     )
   }

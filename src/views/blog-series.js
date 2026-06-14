@@ -6,6 +6,7 @@ import { toast } from "../components/toast.js"
 import { go } from "../router.js"
 import { reveal, clearScroll } from "../lib/anim.js"
 import { fmtAgo } from "../lib/fmt.js"
+import { authorLink } from "../components/author.js"
 
 export default function blogSeries(root, params) {
   const view = h("div", { class: "wrap blogseriesv" }, h("div", { class: "muted mono", style: "padding:70px 0" }, "加载中…"))
@@ -34,7 +35,7 @@ export default function blogSeries(root, params) {
         h("div", { class: "ser__tag mono tiny" }, "系列 · " + posts.length + " 篇"),
         h("h1", { class: "ser__title serif" }, s.title),
         s.desc ? h("p", { class: "ser__desc" }, s.desc) : null,
-        h("div", { class: "ser__meta mono tiny" }, "@" + s.owner),
+        h("div", { class: "ser__meta mono tiny" }, authorLink(s.owner)),
         h("div", { class: "ser__acts" },
           h("button", { class: "btn btn--red btn--sm", onClick: writeHere }, "✎ 在此写文章"),
           canEdit ? h("button", { class: "btn btn--sm", onClick: editSeries }, "编辑系列") : null,
@@ -55,7 +56,7 @@ export default function blogSeries(root, params) {
       h("a", { class: "serrow__main", href: "/blog/" + p.id, "data-link": "1" },
         h("h3", { class: "serrow__title serif" }, p.title),
         p.excerpt ? h("p", { class: "serrow__ex" }, p.excerpt) : null,
-        h("div", { class: "blogrow__meta mono tiny" }, "@" + p.author, h("span", { class: "dotsep" }, fmtAgo(p.createdAt)))),
+        h("div", { class: "blogrow__meta mono tiny" }, authorLink(p.author, { avatar: false }), h("span", { class: "dotsep" }, fmtAgo(p.createdAt)))),
       canEdit ? h("div", { class: "serrow__mv" },
         i > 0 ? mvBtn("↑", i, i - 1) : null,
         i < posts.length - 1 ? mvBtn("↓", i, i + 1) : null) : null

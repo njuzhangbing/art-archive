@@ -10,6 +10,7 @@ import { toast } from "../components/toast.js"
 import { go } from "../router.js"
 import { reveal, clearScroll } from "../lib/anim.js"
 import { fmtAgo, fmtDate } from "../lib/fmt.js"
+import { authorLink } from "../components/author.js"
 
 export default function projectDetail(root, params) {
   const view = h("div", { class: "wrap pdetail" }, h("div", { class: "muted mono", style: "padding:70px 0" }, "加载中…"))
@@ -82,7 +83,7 @@ export default function projectDetail(root, params) {
           h("h1", { class: "pd__title serif" }, project.title),
           project.tags && project.tags.length ? h("div", { class: "tagrow", style: "margin-top:14px" }, ...project.tags.map((t) => h("span", { class: "tag" }, t))) : null,
           h("div", { class: "pd__meta mono" },
-            h("span", {}, "@" + project.author),
+            h("span", {}, authorLink(project.author)),
             h("span", { class: "dotsep" }, "建于 " + fmtDate(project.createdAt)),
             h("span", { class: "dotsep" }, "更新 " + fmtAgo(project.updatedAt)),
             h("span", { class: "dotsep" }, "v" + versions.length)

@@ -14,6 +14,7 @@ export default async (req) => {
     const u = await users.getJSON("user/" + me.id)
     if (typeof body.displayName === "string" && body.displayName.trim()) u.displayName = body.displayName.trim().slice(0, 40)
     if (typeof body.bio === "string") u.bio = body.bio.slice(0, 280)
+    if (body.avatarKey !== undefined) u.avatarKey = body.avatarKey || null
     if (body.newPassword) {
       if (!(await checkPass(String(body.oldPassword || ""), u.passHash))) return oops("原密码不正确", 403)
       if (String(body.newPassword).length < 8) return oops("新密码至少 8 位")

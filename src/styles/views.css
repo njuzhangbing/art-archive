@@ -455,6 +455,36 @@ sup.anno { color: var(--red); font-weight: 700; font-family: var(--font-mono); f
 sup.anno:hover, sup.anno:focus { color: var(--ink); outline: none; }
 sup.anno.qref { color: var(--teth); }
 sup.anno.qref:hover, sup.anno.qref:focus { color: var(--ink); }
+
+/* ---- author link + avatar ---- */
+.authorlink { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; color: inherit; vertical-align: middle; }
+.authorlink:hover .authorhandle, .authorlink:focus-visible .authorhandle { color: var(--red); text-decoration: underline; }
+.authorlink:focus { outline: none; }
+.authoravatar { width: 16px; height: 16px; flex: none; display: inline-grid; place-items: center; background: var(--ink); color: #fff; font-family: var(--font-mono); font-size: 9px; font-weight: 700; background-size: cover; background-position: center; }
+.authoravatar.has { color: transparent; }
+.authoravatar--lg { width: 56px; height: 56px; font-size: 24px; border: 3px solid var(--ink); }
+.navavatar { width: 18px; height: 18px; flex: none; display: inline-grid; place-items: center; background: var(--red); color: #fff; font-family: var(--font-mono); font-size: 10px; font-weight: 700; background-size: cover; background-position: center; margin-right: 7px; }
+.navavatar.has { color: transparent; }
+.navme { display: inline-flex; align-items: center; }
+.avsetrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.avset { width: 64px; height: 64px; font-size: 26px; border: 3px solid var(--ink); }
+
+/* ---- user profile page ---- */
+.userv { padding: clamp(24px, 4vw, 48px) var(--gut) 90px; }
+.uhead { display: flex; gap: clamp(16px, 3vw, 32px); align-items: flex-start; border: 3px solid var(--ink); background: var(--white); box-shadow: var(--shadow-block); padding: clamp(18px, 2.6vw, 30px); margin-bottom: 30px; flex-wrap: wrap; }
+.uhead .authoravatar--lg { background: var(--ink); color: #fff; }
+.uhead__id { flex: 1; min-width: 240px; }
+.uhead__badges { margin-bottom: 10px; }
+.rolebadge { border: 2px solid var(--ink); padding: 3px 10px; font-weight: 700; letter-spacing: .1em; background: var(--ink); color: var(--paper); }
+.rolebadge[data-role="admin"] { background: var(--red); border-color: var(--red); }
+.uhead__name { font-family: var(--font-serif); font-weight: 900; font-size: clamp(28px, 4vw, 50px); line-height: 1.04; }
+.uhead__handle { margin-top: 8px; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.uhead__bio { font-family: var(--font-serif); font-size: 16px; line-height: 1.6; color: var(--ink-soft); margin-top: 14px; max-width: 70ch; }
+.uhead__stats { display: flex; gap: 18px; margin-top: 16px; }
+.ustat { color: var(--ink-soft); }
+.ustat b { font-size: 20px; color: var(--ink); }
+.usec { margin-top: 26px; }
+@media (max-width: 600px) { .uhead { flex-direction: column; } }
 .margpanel { position: absolute; z-index: 60; width: 0; height: 4px; overflow: hidden; background: var(--white); border: 3px solid var(--ink); box-shadow: 7px 7px 0 var(--ink); opacity: 0; visibility: hidden; text-align: left; }
 .margpanel.on { opacity: 1; visibility: visible; }
 .margpanel__in { padding: 13px 15px; width: max-content; max-width: min(340px, 84vw); }

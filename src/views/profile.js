@@ -8,6 +8,7 @@ import { fmtAgo, fmtDate } from "../lib/fmt.js"
 import { heatmap } from "../components/heatmap.js"
 import { planDialog } from "../components/plan-dialog.js"
 import { projectCard } from "../components/project-card.js"
+import { buildAsset } from "../lib/upload.js"
 
 export default function profile(root) {
   if (!session.me) { root.append(wall()); reveal([...root.firstChild.children], { y: 24, stagger: 0.06 }); return {} }
@@ -58,8 +59,10 @@ export default function profile(root) {
 
   function header(me) {
     const seal = (me.displayName || me.handle || "天").trim()[0]
+    const sealEl = h("div", { class: "profile__seal" }, seal)
+    if (me.avatarKey) { sealEl.style.backgroundImage = "url(/media/" + me.avatarKey + ")"; sealEl.style.backgroundSize = "cover"; sealEl.style.backgroundPosition = "center"; sealEl.style.color = "transparent" }
     return h("section", { class: "profile__head" },
-      h("div", { class: "profile__seal" }, seal),
+      sealEl,
       h("div", { class: "profile__id" },
         h("div", { class: "profile__roles" },
           h("span", { class: "badge", "data-grade": me.role === "admin" ? "ALEPH" : "TETH" }, h("span", { class: "badge__dot" }), me.role === "admin" ? "管理员" : "成员"),
@@ -84,8 +87,27 @@ export default function profile(root) {
 
   function settings(me) {
     const grab = (n) => (form.querySelector("[name=" + n + "]") || {}).value || ""
+    let avatarKey = me.avatarKey || null
+    const fallbackChar = (me.handle || "?").slice(0, 1).toUpperCase()
+    const avPrev = h("span", { class: "authoravatar authoravatar--lg avset" }, fallbackChar)
+    if (avatarKey) { avPrev.style.backgroundImage = "url(/media/" + avatarKey + ")"; avPrev.classList.add("has"); avPrev.textContent = "" }
+    const avFile = h("input", { type: "file", accept: "image/*", style: "display:none" })
+    avFile.addEventListener("change", async () => {
+      if (!avFile.files.length) return
+      const f = avFile.files[0]; avFile.value = ""
+      toast("上传头像中…", "info")
+      try { const a = await buildAsset(f); avatarKey = a.previewKey || a.originalKey; avPrev.style.backgroundImage = "url(/media/" + avatarKey + ")"; avPrev.classList.add("has"); avPrev.textContent = "" }
+      catch (e) { toast(e.message || "头像上传失败", "bad") }
+    })
+    const avField = h("div", { class: "field" },
+      h("span", { class: "field__label" }, "头像 / AVATAR"),
+      h("div", { class: "avsetrow" }, avPrev,
+        h("button", { class: "btn btn--sm", type: "button", onClick: () => avFile.click() }, "上传 / 更换"),
+        h("button", { class: "btn btn--sm btn--ghost", type: "button", onClick: () => { avatarKey = null; avPrev.style.backgroundImage = ""; avPrev.classList.remove("has"); avPrev.textContent = fallbackChar } }, "移除"),
+        avFile))
     const form = h("form", { class: "panel stack" },
       h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Account / 账户设置")),
+      avField,
       h("label", { class: "field" }, h("span", { class: "field__label" }, "显示名"), h("input", { class: "input", name: "display", value: me.displayName || "", maxlength: "40" })),
       h("label", { class: "field" }, h("span", { class: "field__label" }, "简介 / BIO"), h("textarea", { class: "textarea", name: "bio", maxlength: "280", placeholder: "一句话介绍自己" }, me.bio || "")),
       h("div", { class: "split2" },
@@ -98,7 +120,7 @@ export default function profile(root) {
     if (bio) bio.value = me.bio || ""
     form.addEventListener("submit", async (e) => {
       e.preventDefault()
-      const body = { displayName: grab("display"), bio: grab("bio") }
+      const body = { displayName: grab("display"), bio: grab("bio"), avatarKey: avatarKey || "" }
       if (grab("neu")) { body.oldPassword = grab("old"); body.newPassword = grab("neu") }
       try {
         const r = await api.patch("/api/me", body)

@@ -3,6 +3,7 @@ import { api } from "../lib/api.js"
 import { levelOf, levelRank } from "../lib/announce.js"
 import { toast } from "./toast.js"
 import { fmtAgo } from "../lib/fmt.js"
+import { authorLink } from "./author.js"
 
 export function announceBanner(anns) {
   if (!anns || !anns.length) return null
@@ -30,7 +31,7 @@ function annCard(a) {
       h("div", { class: "anncard__tag mono tiny" }, h("span", { class: "anncard__badge" }, "公告"), h("span", { class: "anncard__lvl" }, lvl.zh)),
       h("h3", { class: "anncard__title serif" }, a.title),
       a.excerpt ? h("p", { class: "anncard__ex" }, a.excerpt) : null,
-      h("div", { class: "anncard__meta mono tiny" }, "@" + a.author, h("span", { class: "dotsep" }, fmtAgo(a.createdAt)))
+      h("div", { class: "anncard__meta mono tiny" }, authorLink(a.author, { avatar: false }), h("span", { class: "dotsep" }, fmtAgo(a.createdAt)))
     ),
     h("div", { class: "anncard__side" }, a.isAdmin ? cnt : null, readBtn)
   )

@@ -1,6 +1,7 @@
 import { h } from "../lib/dom.js"
 import { fmtAgo } from "../lib/fmt.js"
 import { starButton } from "./star-button.js"
+import { authorLink } from "./author.js"
 
 export function projectCard(p) {
   const cover = p.coverUrl
@@ -22,7 +23,7 @@ export function projectCard(p) {
       h("div", { class: "card__meta" },
         h("span", {}, "v" + (p.versions ?? 1)),
         h("span", { class: "dotsep" }, fmtAgo(p.updatedAt)),
-        p.author ? h("span", { class: "dotsep" }, "@" + p.author) : null
+        p.author ? h("span", { class: "dotsep" }, authorLink(p.author, { avatar: false })) : null
       )
     )
   )

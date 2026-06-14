@@ -8,6 +8,7 @@ import { buildNav } from "./components/nav.js"
 import { mountToasts } from "./components/toast.js"
 import { session } from "./lib/store.js"
 import { api } from "./lib/api.js"
+import { loadDirectory } from "./lib/directory.js"
 
 const app = document.getElementById("app")
 const shell = h("div", { class: "shell" })
@@ -27,6 +28,7 @@ defineRoutes([
   { p: "/blog", tag: "博客", guard: true, view: () => import("./views/blog.js") },
   { p: "/blog/series/:id", tag: "系列", guard: true, view: () => import("./views/blog-series.js") },
   { p: "/blog/:id", tag: "文章", guard: true, view: () => import("./views/blog-post.js") },
+  { p: "/u/:handle", tag: "用户", guard: true, view: () => import("./views/user.js") },
   { p: "/me", tag: "个人", view: () => import("./views/profile.js") },
   { p: "/login", tag: "登录", view: () => import("./views/auth.js") }
 ])
@@ -35,7 +37,7 @@ probe().finally(startRouter)
 app.setAttribute("data-boot", "1")
 
 async function probe() {
-  try { const me = await api.get("/api/me"); session.set(me && me.user) }
+  try { const me = await api.get("/api/me"); session.set(me && me.user); if (me && me.user) loadDirectory() }
   catch { session.set(null) }
 }
 

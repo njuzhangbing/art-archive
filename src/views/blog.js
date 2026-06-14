@@ -6,6 +6,7 @@ import { announceBanner } from "../components/announce-banner.js"
 import { reveal } from "../lib/anim.js"
 import { toast } from "../components/toast.js"
 import { fmtAgo } from "../lib/fmt.js"
+import { authorLink } from "../components/author.js"
 
 export default function blog(root) {
   const annEl = h("div", { class: "blogann" })
@@ -42,7 +43,7 @@ export default function blog(root) {
           p.hidden ? h("span", { class: "blogrow__pin blogrow__pin--hide mono tiny" }, "已隐藏") : null,
           h("h3", { class: "blogrow__title serif" }, p.title)),
         p.excerpt ? h("p", { class: "blogrow__ex" }, p.excerpt) : h("p", { class: "blogrow__ex muted" }, "（无正文）"),
-        h("div", { class: "blogrow__meta mono tiny" }, "@" + p.author, h("span", { class: "dotsep" }, fmtAgo(p.createdAt)))
+        h("div", { class: "blogrow__meta mono tiny" }, authorLink(p.author, { avatar: false }), h("span", { class: "dotsep" }, fmtAgo(p.createdAt)))
       )
     )
   }
