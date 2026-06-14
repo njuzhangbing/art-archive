@@ -22,6 +22,12 @@
 1. Android Studio 打开 `android/` 目录，等待 Gradle 同步（会自动补全 Gradle Wrapper 与 SDK）
 2. Run ▶ 直接装到手机，或 Build → Build APK(s)
 
+## 手机通知（网站通知 → 系统通知栏）
+App 在后台**每约 15 分钟**轮询一次你的 `/api/notifications`（复用 WebView 登录态），有新未读就弹本地系统通知，点开直达站内 `/notifications`。
+- 需要：先在 App 里登录过一次；首次启动同意「通知」权限（安卓 13+ 会弹）
+- 安卓省电后台任务的最小周期约 15 分钟，**不是秒推**
+- 要秒推：得改成**常驻前台服务**（托盘常驻一条「运行中」、~1 分钟轮询）或接 **FCM**（需 Firebase 外部账号）——按需再加
+
 ## 改东西
 - **换网址**（比如以后绑了自定义域名）：改 `app/src/main/java/com/changshengtian/archive/MainActivity.kt` 里的 `startUrl` 和 `host`
 - **改名**：`app/src/main/res/values/strings.xml` 的 `app_name`

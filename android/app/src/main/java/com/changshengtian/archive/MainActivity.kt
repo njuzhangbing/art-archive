@@ -16,6 +16,16 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 
 class MainActivity : Activity() {
 
@@ -102,7 +112,13 @@ class MainActivity : Activity() {
 
         web.setDownloadListener { url, _, _, _, _ -> openExternal(Uri.parse(url)) }
 
-        if (savedInstanceState == null) web.loadUrl(startUrl) else web.restoreState(savedInstanceState)
+        ensureNotifications()
+        if (savedInstanceState != null) {
+            web.restoreState(savedInstanceState)
+        } else {
+            val openPath = intent?.getStringExtra("open")
+            web.loadUrl(if (openPath != null) "https://$host$openPath" else startUrl)
+        }
     }
 
     private fun openExternal(uri: Uri) {
@@ -143,6 +159,27 @@ class MainActivity : Activity() {
             return true
         }
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.getStringExtra("open")?.let { web.loadUrl("https://$host$it") }
+    }
+
+    private fun ensureNotifications() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            val ch = NotificationChannel("notif", "通知", NotificationManager.IMPORTANCE_DEFAULT)
+            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(ch)
+        }
+        if (Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 2002)
+        }
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        val req = PeriodicWorkRequest.Builder(NotifWorker::class.java, 15, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("notif-poll", ExistingPeriodicWorkPolicy.KEEP, req)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
