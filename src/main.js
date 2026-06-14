@@ -28,6 +28,9 @@ defineRoutes([
   { p: "/blog", tag: "博客", guard: true, view: () => import("./views/blog.js") },
   { p: "/blog/series/:id", tag: "系列", guard: true, view: () => import("./views/blog-series.js") },
   { p: "/blog/:id", tag: "文章", guard: true, view: () => import("./views/blog-post.js") },
+  { p: "/talk", tag: "讨论", guard: true, view: () => import("./views/talk.js") },
+  { p: "/talk/:cid", tag: "讨论", guard: true, view: () => import("./views/talk.js") },
+  { p: "/talk/:cid/:tid", tag: "讨论", guard: true, view: () => import("./views/talk.js") },
   { p: "/u/:handle", tag: "用户", guard: true, view: () => import("./views/user.js") },
   { p: "/me", tag: "个人", view: () => import("./views/profile.js") },
   { p: "/login", tag: "登录", view: () => import("./views/auth.js") }
