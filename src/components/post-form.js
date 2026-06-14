@@ -6,7 +6,7 @@ import { mdToHtml } from "../lib/markdown.js"
 import { buildAsset } from "../lib/upload.js"
 import { session } from "../lib/store.js"
 import { LEVELS } from "../lib/announce.js"
-import { hydrateMarginalia, encodeQuote, encodeNote } from "../lib/marginalia.js"
+import { hydrateMarginalia } from "../lib/marginalia.js"
 
 function insertAt(ta, text) {
   const s = ta.selectionStart, e = ta.selectionEnd
@@ -20,11 +20,13 @@ function insertAt(ta, text) {
 export function postFormModal({ post, presetSeriesId, onSaved }) {
   const editing = !!post
   const isAdmin = !!(session.me && session.me.role === "admin")
+  const marg = (post && post.marg) ? JSON.parse(JSON.stringify(post.marg)) : {}
+  const newId = () => { let id; do { id = Math.random().toString(36).slice(2, 8) } while (marg[id]); return id }
   const titleInput = h("input", { class: "input", name: "title", value: (post && post.title) || "", maxlength: "140", placeholder: "文章标题" })
   const ta = h("textarea", { class: "textarea wikied", placeholder: "用 Markdown 写作…\n\n# 标题\n**加粗** *斜体* > 引用 - 列表\n用上方按钮插入图片 / 引用项目 / 引用角色" })
   ta.value = (post && post.body) || ""
   const preview = h("div", { class: "wiki" })
-  const sync = () => { preview.innerHTML = mdToHtml(ta.value) || '<p class="muted">预览…</p>'; hydrateMarginalia(preview) }
+  const sync = () => { preview.innerHTML = mdToHtml(ta.value) || '<p class="muted">预览…</p>'; hydrateMarginalia(preview, marg) }
   ta.addEventListener("input", sync)
 
   const imgInput = h("input", { type: "file", accept: "image/*", style: "display:none" })
@@ -59,7 +61,8 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
     ins.addEventListener("click", () => {
       const note = noteTa.value.trim()
       if (!note) { toast("注释不能为空", "bad"); return }
-      insertAt(ta, "[[注:" + encodeNote(note) + "]]")
+      const id = newId(); marg[id] = { t: "note", note }
+      insertAt(ta, "[[注:" + id + "]]")
       m.close()
     })
   }
@@ -78,7 +81,8 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
       let a = sel.a, b = sel.b
       if (a > b) { const t = a; a = b; b = t }
       if (a === b) { toast("请在原文里选中要高亮的部分", "bad"); return }
-      insertAt(ta, "[[引:" + encodeQuote({ s, a, b }) + "]]")
+      const id = newId(); marg[id] = { t: "quote", s, a, b }
+      insertAt(ta, "[[引:" + id + "]]")
       m.close()
     })
   }
@@ -87,6 +91,7 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
     h("button", { class: "btn btn--sm", type: "button", onClick: () => imgInput.click() }, "＋ 插入图片"),
     h("button", { class: "btn btn--sm", type: "button", onClick: () => pickRef("项目", "/api/projects", "projects", (x) => "[《" + x.title + "》](/projects/" + x.id + ")", (x) => x.title) }, "＠ 引用项目"),
     h("button", { class: "btn btn--sm", type: "button", onClick: () => pickRef("角色", "/api/characters", "characters", (x) => "[" + x.name + "](/characters/" + x.id + ")", (x) => x.name + (x.code ? " · " + x.code : "")) }, "＠ 引用角色"),
+    h("button", { class: "btn btn--sm", type: "button", onClick: () => pickRef("文章", "/api/posts", "posts", (x) => "[《" + x.title + "》](/blog/" + x.id + ")", (x) => x.title) }, "＠ 引用文章"),
     h("button", { class: "btn btn--sm", type: "button", onClick: annDialog }, "＋ 注释"),
     h("button", { class: "btn btn--sm", type: "button", onClick: quoteDialog }, "＋ 引用"),
     imgInput
@@ -134,7 +139,10 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
     const btn = form.querySelector("button[type=submit]")
     btn.disabled = true
     try {
-      const payload = { title, body: ta.value, seriesId: seriesSel.value || null }
+      const used = new Set([...ta.value.matchAll(/\[\[[注引]:([^\]]+)\]\]/g)].map((mm) => mm[1].trim()))
+      const margOut = {}
+      for (const k of used) if (marg[k]) margOut[k] = marg[k]
+      const payload = { title, body: ta.value, seriesId: seriesSel.value || null, marg: margOut }
       if (isAdmin && annSel) {
         if (annSel.value) { payload.kind = "announcement"; payload.level = annSel.value }
         else payload.kind = "post"

@@ -5,6 +5,21 @@ import { postDigest } from "./_lib/blog.mjs"
 
 const LEVELS = ["normal", "important", "urgent"]
 
+function cleanMarg(raw) {
+  if (!raw || typeof raw !== "object") return {}
+  const out = {}
+  let n = 0
+  for (const k of Object.keys(raw)) {
+    if (n >= 300) break
+    const v = raw[k]
+    if (!v || typeof v !== "object") continue
+    const id = String(k).slice(0, 24)
+    if (v.t === "note") { out[id] = { t: "note", note: String(v.note || "").slice(0, 4000) }; n++ }
+    else if (v.t === "quote") { out[id] = { t: "quote", s: String(v.s || "").slice(0, 8000), a: Math.max(0, v.a | 0), b: Math.max(0, v.b | 0) }; n++ }
+  }
+  return out
+}
+
 async function readerIds(id) {
   const base = "read/" + id + "/"
   const idx = await store("reads").list({ prefix: base })
@@ -91,7 +106,7 @@ export default async (req, context) => {
         id: pid, authorId: me.id, authorHandle: me.handle,
         title: title.slice(0, 140), body: String(body.body || "").slice(0, 50000),
         pinned: false, seriesId: null, kind: "post", level: "normal",
-        commentsLocked: false, hidden: false, createdAt: now, updatedAt: now
+        commentsLocked: false, hidden: false, marg: cleanMarg(body.marg), createdAt: now, updatedAt: now
       }
       if (me.role === "admin" && body.kind === "announcement") {
         p.kind = "announcement"
@@ -109,7 +124,7 @@ export default async (req, context) => {
   if (p.hidden && p.authorId !== me.id && me.role !== "admin") return oops("文章不存在", 404)
 
   if (req.method === "GET") {
-    const d = { ...postDigest(p, me), body: p.body, canPin: me.role === "admin" }
+    const d = { ...postDigest(p, me), body: p.body, marg: p.marg || {}, canPin: me.role === "admin" }
     if (d.kind === "announcement") await attachRead(d, id, me)
     if (p.seriesId) {
       const s = await store("series").getJSON("series/" + p.seriesId)
@@ -159,6 +174,10 @@ export default async (req, context) => {
       if (!owns) return oops("无权编辑此文章", 403)
       if (typeof body.title === "string" && body.title.trim()) p.title = body.title.trim().slice(0, 140)
       if (typeof body.body === "string") p.body = body.body.slice(0, 50000)
+    }
+    if (body.marg !== undefined) {
+      if (!owns) return oops("无权操作", 403)
+      p.marg = cleanMarg(body.marg)
     }
     p.updatedAt = new Date().toISOString()
     await posts.setJSON("post/" + id, p)

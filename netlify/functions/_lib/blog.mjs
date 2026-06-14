@@ -1,5 +1,6 @@
 export function excerpt(md, n = 150) {
   return String(md || "")
+    .replace(/\[\[[注引]:[^\]]+\]\]/g, "")
     .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
     .replace(/[#>*`_~]/g, " ")

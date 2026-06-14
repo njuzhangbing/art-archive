@@ -28,7 +28,7 @@ export default function blogPost(root, params) {
     const lvl = levelOf(post.level)
     const bodyEl = h("article", { class: "wiki blogpost__body" })
     bodyEl.innerHTML = mdToHtml(post.body || "")
-    hydrateMarginalia(bodyEl)
+    hydrateMarginalia(bodyEl, post.marg)
 
     view.append(
       h("div", { class: "blogpost__crumb mono" },

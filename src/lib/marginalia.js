@@ -11,9 +11,6 @@ function b64dec(str) {
   try { return decodeURIComponent(escape(atob(str))) } catch { return null }
 }
 
-export function encodeQuote(obj) { return b64enc(JSON.stringify(obj)) }
-export function encodeNote(str) { return b64enc(str) }
-
 function decodeQuote(str) {
   const raw = b64dec(str)
   if (raw == null) return null
@@ -121,8 +118,7 @@ function wrapMarker(el, cls, num) {
   return wrap
 }
 
-function noteMarker(el, num) {
-  const note = decodeNote(el.getAttribute("data-note") || "")
+function noteMarker(el, num, note) {
   const wrap = wrapMarker(el, "margwrap--note", num)
   const panel = buildPanel("note")
   const inner = document.createElement("div"); inner.className = "margpanel__in"
@@ -132,8 +128,7 @@ function noteMarker(el, num) {
   wire(wrap, panel)
 }
 
-function quoteMarker(el, num) {
-  const data = decodeQuote(el.getAttribute("data-q") || "")
+function quoteMarker(el, num, data) {
   const wrap = wrapMarker(el, "margwrap--quote", num)
   const panel = buildPanel("quote")
   const inner = document.createElement("div"); inner.className = "margpanel__in"
@@ -165,14 +160,22 @@ function quoteMarker(el, num) {
   wire(wrap, panel, sweep)
 }
 
-export function hydrateMarginalia(container) {
+export function hydrateMarginalia(container, marg) {
   if (!container) return
   wireDoc()
+  const map = marg || {}
   let n = 0
   container.querySelectorAll("sup.anno").forEach((el) => {
     if (el.closest(".margwrap")) return
     n += 1
-    if (el.classList.contains("qref")) quoteMarker(el, n)
-    else noteMarker(el, n)
+    const id = el.getAttribute("data-id") || ""
+    const entry = map[id]
+    if (el.classList.contains("qref")) {
+      const data = (entry && entry.t === "quote") ? entry : decodeQuote(id)
+      quoteMarker(el, n, data)
+    } else {
+      const note = (entry && entry.t === "note") ? entry.note : decodeNote(id)
+      noteMarker(el, n, note)
+    }
   })
 }
