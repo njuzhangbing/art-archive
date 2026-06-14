@@ -41,9 +41,17 @@ export default async (req, context) => {
   crows.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
   postrows.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
 
+  const follows = store("follows")
+  const [followerCount, followingCount, iFollowRec] = await Promise.all([
+    follows.list({ prefix: "follower/" + id + "/" }).then((r) => r.blobs.length),
+    follows.list({ prefix: "follow/" + id + "/" }).then((r) => r.blobs.length),
+    follows.getJSON("follow/" + me.id + "/" + id)
+  ])
+
   return json({
     user: pubUser(u),
     isMe: me.id === id,
+    follow: { followers: followerCount, following: followingCount, iFollow: !!iFollowRec },
     projects: prows.map((p) => ({ id: p.id, title: p.title, grade: p.grade, coverUrl: p.coverKey ? "/media/" + p.coverKey : null, versions: (p.versionIds || []).length, updatedAt: p.updatedAt })),
     characters: crows.map((c) => ({ id: c.id, name: c.name, code: c.code, grade: c.grade, coverUrl: c.coverKey ? "/media/" + c.coverKey : null })),
     posts: postrows.map((p) => ({ id: p.id, title: p.title, createdAt: p.createdAt })),

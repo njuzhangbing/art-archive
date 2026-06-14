@@ -4,10 +4,11 @@ import { currentUser } from "./_lib/auth.mjs"
 
 const KINDS = ["chat", "board"]
 
-function digest(c, me) {
+function digest(c, me, readTs) {
   return {
     id: c.id, name: c.name, topic: c.topic || "", kind: c.kind,
     owner: c.createdByHandle, ownerId: c.createdBy, createdAt: c.createdAt,
+    unread: !!(c.lastMsgAt && (!readTs || c.lastMsgAt > readTs)),
     canDelete: me ? (c.createdBy === me.id || me.role === "admin") : false
   }
 }
@@ -29,7 +30,9 @@ export default async (req, context) => {
       const idx = await channels.list({ prefix: "channel/" })
       const rows = (await Promise.all(idx.blobs.map((b) => channels.getJSON(b.key)))).filter(Boolean)
       rows.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
-      return json({ channels: rows.map((c) => digest(c, me)) })
+      const cr = store("chanread")
+      const reads = await Promise.all(rows.map((c) => cr.getJSON("cr/" + me.id + "/" + c.id)))
+      return json({ channels: rows.map((c, i) => digest(c, me, reads[i])) })
     }
     if (req.method === "POST") {
       let b

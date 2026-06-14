@@ -32,6 +32,7 @@ defineRoutes([
   { p: "/talk/:cid", tag: "讨论", guard: true, view: () => import("./views/talk.js") },
   { p: "/talk/:cid/:tid", tag: "讨论", guard: true, view: () => import("./views/talk.js") },
   { p: "/u/:handle", tag: "用户", guard: true, view: () => import("./views/user.js") },
+  { p: "/notifications", tag: "通知", guard: true, view: () => import("./views/notifications.js") },
   { p: "/me", tag: "个人", view: () => import("./views/profile.js") },
   { p: "/login", tag: "登录", view: () => import("./views/auth.js") }
 ])

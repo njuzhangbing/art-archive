@@ -42,7 +42,8 @@ export default function talk(root, params) {
       items.forEach((c) => rail.append(
         h("a", { class: "chitem" + (c.id === cid ? " on" : ""), href: "/talk/" + c.id, "data-link": "1" },
           h("span", { class: "chitem__sig mono" }, kind === "chat" ? "#" : "≡"),
-          h("span", { class: "chitem__name" }, c.name))))
+          h("span", { class: "chitem__name" }, c.name),
+          (c.unread && c.id !== cid) ? h("span", { class: "chitem__dot" }) : null)))
     }
     group("chat", "聊天")
     group("board", "帖子板")

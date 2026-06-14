@@ -3,6 +3,7 @@ import { api } from "../lib/api.js"
 import { avatarBlock } from "../components/author.js"
 import { reveal, clearScroll } from "../lib/anim.js"
 import { fmtDate, fmtAgo } from "../lib/fmt.js"
+import { toast } from "../components/toast.js"
 
 const ROLE_ZH = { admin: "管理员", member: "成员" }
 
@@ -35,10 +36,28 @@ export default function userPage(root, params) {
         h("h1", { class: "uhead__name serif" }, u.displayName),
         h("div", { class: "uhead__handle mono" }, "@" + u.handle, h("span", { class: "dotsep" }, "加入于 " + fmtDate(u.createdAt))),
         u.bio ? h("p", { class: "uhead__bio" }, u.bio) : h("p", { class: "uhead__bio muted" }, "这位创作者还没写简介"),
-        h("div", { class: "uhead__stats mono" }, stat(data.stats.projects, "项目"), stat(data.stats.characters, "角色"), stat(data.stats.posts, "文章")),
-        data.isMe ? h("div", { style: "margin-top:16px" }, h("a", { class: "btn btn--sm", href: "/me", "data-link": "1" }, "编辑资料")) : null
+        h("div", { class: "uhead__stats mono" },
+          stat(data.stats.projects, "项目"), stat(data.stats.characters, "角色"), stat(data.stats.posts, "文章"),
+          stat(data.follow ? data.follow.followers : 0, "粉丝"), stat(data.follow ? data.follow.following : 0, "关注")),
+        data.isMe ? h("div", { style: "margin-top:16px" }, h("a", { class: "btn btn--sm", href: "/me", "data-link": "1" }, "编辑资料")) : followRow()
       )
     )
+  }
+
+  function followRow() {
+    const f = data.follow || { iFollow: false }
+    const btn = h("button", { class: "btn btn--sm" + (f.iFollow ? "" : " btn--red") }, f.iFollow ? "已关注 ✓" : "＋ 关注")
+    btn.addEventListener("click", async () => {
+      btn.disabled = true
+      try {
+        const r = await api.post("/api/users/" + data.user.handle + "/follow", {})
+        f.iFollow = r.following
+        btn.textContent = f.iFollow ? "已关注 ✓" : "＋ 关注"
+        btn.classList.toggle("btn--red", !f.iFollow)
+      } catch (e) { toast(e.message || "操作失败", "bad") }
+      btn.disabled = false
+    })
+    return h("div", { style: "margin-top:16px" }, btn)
   }
 
   function stat(n, label) { return h("span", { class: "ustat" }, h("b", {}, String(n)), " " + label) }

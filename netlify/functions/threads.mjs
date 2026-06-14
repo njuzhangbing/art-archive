@@ -1,6 +1,7 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
 import { currentUser } from "./_lib/auth.mjs"
+import { notifyMentions, pushNotif } from "./_lib/notify.mjs"
 
 function excerpt(s, n = 120) { return String(s || "").replace(/\s+/g, " ").trim().slice(0, n) }
 
@@ -41,6 +42,10 @@ export default async (req, context) => {
       t.replyCount = (t.replyCount || 0) + 1
       t.lastAt = now
       await threads.setJSON("thread/" + cid + "/" + tid, t)
+      const ch = await store("channels").getJSON("channel/" + cid)
+      if (ch) { ch.lastMsgAt = now; await store("channels").setJSON("channel/" + cid, ch) }
+      await notifyMentions(body, { fromHandle: me.handle, link: "/talk/" + cid + "/" + tid, label: "帖子", excludeId: me.id })
+      if (t.authorId !== me.id) await pushNotif(t.authorId, { type: "reply", text: "@" + me.handle + " 回复了你的帖《" + t.title + "》", link: "/talk/" + cid + "/" + tid, fromHandle: me.handle })
       return json({ reply: replyOut(r, me) })
     }
     if (req.method === "DELETE") {
@@ -79,6 +84,7 @@ export default async (req, context) => {
     const idx = await threads.list({ prefix: "thread/" + cid + "/" })
     const rows = (await Promise.all(idx.blobs.map((b) => threads.getJSON(b.key)))).filter(Boolean)
     rows.sort((a, b) => ((a.lastAt || a.createdAt) < (b.lastAt || b.createdAt) ? 1 : -1))
+    await store("chanread").setJSON("cr/" + me.id + "/" + cid, new Date().toISOString())
     return json({ threads: rows.map((t) => threadRow(t, me)) })
   }
   if (req.method === "POST") {
@@ -92,6 +98,9 @@ export default async (req, context) => {
     const now = new Date().toISOString()
     const t = { id, cid, title: title.slice(0, 140), authorId: me.id, handle: me.handle, body: String(b.body || "").slice(0, 8000), createdAt: now, replyCount: 0, lastAt: now }
     await threads.setJSON("thread/" + cid + "/" + id, t)
+    ch.lastMsgAt = now
+    await store("channels").setJSON("channel/" + cid, ch)
+    await notifyMentions(title + " " + (b.body || ""), { fromHandle: me.handle, link: "/talk/" + cid + "/" + id, label: "帖子板", excludeId: me.id })
     return json({ thread: threadRow(t, me) })
   }
   return oops("方法不允许", 405)

@@ -1,6 +1,7 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
 import { currentUser } from "./_lib/auth.mjs"
+import { notifyMentions, pushNotif } from "./_lib/notify.mjs"
 
 function out(c, me, postOwnerId) {
   return {
@@ -36,6 +37,8 @@ export default async (req, context) => {
     const now = new Date().toISOString()
     const c = { id, postId: pid, authorId: me.id, authorHandle: me.handle, body: body.slice(0, 2000), createdAt: now }
     await comments.setJSON("comment/" + pid + "/" + id, c)
+    await notifyMentions(body, { fromHandle: me.handle, link: "/blog/" + pid, label: "评论", excludeId: me.id })
+    if (p.authorId !== me.id) await pushNotif(p.authorId, { type: "comment", text: "@" + me.handle + " 评论了你的《" + p.title + "》", link: "/blog/" + pid, fromHandle: me.handle })
     return json({ comment: out(c, me, p.authorId) })
   }
 

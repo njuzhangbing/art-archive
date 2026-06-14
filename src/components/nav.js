@@ -1,5 +1,6 @@
 import { h, clear } from "../lib/dom.js"
 import { session } from "../lib/store.js"
+import { api } from "../lib/api.js"
 
 const LINKS = [
   { path: "/", i: "00", label: "主页" },
@@ -19,18 +20,26 @@ export function buildNav() {
   )
 
   const me = h("div", { class: "topbar__me" })
+  const pollNotif = () => {
+    if (!session.me) return
+    api.get("/api/notifications").then((r) => { const dot = me.querySelector(".navdot"); if (dot) dot.classList.toggle("on", (r.unread || 0) > 0) }).catch(() => {})
+  }
   const drawMe = (u) => {
     clear(me)
     if (u) {
       const av = h("span", { class: "navavatar" }, (u.handle || "?").slice(0, 1).toUpperCase())
       if (u.avatarKey) { av.style.backgroundImage = "url(/media/" + u.avatarKey + ")"; av.classList.add("has") }
-      me.append(h("a", { class: "btn btn--sm navme", href: "/me", "data-link": "1" }, av, h("span", {}, "@" + (u.handle || "me"))))
+      me.append(
+        h("a", { class: "navbell", href: "/notifications", "data-link": "1", title: "通知" }, "🔔", h("span", { class: "navdot" })),
+        h("a", { class: "btn btn--sm navme", href: "/me", "data-link": "1" }, av, h("span", {}, "@" + (u.handle || "me"))))
+      pollNotif()
     } else {
       me.append(h("a", { class: "btn btn--sm btn--red", href: "/login", "data-link": "1" }, "登录/注册"))
     }
   }
   session.sub(drawMe)
   drawMe(session.me)
+  setInterval(pollNotif, 30000)
 
   return h("header", { class: "topbar" },
     h("a", { class: "topbar__brand", href: "/", "data-link": "1" },

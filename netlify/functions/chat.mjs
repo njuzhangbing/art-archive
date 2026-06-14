@@ -1,6 +1,7 @@
 import { json, oops } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
 import { currentUser } from "./_lib/auth.mjs"
+import { notifyMentions } from "./_lib/notify.mjs"
 
 const MAX_KEEP = 400
 
@@ -26,6 +27,7 @@ export default async (req, context) => {
     const keys = idx.blobs.map((b) => b.key.slice(base.length)).sort()
     const pick = since ? keys.filter((k) => k > since) : keys.slice(-60)
     const rows = (await Promise.all(pick.map((k) => messages.getJSON(base + k)))).filter(Boolean)
+    await store("chanread").setJSON("cr/" + me.id + "/" + cid, new Date().toISOString())
     return json({ messages: rows.map((m) => out(m, me)), cursor: keys.length ? keys[keys.length - 1] : (since || "") })
   }
 
@@ -42,6 +44,9 @@ export default async (req, context) => {
     const idx = await messages.list({ prefix: base })
     const keys = idx.blobs.map((x) => x.key.slice(base.length)).sort()
     if (keys.length > MAX_KEEP) for (const k of keys.slice(0, keys.length - MAX_KEEP)) await messages.delete(base + k)
+    ch.lastMsgAt = m.createdAt
+    await store("channels").setJSON("channel/" + cid, ch)
+    await notifyMentions(body, { fromHandle: me.handle, link: "/talk/" + cid, label: "频道 #" + ch.name, excludeId: me.id })
     return json({ message: out(m, me), cursor: id })
   }
 
