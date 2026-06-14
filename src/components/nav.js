@@ -30,6 +30,7 @@ export function buildNav() {
       const av = h("span", { class: "navavatar" }, (u.handle || "?").slice(0, 1).toUpperCase())
       if (u.avatarKey) { av.style.backgroundImage = "url(/media/" + u.avatarKey + ")"; av.classList.add("has") }
       me.append(
+        h("a", { class: "navbell", href: "/dm", "data-link": "1", title: "私信" }, "✉"),
         h("a", { class: "navbell", href: "/notifications", "data-link": "1", title: "通知" }, "🔔", h("span", { class: "navdot" })),
         h("a", { class: "btn btn--sm navme", href: "/me", "data-link": "1" }, av, h("span", {}, "@" + (u.handle || "me"))))
       pollNotif()

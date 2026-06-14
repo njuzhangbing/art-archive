@@ -57,7 +57,8 @@ export default function userPage(root, params) {
       } catch (e) { toast(e.message || "操作失败", "bad") }
       btn.disabled = false
     })
-    return h("div", { style: "margin-top:16px" }, btn)
+    return h("div", { style: "margin-top:16px;display:flex;gap:8px" }, btn,
+      h("a", { class: "btn btn--sm", href: "/dm/" + data.user.handle, "data-link": "1" }, "私信"))
   }
 
   function stat(n, label) { return h("span", { class: "ustat" }, h("b", {}, String(n)), " " + label) }
