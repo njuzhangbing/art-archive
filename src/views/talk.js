@@ -73,6 +73,7 @@ export default function talk(root, params) {
 
   function renderChat(ch) {
     let cursor = ""
+    const seen = new Set()
     const log = h("div", { class: "chatlog" })
     const input = h("textarea", { class: "textarea chatinput", rows: "1", placeholder: "说点什么…（Enter 发送，Shift+Enter 换行）" })
     const sendBtn = h("button", { class: "btn btn--red", onClick: send }, "发送")
@@ -82,8 +83,10 @@ export default function talk(root, params) {
     const scrollEnd = () => { log.scrollTop = log.scrollHeight }
 
     function addMsgs(msgs, jump) {
+      const fresh = msgs.filter((m) => m && !seen.has(m.id))
+      if (!fresh.length) return
       const stick = atBottom()
-      msgs.forEach((m) => log.append(msgRow(m)))
+      fresh.forEach((m) => { seen.add(m.id); log.append(msgRow(m)) })
       if (jump || stick) scrollEnd()
     }
     function msgRow(m) {
@@ -100,7 +103,7 @@ export default function talk(root, params) {
       try {
         const r = await api.get("/api/channels/" + ch.id + "/messages")
         cursor = r.cursor || ""
-        clear(log)
+        clear(log); seen.clear()
         if (!r.messages.length) log.append(h("div", { class: "muted mono tiny", style: "padding:16px" }, "还没有消息，开个头吧"))
         else addMsgs(r.messages, true)
       } catch (e) { clear(log); log.append(h("div", { class: "muted mono tiny", style: "padding:16px" }, "加载失败")) }

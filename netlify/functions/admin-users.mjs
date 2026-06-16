@@ -1,10 +1,13 @@
 import { json, oops } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser, shareable } from "./_lib/auth.mjs"
+import { currentUser, isAdmin, shareable } from "./_lib/auth.mjs"
+
+const RANK = { member: 0, admin: 1, owner: 2 }
+const rank = (r) => RANK[r] || 0
 
 export default async (req, context) => {
   const me = await currentUser(req)
-  if (!me || me.role !== "admin") return oops("需要管理员权限", 403)
+  if (!isAdmin(me)) return oops("需要管理员权限", 403)
 
   const users = store("users")
   const id = context && context.params && context.params.id
@@ -13,7 +16,7 @@ export default async (req, context) => {
     const idx = await users.list({ prefix: "user/" })
     const rows = (await Promise.all(idx.blobs.map((b) => users.getJSON(b.key)))).filter(Boolean)
     rows.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
-    return json({ users: rows.map(shareable) })
+    return json({ users: rows.map(shareable), myRank: rank(me.role) })
   }
 
   if (req.method === "PATCH" && id) {
@@ -21,19 +24,19 @@ export default async (req, context) => {
     try { body = await req.json() } catch { return oops("请求体无效") }
     const u = await users.getJSON("user/" + id)
     if (!u) return oops("用户不存在", 404)
+    if (rank(me.role) <= rank(u.role)) return oops("权限不足，无法操作该用户", 403)
     if (body.status && ["active", "pending", "blocked"].includes(body.status)) u.status = body.status
-    if (body.role && ["admin", "member"].includes(body.role)) {
-      if (u.id === me.id && body.role !== "admin") return oops("不能撤销自己的管理员身份")
-      u.role = body.role
-    }
+    if (body.role && ["admin", "member"].includes(body.role)) u.role = body.role
     await users.setJSON("user/" + u.id, u)
     return json({ user: shareable(u) })
   }
 
   if (req.method === "DELETE" && id) {
-    if (id === me.id) return oops("不能删除自己")
     const u = await users.getJSON("user/" + id)
-    if (u) { await users.delete("user/" + id); await users.delete("handle/" + u.handleLower) }
+    if (!u) return json({ ok: true })
+    if (rank(me.role) <= rank(u.role)) return oops("权限不足，无法操作该用户", 403)
+    await users.delete("user/" + id)
+    await users.delete("handle/" + u.handleLower)
     return json({ ok: true })
   }
 

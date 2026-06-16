@@ -1,12 +1,12 @@
 import { json, oops } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 import { notifyMentions } from "./_lib/notify.mjs"
 
 const MAX_KEEP = 400
 
 function out(m, me) {
-  return { id: m.id, author: m.handle, authorId: m.authorId, body: m.body, createdAt: m.createdAt, canDelete: me ? (m.authorId === me.id || me.role === "admin") : false }
+  return { id: m.id, author: m.handle, authorId: m.authorId, body: m.body, createdAt: m.createdAt, canDelete: me ? (m.authorId === me.id || isAdmin(me)) : false }
 }
 
 function newId() {
@@ -54,7 +54,7 @@ export default async (req, context) => {
     if (!mid) return oops("缺少消息编号")
     const m = await messages.getJSON(base + mid)
     if (!m) return oops("消息不存在", 404)
-    if (m.authorId !== me.id && me.role !== "admin") return oops("无权删除", 403)
+    if (m.authorId !== me.id && !isAdmin(me)) return oops("无权删除", 403)
     await messages.delete(base + mid)
     return json({ ok: true })
   }

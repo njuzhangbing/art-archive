@@ -12,5 +12,9 @@ export const session = {
 }
 
 export function isAdmin() {
-  return !!(seat.me && seat.me.role === "admin")
+  return !!(seat.me && (seat.me.role === "admin" || seat.me.role === "owner"))
+}
+
+export function isOwner() {
+  return !!(seat.me && seat.me.role === "owner")
 }

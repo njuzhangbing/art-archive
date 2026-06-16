@@ -1,6 +1,6 @@
 import { json, oops } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 import { pushNotif } from "./_lib/notify.mjs"
 
 const MAX_KEEP = 500
@@ -69,7 +69,7 @@ export default async (req, context) => {
     if (!mid) return oops("缺少消息编号")
     const m = await messages.getJSON(mbase + mid)
     if (!m) return oops("消息不存在", 404)
-    if (m.fromId !== me.id && me.role !== "admin") return oops("无权删除", 403)
+    if (m.fromId !== me.id && !isAdmin(me)) return oops("无权删除", 403)
     await messages.delete(mbase + mid)
     return json({ ok: true })
   }

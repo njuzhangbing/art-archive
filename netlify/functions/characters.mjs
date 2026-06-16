@@ -1,6 +1,6 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 
 const GRADE_KEYS = ["ALEPH", "WAW", "HE", "TETH", "ZAYIN"]
 const DAMAGE = ["RED", "WHITE", "BLACK", "PALE"]
@@ -81,10 +81,10 @@ export default async (req, context) => {
       .filter((p) => (p.characters || []).includes(id))
       .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
       .map((p) => ({ id: p.id, title: p.title, grade: p.grade, coverUrl: p.coverKey ? "/media/" + p.coverKey : null, author: p.ownerHandle, desc: (p.desc || "").slice(0, 160) }))
-    return json({ character: digest(c), projects: involved, canEdit: c.ownerId === me.id || me.role === "admin" })
+    return json({ character: digest(c), projects: involved, canEdit: c.ownerId === me.id || isAdmin(me) })
   }
 
-  if (c.ownerId !== me.id && me.role !== "admin") return oops("无权操作此角色", 403)
+  if (c.ownerId !== me.id && !isAdmin(me)) return oops("无权操作此角色", 403)
 
   if (req.method === "PATCH") {
     let b

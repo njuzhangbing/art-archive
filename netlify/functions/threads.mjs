@@ -1,6 +1,6 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 import { notifyMentions, pushNotif } from "./_lib/notify.mjs"
 
 function excerpt(s, n = 120) { return String(s || "").replace(/\s+/g, " ").trim().slice(0, n) }
@@ -9,12 +9,12 @@ function threadRow(t, me) {
   return {
     id: t.id, title: t.title, author: t.handle, authorId: t.authorId,
     replyCount: t.replyCount || 0, createdAt: t.createdAt, lastAt: t.lastAt || t.createdAt,
-    excerpt: excerpt(t.body), canDelete: me ? (t.authorId === me.id || me.role === "admin") : false
+    excerpt: excerpt(t.body), canDelete: me ? (t.authorId === me.id || isAdmin(me)) : false
   }
 }
 
 function replyOut(r, me) {
-  return { id: r.id, author: r.handle, authorId: r.authorId, body: r.body, createdAt: r.createdAt, canDelete: me ? (r.authorId === me.id || me.role === "admin") : false }
+  return { id: r.id, author: r.handle, authorId: r.authorId, body: r.body, createdAt: r.createdAt, canDelete: me ? (r.authorId === me.id || isAdmin(me)) : false }
 }
 
 export default async (req, context) => {
@@ -52,7 +52,7 @@ export default async (req, context) => {
       if (!rid) return oops("缺少回复编号")
       const r = await replies.getJSON("reply/" + tid + "/" + rid)
       if (!r) return oops("回复不存在", 404)
-      if (r.authorId !== me.id && me.role !== "admin") return oops("无权删除", 403)
+      if (r.authorId !== me.id && !isAdmin(me)) return oops("无权删除", 403)
       await replies.delete("reply/" + tid + "/" + rid)
       t.replyCount = Math.max(0, (t.replyCount || 0) - 1)
       await threads.setJSON("thread/" + cid + "/" + tid, t)
@@ -71,7 +71,7 @@ export default async (req, context) => {
       return json({ thread: { ...threadRow(t, me), body: t.body }, replies: rows.map((r) => replyOut(r, me)) })
     }
     if (req.method === "DELETE") {
-      if (t.authorId !== me.id && me.role !== "admin") return oops("无权删除", 403)
+      if (t.authorId !== me.id && !isAdmin(me)) return oops("无权删除", 403)
       const idx = await replies.list({ prefix: "reply/" + tid + "/" })
       for (const b of idx.blobs) await replies.delete(b.key)
       await threads.delete("thread/" + cid + "/" + tid)

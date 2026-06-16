@@ -1,6 +1,6 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 import { excerpt } from "./_lib/blog.mjs"
 
 function digest(s, me) {
@@ -10,7 +10,7 @@ function digest(s, me) {
     coverUrl: s.coverKey ? "/media/" + s.coverKey : null,
     owner: s.ownerHandle, ownerId: s.ownerId,
     count: (s.order || []).length,
-    canEdit: me ? (s.ownerId === me.id || me.role === "admin") : false,
+    canEdit: me ? (s.ownerId === me.id || isAdmin(me)) : false,
     createdAt: s.createdAt, updatedAt: s.updatedAt
   }
 }
@@ -61,11 +61,11 @@ export default async (req, context) => {
     const posts = store("posts")
     const order = (s.order || []).filter(Boolean)
     const loaded = await Promise.all(order.map((pid) => posts.getJSON("post/" + pid)))
-    const visible = loaded.filter((p) => p && (!p.hidden || p.authorId === me.id || me.role === "admin"))
+    const visible = loaded.filter((p) => p && (!p.hidden || p.authorId === me.id || isAdmin(me)))
     return json({ series: digest(s, me), posts: visible.map(rowOf) })
   }
 
-  const owns = s.ownerId === me.id || me.role === "admin"
+  const owns = s.ownerId === me.id || isAdmin(me)
   if (!owns) return oops("无权操作此系列", 403)
 
   if (req.method === "PATCH") {

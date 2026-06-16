@@ -1,6 +1,6 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 
 const KINDS = ["chat", "board"]
 
@@ -9,7 +9,7 @@ function digest(c, me, readTs) {
     id: c.id, name: c.name, topic: c.topic || "", kind: c.kind,
     owner: c.createdByHandle, ownerId: c.createdBy, createdAt: c.createdAt,
     unread: !!(c.lastMsgAt && (!readTs || c.lastMsgAt > readTs)),
-    canDelete: me ? (c.createdBy === me.id || me.role === "admin") : false
+    canDelete: me ? (c.createdBy === me.id || isAdmin(me)) : false
   }
 }
 
@@ -55,7 +55,7 @@ export default async (req, context) => {
   if (req.method === "GET") return json({ channel: digest(c, me) })
 
   if (req.method === "DELETE") {
-    if (c.createdBy !== me.id && me.role !== "admin") return oops("只能删除自己建的频道", 403)
+    if (c.createdBy !== me.id && !isAdmin(me)) return oops("只能删除自己建的频道", 403)
     if (c.kind === "chat") {
       await wipePrefix("messages", "msg/" + cid + "/")
     } else {

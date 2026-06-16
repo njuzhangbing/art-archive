@@ -19,7 +19,7 @@ function insertAt(ta, text) {
 
 export function postFormModal({ post, presetSeriesId, onSaved }) {
   const editing = !!post
-  const isAdmin = !!(session.me && session.me.role === "admin")
+  const isAdmin = !!(session.me && (session.me.role === "admin" || session.me.role === "owner"))
   const marg = (post && post.marg) ? JSON.parse(JSON.stringify(post.marg)) : {}
   const newId = () => { let id; do { id = Math.random().toString(36).slice(2, 8) } while (marg[id]); return id }
   const titleInput = h("input", { class: "input", name: "title", value: (post && post.title) || "", maxlength: "140", placeholder: "文章标题" })

@@ -1,12 +1,12 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 
 const coin = () => freshId(4).toUpperCase()
 
 export default async (req) => {
   const me = await currentUser(req)
-  if (!me || me.role !== "admin") return oops("需要管理员权限", 403)
+  if (!me || !isAdmin(me)) return oops("需要管理员权限", 403)
 
   const invites = store("invites")
 

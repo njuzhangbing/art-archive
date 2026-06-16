@@ -1,6 +1,6 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 
 async function bumpActivity(scope, day) {
   const act = store("activity")
@@ -20,7 +20,7 @@ export default async (req, context) => {
   const versions = store("versions")
   const p = await projects.getJSON("project/" + pid)
   if (!p) return oops("项目不存在", 404)
-  if (p.ownerId !== me.id && me.role !== "admin") return oops("无权操作", 403)
+  if (p.ownerId !== me.id && !isAdmin(me)) return oops("无权操作", 403)
 
   let body
   try { body = await req.json() } catch { return oops("请求体无效") }

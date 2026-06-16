@@ -1,6 +1,6 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 import { postDigest } from "./_lib/blog.mjs"
 
 const LEVELS = ["normal", "important", "urgent"]
@@ -64,7 +64,7 @@ export default async (req, context) => {
   const path = new URL(req.url).pathname
 
   if (id && path.endsWith("/reads")) {
-    if (me.role !== "admin") return oops("需要管理员权限", 403)
+    if (!isAdmin(me)) return oops("需要管理员权限", 403)
     const base = "read/" + id + "/"
     const idx = await store("reads").list({ prefix: base })
     const rows = (await Promise.all(idx.blobs.map((b) => store("reads").getJSON(b.key)))).filter(Boolean)
@@ -85,7 +85,7 @@ export default async (req, context) => {
     if (req.method === "GET") {
       const idx = await posts.list({ prefix: "post/" })
       let rows = (await Promise.all(idx.blobs.map((b) => posts.getJSON(b.key)))).filter(Boolean)
-      rows = rows.filter((p) => !p.hidden || p.authorId === me.id || me.role === "admin")
+      rows = rows.filter((p) => !p.hidden || p.authorId === me.id || isAdmin(me))
       rows.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (a.createdAt < b.createdAt ? 1 : -1))
       const out = []
       for (const p of rows) {
@@ -108,23 +108,23 @@ export default async (req, context) => {
         pinned: false, seriesId: null, kind: "post", level: "normal",
         commentsLocked: false, hidden: false, marg: cleanMarg(body.marg), createdAt: now, updatedAt: now
       }
-      if (me.role === "admin" && body.kind === "announcement") {
+      if (isAdmin(me) && body.kind === "announcement") {
         p.kind = "announcement"
         p.level = LEVELS.includes(body.level) ? body.level : "normal"
       }
       if (body.seriesId && await seriesAdd(body.seriesId, pid)) p.seriesId = body.seriesId
       await posts.setJSON("post/" + pid, p)
-      return json({ post: { ...postDigest(p, me), body: p.body, canPin: me.role === "admin" } })
+      return json({ post: { ...postDigest(p, me), body: p.body, canPin: isAdmin(me) } })
     }
     return oops("方法不允许", 405)
   }
 
   const p = await posts.getJSON("post/" + id)
   if (!p) return oops("文章不存在", 404)
-  if (p.hidden && p.authorId !== me.id && me.role !== "admin") return oops("文章不存在", 404)
+  if (p.hidden && p.authorId !== me.id && !isAdmin(me)) return oops("文章不存在", 404)
 
   if (req.method === "GET") {
-    const d = { ...postDigest(p, me), body: p.body, marg: p.marg || {}, canPin: me.role === "admin" }
+    const d = { ...postDigest(p, me), body: p.body, marg: p.marg || {}, canPin: isAdmin(me) }
     if (d.kind === "announcement") await attachRead(d, id, me)
     if (p.seriesId) {
       const s = await store("series").getJSON("series/" + p.seriesId)
@@ -144,17 +144,17 @@ export default async (req, context) => {
     return json({ post: d })
   }
 
-  const owns = p.authorId === me.id || me.role === "admin"
+  const owns = p.authorId === me.id || isAdmin(me)
 
   if (req.method === "PATCH") {
     let body
     try { body = await req.json() } catch { return oops("请求体无效") }
     if (body.pinned !== undefined) {
-      if (me.role !== "admin") return oops("仅管理员可置顶", 403)
+      if (!isAdmin(me)) return oops("仅管理员可置顶", 403)
       p.pinned = !!body.pinned
     }
     if (body.kind !== undefined || body.level !== undefined) {
-      if (me.role !== "admin") return oops("仅管理员可设公告", 403)
+      if (!isAdmin(me)) return oops("仅管理员可设公告", 403)
       if (body.kind === "announcement") { p.kind = "announcement"; if (LEVELS.includes(body.level)) p.level = body.level; else p.level = p.level || "normal" }
       else if (body.kind === "post") p.kind = "post"
       else if (LEVELS.includes(body.level)) p.level = body.level
@@ -181,7 +181,7 @@ export default async (req, context) => {
     }
     p.updatedAt = new Date().toISOString()
     await posts.setJSON("post/" + id, p)
-    return json({ post: { ...postDigest(p, me), body: p.body, canPin: me.role === "admin" } })
+    return json({ post: { ...postDigest(p, me), body: p.body, canPin: isAdmin(me) } })
   }
 
   if (req.method === "DELETE") {

@@ -1,6 +1,6 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 
 const GRADE_KEYS = ["ALEPH", "WAW", "HE", "TETH", "ZAYIN"]
 
@@ -80,10 +80,10 @@ export default async (req, context) => {
 
   if (req.method === "GET") {
     const starred = !!(await store("stars").getJSON("star/" + id + "/" + me.id))
-    return json({ project: digest(p, me, starred ? new Set([id]) : null), canEdit: p.ownerId === me.id || me.role === "admin" })
+    return json({ project: digest(p, me, starred ? new Set([id]) : null), canEdit: p.ownerId === me.id || isAdmin(me) })
   }
 
-  const owns = p.ownerId === me.id || me.role === "admin"
+  const owns = p.ownerId === me.id || isAdmin(me)
   if (!owns) return oops("无权操作此项目", 403)
 
   if (req.method === "PATCH") {

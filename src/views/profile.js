@@ -65,7 +65,7 @@ export default function profile(root) {
       sealEl,
       h("div", { class: "profile__id" },
         h("div", { class: "profile__roles" },
-          h("span", { class: "badge", "data-grade": me.role === "admin" ? "ALEPH" : "TETH" }, h("span", { class: "badge__dot" }), me.role === "admin" ? "管理员" : "成员"),
+          h("span", { class: "badge", "data-grade": me.role === "owner" ? "ALEPH" : me.role === "admin" ? "WAW" : "TETH" }, h("span", { class: "badge__dot" }), me.role === "owner" ? "站长" : me.role === "admin" ? "管理员" : "成员"),
           h("span", { class: "mono tiny" }, "入库 " + fmtAgo(me.createdAt))
         ),
         h("h1", { class: "profile__name serif" }, me.displayName || me.handle),
@@ -233,18 +233,21 @@ export default function profile(root) {
     const stat = u.status === "active" ? "TETH" : u.status === "pending" ? "HE" : "ALEPH"
     const act = async (fn) => { try { await fn(); reload() } catch (e) { toast(e.message || "失败", "bad") } }
     const me = session.me
-    const self = u.id === me.id
+    const RANK = { member: 0, admin: 1, owner: 2 }
+    const canManage = (RANK[me.role] || 0) > (RANK[u.role] || 0)
+    const roleGrade = u.role === "owner" ? "ALEPH" : u.role === "admin" ? "WAW" : "ZAYIN"
+    const roleText = u.role === "owner" ? "站长" : u.role === "admin" ? "ADMIN" : "MEMBER"
     return h("div", { class: "urow" },
       h("div", { class: "urow__who" },
-        h("span", { class: "badge", "data-grade": u.role === "admin" ? "ALEPH" : "ZAYIN" }, h("span", { class: "badge__dot" }), u.role === "admin" ? "ADMIN" : "MEMBER"),
+        h("span", { class: "badge", "data-grade": roleGrade }, h("span", { class: "badge__dot" }), roleText),
         h("b", {}, "@" + u.handle), h("span", { class: "mono tiny muted" }, u.displayName || "")
       ),
       h("div", { class: "urow__st" }, h("span", { class: "badge", "data-grade": stat }, h("span", { class: "badge__dot" }), u.status)),
       h("div", { class: "urow__btns" },
-        u.status !== "active" ? h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/admin/users/" + u.id, { status: "active" })) }, "批准") : null,
-        u.status === "active" && !self ? h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/admin/users/" + u.id, { status: "blocked" })) }, "停用") : null,
-        !self ? h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/admin/users/" + u.id, { role: u.role === "admin" ? "member" : "admin" })) }, u.role === "admin" ? "降权" : "升管") : null,
-        !self ? h("button", { class: "btn btn--sm btn--danger", onClick: () => { if (confirm("删除 @" + u.handle + " ?")) act(() => api.del("/api/admin/users/" + u.id)) } }, "删") : null
+        (canManage && u.status !== "active") ? h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/admin/users/" + u.id, { status: "active" })) }, "批准") : null,
+        (canManage && u.status === "active") ? h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/admin/users/" + u.id, { status: "blocked" })) }, "停用") : null,
+        canManage ? h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/admin/users/" + u.id, { role: u.role === "admin" ? "member" : "admin" })) }, u.role === "admin" ? "撤销管理员" : "升为管理员") : null,
+        canManage ? h("button", { class: "btn btn--sm btn--danger", onClick: () => { if (confirm("删除 @" + u.handle + " ?")) act(() => api.del("/api/admin/users/" + u.id)) } }, "删") : null
       )
     )
   }

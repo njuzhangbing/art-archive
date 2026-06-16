@@ -1,6 +1,6 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 
 function url(k) { return k ? "/media/" + k : null }
 
@@ -51,11 +51,11 @@ export default async (req, context) => {
   if (req.method === "GET") {
     const raw = await Promise.all((p.versionIds || []).map((id) => versions.getJSON("version/" + pid + "/" + id)))
     const rows = raw.filter(Boolean).map(versionOut).reverse()
-    return json({ versions: rows, headVersionId: p.headVersionId, canEdit: p.ownerId === me.id || me.role === "admin" })
+    return json({ versions: rows, headVersionId: p.headVersionId, canEdit: p.ownerId === me.id || isAdmin(me) })
   }
 
   if (req.method === "POST") {
-    if (p.ownerId !== me.id && me.role !== "admin") return oops("无权上传更新", 403)
+    if (p.ownerId !== me.id && !isAdmin(me)) return oops("无权上传更新", 403)
     let body
     try { body = await req.json() } catch { return oops("请求体无效") }
     const assets = (Array.isArray(body.assets) ? body.assets : []).map((a) => ({ ...a, id: a.id || "a_" + freshId(6) }))

@@ -1,6 +1,6 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { currentUser } from "./_lib/auth.mjs"
+import { currentUser, isAdmin } from "./_lib/auth.mjs"
 
 const KINDS = ["project", "character", "post"]
 
@@ -25,7 +25,7 @@ export default async (req, context) => {
       return json({ ok: true })
     }
     if (req.method === "GET") {
-      if (me.role !== "admin") return oops("需要管理员权限", 403)
+      if (!isAdmin(me)) return oops("需要管理员权限", 403)
       const idx = await reports.list({ prefix: "report/" })
       const rows = (await Promise.all(idx.blobs.map((b) => reports.getJSON(b.key)))).filter(Boolean)
       rows.sort((a, b) => (a.resolved ? 1 : 0) - (b.resolved ? 1 : 0) || (a.createdAt < b.createdAt ? 1 : -1))
@@ -34,7 +34,7 @@ export default async (req, context) => {
     return oops("方法不允许", 405)
   }
 
-  if (me.role !== "admin") return oops("需要管理员权限", 403)
+  if (!isAdmin(me)) return oops("需要管理员权限", 403)
   if (req.method === "PATCH") {
     let body
     try { body = await req.json() } catch { return oops("请求体无效") }

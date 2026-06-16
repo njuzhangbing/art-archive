@@ -39,13 +39,27 @@ export async function currentUser(req) {
   const claim = await readSession(req)
   if (!claim) return null
   const u = await store("users").getJSON("user/" + claim.uid)
-  return u && u.status === "active" ? u : null
+  if (!u || u.status !== "active") return null
+  const envOwner = (process.env.OWNER_HANDLE || "").trim().toLowerCase()
+  if (envOwner && u.handleLower === envOwner && u.role !== "owner") {
+    u.role = "owner"
+    await store("users").setJSON("user/" + u.id, u)
+  }
+  return u
 }
 
 export function shareable(u) {
   if (!u) return null
   const { passHash, handleLower, ...rest } = u
   return rest
+}
+
+export function isAdmin(u) {
+  return !!u && (u.role === "admin" || u.role === "owner")
+}
+
+export function isOwner(u) {
+  return !!u && u.role === "owner"
 }
 
 export async function rateGate(bucket, max = 8, windowMs = 10 * 60 * 1000) {
