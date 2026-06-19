@@ -3,6 +3,7 @@ import "./styles/tokens.css"
 import "./styles/constructivism.css"
 import "./styles/views.css"
 import "./styles/cinema.css"
+import "./styles/fx.css"
 import { h } from "./lib/dom.js"
 import { defineRoutes, mountOutlet, startRouter } from "./router.js"
 import { buildNav } from "./components/nav.js"
@@ -10,14 +11,18 @@ import { mountToasts } from "./components/toast.js"
 import { session } from "./lib/store.js"
 import { api } from "./lib/api.js"
 import { loadDirectory } from "./lib/directory.js"
+import { initCursor } from "./lib/cursor.js"
+import { showLoader } from "./components/loader.js"
 
 const app = document.getElementById("app")
+showLoader()
 const shell = h("div", { class: "shell" })
 const main = h("main")
 shell.append(main, footer())
 app.append(buildNav(), shell)
 mountOutlet(main)
 mountToasts()
+initCursor()
 
 defineRoutes([
   { p: "/", tag: "主页", view: () => import("./views/home.js") },

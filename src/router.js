@@ -1,5 +1,6 @@
 import { clear } from "./lib/dom.js"
 import { pageWipe } from "./lib/anim.js"
+import { hideLoader } from "./components/loader.js"
 import { syncNav } from "./components/nav.js"
 import { session } from "./lib/store.js"
 
@@ -52,7 +53,7 @@ async function paint() {
     else active = mod.default(outlet, hit ? hit.params : {}) || null
     syncNav()
   }
-  if (!booted) { booted = true; swap() }
+  if (!booted) { booted = true; swap(); hideLoader() }
   else await pageWipe(swap, hit ? hit.r.tag : "404")
 }
 

@@ -7,3 +7,9 @@ dist
 npm-debug.log*
 deno.lock
 start.command
+_homepage_backup/
+dump-blobs.mjs
+push-blobs.mjs
+export-blobs.command
+deploy-direct.sh
+art-archive-export/

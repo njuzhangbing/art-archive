@@ -1,6 +1,7 @@
 import { h, clear } from "../lib/dom.js"
 import { session } from "../lib/store.js"
 import { api } from "../lib/api.js"
+import { openSearch } from "./search.js"
 
 const LINKS = [
   { path: "/", i: "00", label: "主页" },
@@ -30,6 +31,7 @@ export function buildNav() {
       const av = h("span", { class: "navavatar" }, (u.handle || "?").slice(0, 1).toUpperCase())
       if (u.avatarKey) { av.style.backgroundImage = "url(/media/" + u.avatarKey + ")"; av.classList.add("has") }
       me.append(
+        h("button", { class: "navbell navfind", type: "button", title: "搜索 ( / )", onClick: openSearch }, "🔍"),
         h("a", { class: "navbell", href: "/dm", "data-link": "1", title: "私信" }, "✉"),
         h("a", { class: "navbell", href: "/notifications", "data-link": "1", title: "通知" }, "🔔", h("span", { class: "navdot" })),
         h("a", { class: "btn btn--sm navme", href: "/me", "data-link": "1" }, av, h("span", {}, "@" + (u.handle || "me"))))
@@ -41,6 +43,14 @@ export function buildNav() {
   session.sub(drawMe)
   drawMe(session.me)
   setInterval(pollNotif, 30000)
+
+  addEventListener("keydown", (e) => {
+    if (!session.me) return
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable
+    const slash = e.key === "/" && !typing
+    const palette = (e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")
+    if (slash || palette) { e.preventDefault(); openSearch() }
+  })
 
   return h("header", { class: "topbar" },
     h("a", { class: "topbar__brand", href: "/", "data-link": "1" },

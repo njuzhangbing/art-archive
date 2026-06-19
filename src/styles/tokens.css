@@ -1,22 +1,30 @@
 :root {
-  --ink: #0E0E0E;
-  --ink-soft: #2a2a26;
-  --paper: #F2EFE6;
-  --paper-2: #E7E2D2;
-  --paper-3: #DAD4C0;
-  --white: #FFFFFF;
+  /* ---- palette: #708194 / #d3979f / #dec6bc / #8ea0aa ---- */
+  --slate: #708194;
+  --slate-soft: #8ea0aa;
+  --sand: #dec6bc;
+  --rose: #d3979f;
 
-  --red: #E2231A;
-  --red-deep: #A8140D;
+  /* clean light: bright warm canvas + deep cold ink + punchy rose (high contrast, not muddy) */
+  --paper: #f4ede5;        /* canvas — bright clean warm cream */
+  --paper-2: #ebe0d4;      /* secondary surface */
+  --paper-3: #ddc9bc;      /* deepest paper (sand panels) */
+  --white: #fdf9f4;        /* near-white card */
+  --ink: #20272d;          /* primary text — deep cold near-black, strong contrast */
+  --ink-soft: #5e7280;     /* secondary text — slate */
 
-  --aleph: #D7263D;
-  --waw: #6A2C9C;
-  --he: #F0A202;
-  --teth: #1B6CA8;
-  --zayin: #2A9D4A;
+  --red: #cc7a8b;          /* accent (rose, slightly deepened so it pops on cream) */
+  --red-deep: #b85e72;
 
-  --line: #0E0E0E;
-  --hair: rgba(14, 14, 14, 0.18);
+  /* grade colors — clear on cream */
+  --aleph: #c4576b;
+  --waw: #7d6c98;
+  --he: #c08a47;
+  --teth: #4f7ca2;
+  --zayin: #5d9070;
+
+  --line: #20272d;
+  --hair: rgba(32, 39, 45, 0.18);
 
   --maxw: 1320px;
   --gut: clamp(16px, 3.2vw, 44px);
@@ -31,8 +39,8 @@
   --font-body: "Noto Sans SC", system-ui, -apple-system, "Helvetica Neue", sans-serif;
   --font-mono: "Space Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  --shadow-block: 8px 8px 0 var(--ink);
-  --shadow-block-red: 8px 8px 0 var(--red);
+  --shadow-block: 7px 7px 0 var(--ink);
+  --shadow-block-red: 7px 7px 0 var(--red);
 }
 
 [data-grade="ALEPH"] { --grade: var(--aleph); }

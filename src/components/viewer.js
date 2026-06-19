@@ -1,9 +1,12 @@
 import { h, clear } from "../lib/dom.js"
 import { fmtBytes } from "../lib/fmt.js"
+import { pinLayer } from "./pins.js"
 
-export function assetStage(version) {
+export function assetStage(version, opts = {}) {
   const assets = version.assets || []
   let cur = assets.find((a) => a.id === version.coverAssetId) || assets[0]
+  const project = opts.project || null
+  let activePins = null
 
   const stage = h("div", { class: "stage__main" })
   const side = h("div", { class: "stage__side" })
@@ -23,12 +26,19 @@ export function assetStage(version) {
   }
 
   function draw() {
+    if (activePins) { activePins.destroy(); activePins = null }
     clear(stage)
     clear(side)
     if (!cur) { stage.append(h("div", { class: "muted mono" }, "无资源")); return }
 
     if (cur.kind === "video") {
       stage.append(h("video", { class: "stage__vid", src: cur.originalUrl, controls: true, poster: cur.posterUrl || "", playsinline: true }))
+    } else if (project) {
+      const canvas = h("div", { class: "stage__canvas" },
+        h("img", { class: "stage__img", src: cur.previewUrl || cur.originalUrl, alt: cur.filename }))
+      activePins = pinLayer({ projectId: project.id, versionId: version.id, assetId: cur.id })
+      canvas.append(activePins.el)
+      stage.append(canvas)
     } else {
       stage.append(h("a", { class: "stage__link", href: cur.originalUrl, target: "_blank", title: "打开原始文件" },
         h("img", { class: "stage__img", src: cur.previewUrl || cur.originalUrl, alt: cur.filename })))

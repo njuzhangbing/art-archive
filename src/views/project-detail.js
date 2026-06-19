@@ -108,7 +108,7 @@ export default function projectDetail(root, params) {
           (!head && canEdit) ? h("button", { class: "btn btn--sm btn--red", onClick: () => doRollback(v) }, "回滚到此版") : null
         )
       ),
-      assetStage(v)
+      assetStage(v, { project })
     )
   }
 

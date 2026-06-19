@@ -79,7 +79,13 @@ export function pageWipe(swap, tag = "长生天") {
     let fired = false
     const finish = () => { if (fired) return; fired = true; resolve() }
     let swapped = false
-    const doSwap = () => { if (swapped) return; swapped = true; swap && swap(); window.scrollTo(0, 0) }
+    const stage = document.querySelector("main")
+    const doSwap = () => {
+      if (swapped) return; swapped = true
+      if (stage) gsap.set(stage, { clearProps: "transform,opacity" })
+      swap && swap(); window.scrollTo(0, 0)
+      if (stage) gsap.fromTo(stage, { x: 44, autoAlpha: 0.35 }, { x: 0, autoAlpha: 1, duration: 0.5, ease: "power3.out" })
+    }
     const sheet = document.createElement("div")
     sheet.className = "wipe"
     const word = document.createElement("div")
@@ -88,7 +94,8 @@ export function pageWipe(swap, tag = "长生天") {
     sheet.appendChild(word)
     document.body.appendChild(sheet)
     const tl = gsap.timeline({ onComplete() { sheet.remove(); finish() } })
-    tl.to(sheet, { scaleX: 1, duration: 0.42, ease: "power4.inOut" })
+    if (stage) tl.to(stage, { x: -46, autoAlpha: 0.4, duration: 0.42, ease: "power3.in" }, 0)
+    tl.to(sheet, { scaleX: 1, duration: 0.42, ease: "power4.inOut" }, 0)
     tl.to(word, { autoAlpha: 1, duration: 0.18 }, "-=0.22")
     tl.add(doSwap)
     tl.to(word, { autoAlpha: 0, duration: 0.14 })
