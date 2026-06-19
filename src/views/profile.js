@@ -9,6 +9,7 @@ import { heatmap } from "../components/heatmap.js"
 import { planDialog } from "../components/plan-dialog.js"
 import { projectCard } from "../components/project-card.js"
 import { buildAsset } from "../lib/upload.js"
+import { exportAll } from "../lib/exporter.js"
 
 export default function profile(root) {
   if (!session.me) { root.append(wall()); reveal([...root.firstChild.children], { y: 24, stagger: 0.06 }); return {} }
@@ -158,6 +159,16 @@ export default function profile(root) {
         status.textContent = "已下载备份（" + (blob.size / 1024).toFixed(0) + " KB）"
       } catch (e) { status.textContent = ""; toast(e.message || "导出失败", "bad") }
     }
+    async function fullExport() {
+      status.textContent = "全量导出中… 0%（含文件，可能较久）"
+      try {
+        const blob = await exportAll((done, total) => { status.textContent = "全量导出中… " + Math.round(done / total * 100) + "%" })
+        const url = URL.createObjectURL(blob)
+        const a = h("a", { href: url, download: "changshengtian-full-" + new Date().toISOString().slice(0, 10) + ".zip" })
+        document.body.append(a); a.click(); a.remove(); URL.revokeObjectURL(url)
+        status.textContent = "已下载全量包（" + (blob.size / 1048576).toFixed(1) + " MB）"
+      } catch (e) { status.textContent = ""; toast(e.message || "全量导出失败", "bad") }
+    }
     fileIn.addEventListener("change", async () => {
       const f = fileIn.files[0]; fileIn.value = ""
       if (!f) return
@@ -174,10 +185,11 @@ export default function profile(root) {
       h("div", { class: "panel__head" },
         h("span", { class: "kicker" }, "Backup / 数据备份"),
         h("div", { style: "display:flex;gap:8px" },
-          h("button", { class: "btn btn--sm btn--red", onClick: pullDown }, "下载备份"),
+          h("button", { class: "btn btn--sm btn--red", onClick: fullExport }, "全量导出(含文件)"),
+          h("button", { class: "btn btn--sm", onClick: pullDown }, "JSON 备份"),
           h("button", { class: "btn btn--sm", onClick: () => fileIn.click() }, "导入合并"))),
       h("div", { class: "rows" },
-        h("p", { class: "mono tiny muted", style: "line-height:1.6" }, "把全部项目 / 版本 / 角色 / 博客 / 计划 / 收藏 / 举报 / 成员 / 邀请的记录导出为一个 JSON。导入时按记录合并（同 key 覆盖，不删现有）。含成员密码哈希，请妥善保管；不含图片二进制（图片存于 Blobs，随存储持久保留）。"),
+        h("p", { class: "mono tiny muted", style: "line-height:1.6" }, "「全量导出」把 Blobs 里全部数据（所有库 + 上传的图片/视频/PSD 文件）打包成一个 zip，离线留档/迁移用。「JSON 备份」仅文本记录，可再「导入合并」（同 key 覆盖、不删现有）。两者均含成员密码哈希，请妥善保管。"),
         status, fileIn))
   }
 
