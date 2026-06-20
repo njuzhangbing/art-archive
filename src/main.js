@@ -4,6 +4,7 @@ import "./styles/constructivism.css"
 import "./styles/views.css"
 import "./styles/cinema.css"
 import "./styles/fx.css"
+import "./styles/fonts.css"
 import { h } from "./lib/dom.js"
 import { defineRoutes, mountOutlet, startRouter } from "./router.js"
 import { buildNav } from "./components/nav.js"
@@ -56,9 +57,8 @@ async function probe() {
 function footer() {
   return h("footer", { class: "footer" },
     h("div", { class: "wrap" },
-      h("div", { class: "footer__big serif" }, "长生天", h("span", { class: "red" }, "計劃")),
-      h("div", { class: "mono" }, "艺作存档库 / ARCHIVE OF WORKS"),
-      h("div", { class: "mono", style: "margin-left:auto" }, "NETLIFY · BLOBS · MMXXVI")
+      h("div", { class: "footer__big serif" }, "长生天", h("span", { class: "red" }, "计划")),
+      h("div", { class: "mono" }, "艺作存档库 / ARCHIVE OF WORKS")
     )
   )
 }
