@@ -8,10 +8,12 @@
     "stack": "netlify dev",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:app": "VITE_API_BASE=https://ptrart.netlify.app vite build && node tools/sync-android.mjs",
+    "apk": "npm run build:app && cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
-    "@netlify/blobs": "^8.1.0",
+    "@netlify/blobs": "^10.7.12",
     "ag-psd": "^25.0.0",
     "fflate": "^0.8.3",
     "gsap": "^3.12.5",

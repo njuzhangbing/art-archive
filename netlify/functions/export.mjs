@@ -1,11 +1,12 @@
 import { json, oops } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
+import { isIndexKey } from "./_lib/collection.mjs"
 import { currentUser, isAdmin } from "./_lib/auth.mjs"
 
 const JSON_STORES = [
   "projects", "versions", "characters", "posts", "series", "comments",
   "channels", "messages", "threads", "replies", "plans", "stars", "reports",
-  "users", "invites", "activity", "notifs", "follows", "reads", "chanread",
+  "users", "activity", "notifs", "follows", "reads", "chanread",
   "dms", "dmconv", "dmread"
 ]
 
@@ -26,6 +27,7 @@ export default async (req) => {
     const idx = await s.list({})
     const data = {}
     for (const b of idx.blobs) {
+      if (isIndexKey(b.key)) continue
       try { const v = await s.getJSON(b.key); if (v != null) data[b.key] = v } catch {}
     }
     return json({ store: part, data })

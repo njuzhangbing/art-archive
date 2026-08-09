@@ -1,7 +1,10 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
-import { store } from "./_lib/store.mjs"
+import { store, updateJSON } from "./_lib/store.mjs"
 import { currentUser, isAdmin } from "./_lib/auth.mjs"
-import { postDigest } from "./_lib/blog.mjs"
+import { collection } from "./_lib/collection.mjs"
+import { postDigest, postRow, forViewer } from "./_lib/blog.mjs"
+
+const postIndex = collection({ name: "posts", prefix: "post/", project: postRow })
 
 const LEVELS = ["normal", "important", "urgent"]
 
@@ -33,21 +36,23 @@ async function attachRead(d, id, me) {
 }
 
 async function seriesAdd(sid, pid) {
-  const series = store("series")
-  const s = await series.getJSON("series/" + sid)
-  if (!s) return false
-  s.order = s.order || []
-  if (!s.order.includes(pid)) { s.order.push(pid); s.updatedAt = new Date().toISOString(); await series.setJSON("series/" + sid, s) }
-  return true
+  const updated = await updateJSON(store("series"), "series/" + sid, (s) => {
+    s.order = s.order || []
+    if (s.order.includes(pid)) return undefined
+    s.order.push(pid)
+    s.updatedAt = new Date().toISOString()
+    return s
+  })
+  return !!updated
 }
 
 async function seriesRemove(sid, pid) {
-  const series = store("series")
-  const s = await series.getJSON("series/" + sid)
-  if (!s || !(s.order || []).includes(pid)) return
-  s.order = s.order.filter((x) => x !== pid)
-  s.updatedAt = new Date().toISOString()
-  await series.setJSON("series/" + sid, s)
+  await updateJSON(store("series"), "series/" + sid, (s) => {
+    if (!(s.order || []).includes(pid)) return undefined
+    s.order = s.order.filter((x) => x !== pid)
+    s.updatedAt = new Date().toISOString()
+    return s
+  })
 }
 
 async function wipePrefix(name, prefix) {
@@ -83,16 +88,15 @@ export default async (req, context) => {
 
   if (!id) {
     if (req.method === "GET") {
-      const idx = await posts.list({ prefix: "post/" })
-      let rows = (await Promise.all(idx.blobs.map((b) => posts.getJSON(b.key)))).filter(Boolean)
-      rows = rows.filter((p) => !p.hidden || p.authorId === me.id || isAdmin(me))
-      rows.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (a.createdAt < b.createdAt ? 1 : -1))
-      const out = []
-      for (const p of rows) {
-        const d = postDigest(p, me)
-        if (d.kind === "announcement") await attachRead(d, p.id, me)
-        out.push(d)
-      }
+      const all = await postIndex.rows()
+      const rows = all
+        .filter((p) => !p.hidden || p.authorId === me.id || isAdmin(me))
+        .slice()
+        .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (a.createdAt < b.createdAt ? 1 : -1))
+      const out = rows.map((r) => forViewer(r, me))
+      // Read receipts live outside the post record, so they still cost a lookup
+      // each — but they no longer queue up behind one another.
+      await Promise.all(out.map((d) => (d.kind === "announcement" ? attachRead(d, d.id, me) : null)))
       return json({ posts: out })
     }
     if (req.method === "POST") {

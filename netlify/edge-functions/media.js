@@ -11,7 +11,15 @@ export default async (request) => {
   return new Response(stream, {
     headers: {
       "content-type": (meta.metadata && meta.metadata.contentType) || "application/octet-stream",
-      "cache-control": "public, max-age=86400"
+      // Keys are random and a stored file is never rewritten under the same
+      // one — a new upload gets a new key — so this can be cached for good
+      // instead of being revalidated once a day.
+      "cache-control": "public, max-age=31536000, immutable",
+      // An <img> needs nothing, but the export tool reads these with fetch, and
+      // in the Android build that is a cross-origin read. Files here are public
+      // by key alone, so a blanket allow costs nothing.
+      "access-control-allow-origin": "*",
+      ...(meta.etag ? { etag: meta.etag } : {})
     }
   })
 }

@@ -1,5 +1,6 @@
 import { json, oops } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
+import { userIndex, projectIndex, characterIndex, postIndex } from "./_lib/indexes.mjs"
 import { currentUser } from "./_lib/auth.mjs"
 
 function pubUser(u) {
@@ -17,9 +18,9 @@ export default async (req, context) => {
   const handle = context && context.params && context.params.handle
 
   if (!handle) {
-    const idx = await users.list({ prefix: "user/" })
-    const rows = (await Promise.all(idx.blobs.map((b) => users.getJSON(b.key)))).filter((u) => u && u.status === "active")
-    rows.sort((a, b) => ((a.handleLower || "") < (b.handleLower || "") ? -1 : 1))
+    const rows = (await userIndex.rows())
+      .filter((u) => u.status === "active")
+      .sort((a, b) => (a.handle.toLowerCase() < b.handle.toLowerCase() ? -1 : 1))
     return json({ users: rows.map(pubUser) })
   }
 
@@ -28,18 +29,14 @@ export default async (req, context) => {
   const u = await users.getJSON("user/" + id)
   if (!u || u.status !== "active") return oops("用户不存在", 404)
 
-  const projects = store("projects"), chars = store("characters"), posts = store("posts")
-  const [pidx, cidx, postidx] = await Promise.all([
-    projects.list({ prefix: "project/" }),
-    chars.list({ prefix: "char/" }),
-    posts.list({ prefix: "post/" })
+  const [allProjects, allChars, allPosts] = await Promise.all([
+    projectIndex.rows(), characterIndex.rows(), postIndex.rows()
   ])
-  const prows = (await Promise.all(pidx.blobs.map((b) => projects.getJSON(b.key)))).filter((p) => p && p.ownerId === id)
-  const crows = (await Promise.all(cidx.blobs.map((b) => chars.getJSON(b.key)))).filter((c) => c && c.ownerId === id)
-  const postrows = (await Promise.all(postidx.blobs.map((b) => posts.getJSON(b.key)))).filter((p) => p && p.authorId === id && !p.hidden && p.kind !== "announcement")
-  prows.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
-  crows.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
-  postrows.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+  const prows = allProjects.filter((p) => p.ownerId === id).sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
+  const crows = allChars.filter((c) => c.ownerId === id).sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
+  const postrows = allPosts
+    .filter((p) => p.authorId === id && !p.hidden && p.kind !== "announcement")
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
 
   const follows = store("follows")
   const [followerCount, followingCount, iFollowRec] = await Promise.all([
@@ -52,8 +49,8 @@ export default async (req, context) => {
     user: pubUser(u),
     isMe: me.id === id,
     follow: { followers: followerCount, following: followingCount, iFollow: !!iFollowRec },
-    projects: prows.map((p) => ({ id: p.id, title: p.title, grade: p.grade, coverUrl: p.coverKey ? "/media/" + p.coverKey : null, versions: (p.versionIds || []).length, updatedAt: p.updatedAt })),
-    characters: crows.map((c) => ({ id: c.id, name: c.name, code: c.code, grade: c.grade, coverUrl: c.coverKey ? "/media/" + c.coverKey : null })),
+    projects: prows.map((p) => ({ id: p.id, title: p.title, sec: p.sec, coverUrl: p.coverUrl, versions: p.versions, updatedAt: p.updatedAt })),
+    characters: crows.map((c) => ({ id: c.id, name: c.name, code: c.code, sec: c.sec, coverUrl: c.coverUrl })),
     posts: postrows.map((p) => ({ id: p.id, title: p.title, createdAt: p.createdAt })),
     stats: { projects: prows.length, characters: crows.length, posts: postrows.length }
   })

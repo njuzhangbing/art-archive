@@ -1,6 +1,7 @@
 import { json, oops } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
 import { currentUser, isAdmin } from "./_lib/auth.mjs"
+import { secrecyOf, canRead } from "./_lib/classify.mjs"
 
 function hit(text, q) { return String(text || "").toLowerCase().includes(q) }
 
@@ -31,11 +32,11 @@ export default async (req) => {
     rows("posts", "post/"), rows("users", "user/"), rows("threads", "thread/")
   ])
 
-  out.projects = pj.filter((p) => hit(p.title, q) || hit(p.desc, q) || hit((p.tags || []).join(" "), q)).slice(0, cap)
-    .map((p) => ({ id: p.id, title: p.title, grade: p.grade, coverUrl: p.coverKey ? "/media/" + p.coverKey : null, snippet: snippet(p.desc, q) }))
+  out.projects = pj.filter((p) => canRead(p, me) && (hit(p.title, q) || hit(p.desc, q) || hit((p.tags || []).join(" "), q))).slice(0, cap)
+    .map((p) => ({ id: p.id, title: p.title, sec: secrecyOf(p), coverUrl: p.coverKey ? "/media/" + p.coverKey : null, snippet: snippet(p.desc, q) }))
 
-  out.characters = ch.filter((c) => hit(c.name, q) || hit(c.code, q) || hit(c.body, q)).slice(0, cap)
-    .map((c) => ({ id: c.id, name: c.name, code: c.code, grade: c.grade, coverUrl: c.coverKey ? "/media/" + c.coverKey : null, snippet: snippet(c.body, q) }))
+  out.characters = ch.filter((c) => canRead(c, me) && (hit(c.name, q) || hit(c.code, q) || hit(c.body, q))).slice(0, cap)
+    .map((c) => ({ id: c.id, name: c.name, code: c.code, sec: secrecyOf(c), coverUrl: c.coverKey ? "/media/" + c.coverKey : null, snippet: snippet(c.body, q) }))
 
   out.posts = po.filter((p) => (!p.hidden || p.authorId === me.id || isAdmin(me)) && (hit(p.title, q) || hit(p.body, q))).slice(0, cap)
     .map((p) => ({ id: p.id, title: p.title, author: p.authorHandle, snippet: snippet(p.body, q) }))

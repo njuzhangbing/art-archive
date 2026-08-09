@@ -1,9 +1,10 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
+import { characterIndex, projectIndex } from "./_lib/indexes.mjs"
+import { characterDigest as digest } from "./_lib/rows.mjs"
 import { currentUser, isAdmin } from "./_lib/auth.mjs"
+import { cleanSecrecy, redactFor } from "./_lib/classify.mjs"
 
-const GRADE_KEYS = ["ALEPH", "WAW", "HE", "TETH", "ZAYIN"]
-const DAMAGE = ["RED", "WHITE", "BLACK", "PALE"]
 const PERSONA = ["FULL", "SEMI"]
 const MIMICRY = ["MALE", "FEMALE", "HERM", "NONE", "UNKNOWN"]
 
@@ -11,18 +12,6 @@ function lockCode(raw, experimental) {
   let code = String(raw || "").trim().slice(0, 24)
   if (experimental && code) code = "E" + code.slice(1)
   return code
-}
-
-function digest(c) {
-  return {
-    id: c.id, name: c.name, code: c.code, grade: c.grade, damage: c.damage,
-    persona: c.persona || "FULL", experimental: !!c.experimental,
-    mimicry: c.mimicry || "",
-    owner: c.ownerHandle, ownerId: c.ownerId,
-    coverUrl: c.coverKey ? "/media/" + c.coverKey : null,
-    portraits: (c.portraits || []).map((p) => ({ id: p.id, key: p.key, url: "/media/" + p.key, w: p.w, h: p.h, filename: p.filename })),
-    body: c.body || "", createdAt: c.createdAt, updatedAt: c.updatedAt
-  }
 }
 
 function cleanPortraits(raw) {
@@ -38,10 +27,9 @@ export default async (req, context) => {
 
   if (!id) {
     if (req.method === "GET") {
-      const idx = await chars.list({ prefix: "char/" })
-      const rows = (await Promise.all(idx.blobs.map((b) => chars.getJSON(b.key)))).filter(Boolean)
+      const rows = (await characterIndex.rows()).slice()
       rows.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
-      return json({ characters: rows.map(digest) })
+      return json({ characters: rows.map((r) => redactFor(r, me)) })
     }
     if (req.method === "POST") {
       let b
@@ -55,8 +43,7 @@ export default async (req, context) => {
       const c = {
         id: cid, ownerId: me.id, ownerHandle: me.handle,
         name: name.slice(0, 80), code: lockCode(b.code, experimental),
-        grade: GRADE_KEYS.includes(b.grade) ? b.grade : "ZAYIN",
-        damage: DAMAGE.includes(b.damage) ? b.damage : "RED",
+        sec: cleanSecrecy(b.sec),
         persona: PERSONA.includes(b.persona) ? b.persona : "FULL",
         mimicry: MIMICRY.includes(b.mimicry) ? b.mimicry : "",
         experimental,
@@ -74,14 +61,11 @@ export default async (req, context) => {
   if (!c) return oops("角色不存在", 404)
 
   if (req.method === "GET") {
-    const projects = store("projects")
-    const pidx = await projects.list({ prefix: "project/" })
-    const prows = (await Promise.all(pidx.blobs.map((b) => projects.getJSON(b.key)))).filter(Boolean)
-    const involved = prows
+    const involved = (await projectIndex.rows())
       .filter((p) => (p.characters || []).includes(id))
       .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
-      .map((p) => ({ id: p.id, title: p.title, grade: p.grade, coverUrl: p.coverKey ? "/media/" + p.coverKey : null, author: p.ownerHandle, desc: (p.desc || "").slice(0, 160) }))
-    return json({ character: digest(c), projects: involved, canEdit: c.ownerId === me.id || isAdmin(me) })
+      .map((p) => ({ id: p.id, title: p.title, sec: p.sec, coverUrl: p.coverUrl, author: p.author, desc: (p.desc || "").slice(0, 160) }))
+    return json({ character: redactFor(digest(c), me), projects: involved, canEdit: c.ownerId === me.id || isAdmin(me) })
   }
 
   if (c.ownerId !== me.id && !isAdmin(me)) return oops("无权操作此角色", 403)
@@ -95,8 +79,7 @@ export default async (req, context) => {
     if (typeof b.experimental === "boolean") c.experimental = b.experimental
     if (typeof b.code === "string") c.code = lockCode(b.code, c.experimental)
     else if (b.experimental === true) c.code = lockCode(c.code, true)
-    if (GRADE_KEYS.includes(b.grade)) c.grade = b.grade
-    if (DAMAGE.includes(b.damage)) c.damage = b.damage
+    if (b.sec !== undefined) c.sec = cleanSecrecy(b.sec, c.sec)
     if (typeof b.body === "string") c.body = b.body.slice(0, 20000)
     if (b.portraits !== undefined) {
       c.portraits = cleanPortraits(b.portraits)

@@ -1,6 +1,7 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
 import { currentUser, isAdmin } from "./_lib/auth.mjs"
+import { attachVersion, bumpActivity } from "./_lib/versioning.mjs"
 
 function url(k) { return k ? "/media/" + k : null }
 
@@ -21,14 +22,6 @@ function versionOut(v) {
     parentId: v.parentId, createdAt: v.createdAt, coverAssetId: v.coverAssetId,
     assets: (v.assets || []).map(assetOut)
   }
-}
-
-async function bumpActivity(scope, day) {
-  const act = store("activity")
-  const k = "act/" + scope + "/" + day
-  const cur = (await act.getJSON(k)) || { c: 0 }
-  cur.c += 1
-  await act.setJSON(k, cur)
 }
 
 export default async (req, context) => {
@@ -71,11 +64,11 @@ export default async (req, context) => {
     }
     await versions.setJSON("version/" + pid + "/" + id, v)
 
-    p.versionIds = [...(p.versionIds || []), id]
-    p.headVersionId = id
-    p.coverKey = cover ? (cover.previewKey || cover.posterKey || cover.originalKey) : p.coverKey
-    p.updatedAt = now
-    await projects.setJSON("project/" + pid, p)
+    await attachVersion(pid, {
+      id,
+      coverKey: cover ? (cover.previewKey || cover.posterKey || cover.originalKey) : null,
+      at: now
+    })
 
     const day = now.slice(0, 10)
     await bumpActivity("global", day)

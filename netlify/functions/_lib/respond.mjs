@@ -7,6 +7,21 @@ export function oops(message, status = 400, extra = {}) {
   return json({ error: message, ...extra }, { status })
 }
 
+/**
+ * The origin the Android build talks from. The APK carries the pages inside it
+ * and the WebView serves them over androidx's asset domain, so a request under
+ * that origin is the app rather than the website — which is what lets a session
+ * token be handed to the app and to nothing else.
+ *
+ * Exactly one entry, on purpose. Reflecting whatever Origin turns up would let
+ * any site on the internet make credentialed calls with a reader's session.
+ */
+export const NATIVE_ORIGINS = new Set(["https://appassets.androidplatform.net"])
+
+export function isNative(req) {
+  return NATIVE_ORIGINS.has(req.headers.get("origin") || "")
+}
+
 export function readCookies(req) {
   const raw = req.headers.get("cookie") || ""
   const jar = {}

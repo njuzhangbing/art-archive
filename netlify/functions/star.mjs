@@ -1,5 +1,5 @@
 import { json, oops } from "./_lib/respond.mjs"
-import { store } from "./_lib/store.mjs"
+import { store, updateJSON } from "./_lib/store.mjs"
 import { currentUser } from "./_lib/auth.mjs"
 
 export default async (req, context) => {
@@ -16,11 +16,27 @@ export default async (req, context) => {
   const stars = store("stars")
   const k = "star/" + pid + "/" + me.id
   const has = await stars.getJSON(k)
-  if (has) { await stars.delete(k); p.starCount = Math.max(0, (p.starCount || 0) - 1) }
-  else { await stars.setJSON(k, { at: new Date().toISOString() }); p.starCount = (p.starCount || 0) + 1 }
-  await projects.setJSON("project/" + pid, p)
 
-  return json({ starred: !has, starCount: p.starCount })
+  // The star itself is one blob per user, so only count it against the project
+  // once the write really flipped the state — a double-tapped button otherwise
+  // bumps the tally twice for the same star.
+  let delta = 0
+  if (has) {
+    await stars.delete(k)
+    delta = -1
+  } else {
+    const res = await stars.setJSONIf(k, { at: new Date().toISOString() }, { onlyIfNew: true })
+    delta = res.modified ? 1 : 0
+  }
+
+  const updated = delta === 0
+    ? p
+    : await updateJSON(projects, "project/" + pid, (doc) => {
+      doc.starCount = Math.max(0, (doc.starCount || 0) + delta)
+      return doc
+    })
+
+  return json({ starred: !has, starCount: (updated || p).starCount || 0 })
 }
 
 export const config = { path: "/api/projects/:id/star" }

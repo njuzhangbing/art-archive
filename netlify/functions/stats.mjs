@@ -1,26 +1,18 @@
 import { json, oops } from "./_lib/respond.mjs"
-import { store } from "./_lib/store.mjs"
+import { projectIndex, versionIndex, userIndex } from "./_lib/indexes.mjs"
 import { currentUser } from "./_lib/auth.mjs"
 
-const GRADE_KEYS = ["ALEPH", "WAW", "HE", "TETH", "ZAYIN"]
 
 export default async (req) => {
   const me = await currentUser(req)
   if (!me) return oops("未登录", 401)
 
-  const projects = store("projects")
-  const versions = store("versions")
-  const users = store("users")
+  const [pRows, vRows, uRows] = await Promise.all([
+    projectIndex.rows(), versionIndex.rows(), userIndex.rows()
+  ])
 
-  const pIdx = await projects.list({ prefix: "project/" })
-  const pRows = (await Promise.all(pIdx.blobs.map((b) => projects.getJSON(b.key)))).filter(Boolean)
-  const vIdx = await versions.list({ prefix: "version/" })
-  const vRows = (await Promise.all(vIdx.blobs.map((b) => versions.getJSON(b.key)))).filter(Boolean)
-  const uIdx = await users.list({ prefix: "user/" })
-
-  const grades = {}
-  GRADE_KEYS.forEach((k) => { grades[k] = 0 })
-  for (const p of pRows) if (grades[p.grade] != null) grades[p.grade]++
+  const grades = { PUBLIC: 0, SECRET: 0 }
+  for (const p of pRows) grades[p.sec === "SECRET" ? "SECRET" : "PUBLIC"]++
 
   const types = { image: 0, video: 0, psd: 0 }
   let layers = 0
@@ -36,15 +28,15 @@ export default async (req) => {
       if (v.authorId === me.id) myDaily[day] = (myDaily[day] || 0) + 1
     }
     if (v.authorHandle) contrib[v.authorHandle] = (contrib[v.authorHandle] || 0) + 1
-    for (const a of v.assets || []) {
+    layers += v.layers || 0
+    for (const kind of v.kinds || []) {
       files++
-      if (types[a.kind] != null) types[a.kind]++
-      if (a.kind === "psd") layers += (a.layers || []).length
+      if (types[kind] != null) types[kind]++
     }
   }
 
   const topProjects = pRows
-    .map((p) => ({ id: p.id, title: p.title, grade: p.grade, versions: (p.versionIds || []).length }))
+    .map((p) => ({ id: p.id, title: p.title, sec: p.sec, versions: p.versions }))
     .sort((a, b) => b.versions - a.versions)
     .slice(0, 6)
 
@@ -54,7 +46,7 @@ export default async (req) => {
     .slice(0, 6)
 
   return json({
-    totals: { projects: pRows.length, versions: vRows.length, members: uIdx.blobs.length, layers, files },
+    totals: { projects: pRows.length, versions: vRows.length, members: uRows.length, layers, files },
     grades, types, daily, myDaily, topProjects, topContributors
   })
 }

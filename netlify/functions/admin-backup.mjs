@@ -1,14 +1,16 @@
 import { json, oops } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
+import { isIndexKey } from "./_lib/collection.mjs"
 import { currentUser, isAdmin } from "./_lib/auth.mjs"
 
-const VAULTS = ["projects", "versions", "characters", "posts", "plans", "stars", "reports", "users", "invites", "activity"]
+const VAULTS = ["projects", "versions", "characters", "posts", "plans", "stars", "reports", "users", "activity"]
 
 async function dumpVault(name) {
   const s = store(name)
   const idx = await s.list({})
   const out = {}
   for (const b of idx.blobs) {
+    if (isIndexKey(b.key)) continue
     try { const v = await s.getJSON(b.key); if (v != null) out[b.key] = v } catch {}
   }
   return out
@@ -51,7 +53,7 @@ export default async (req) => {
       const s = store(name)
       let n = 0
       for (const [k, v] of Object.entries(bag)) {
-        if (v == null) continue
+        if (v == null || isIndexKey(k)) continue
         await s.setJSON(k, v)
         n++; wrote++
       }

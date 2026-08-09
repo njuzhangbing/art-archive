@@ -1,14 +1,7 @@
 import { json, oops, freshId } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
 import { currentUser, isAdmin } from "./_lib/auth.mjs"
-
-async function bumpActivity(scope, day) {
-  const act = store("activity")
-  const k = "act/" + scope + "/" + day
-  const cur = (await act.getJSON(k)) || { c: 0 }
-  cur.c += 1
-  await act.setJSON(k, cur)
-}
+import { attachVersion, bumpActivity } from "./_lib/versioning.mjs"
 
 export default async (req, context) => {
   if (req.method !== "POST") return oops("方法不允许", 405)
@@ -40,11 +33,11 @@ export default async (req, context) => {
   await versions.setJSON("version/" + pid + "/" + id, v)
 
   const cover = (target.assets || []).find((a) => a.id === target.coverAssetId) || (target.assets || [])[0]
-  p.versionIds = [...(p.versionIds || []), id]
-  p.headVersionId = id
-  p.coverKey = cover ? (cover.previewKey || cover.posterKey || cover.originalKey) : p.coverKey
-  p.updatedAt = now
-  await projects.setJSON("project/" + pid, p)
+  await attachVersion(pid, {
+    id,
+    coverKey: cover ? (cover.previewKey || cover.posterKey || cover.originalKey) : null,
+    at: now
+  })
 
   const day = now.slice(0, 10)
   await bumpActivity("global", day)
