@@ -21,9 +21,23 @@ try {
   process.exit(1)
 }
 
+/**
+ * Directories that stay on the server. The lexicon is 124MB of plates and
+ * scans — a separate work that the archive links out to, not part of the shell
+ * — and putting it in the APK would make the download eight times bigger for
+ * something most readers will never open.
+ */
+const SERVER_ONLY = new Set(["lexica"])
+
 await rm(path.dirname(to), { recursive: true, force: true })
 await mkdir(to, { recursive: true })
-await cp(from, to, { recursive: true })
+await cp(from, to, {
+  recursive: true,
+  filter: (src) => {
+    const rel = path.relative(from, src)
+    return !rel || !SERVER_ONLY.has(rel.split(path.sep)[0])
+  }
+})
 
 async function weigh(dir) {
   let n = 0, bytes = 0

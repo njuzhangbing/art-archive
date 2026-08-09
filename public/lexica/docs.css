@@ -1,0 +1,343 @@
+/* ==========================================================================
+   契丹小字 语法与拟音 — 文件入口
+
+   A file list. One line per document: name, size, two buttons. No prose, no
+   annotations, no embedded viewer — the reader came for the files.
+   ========================================================================== */
+
+body.is-docs {
+  display: block;
+  height: auto;
+  min-height: 100dvh;
+  background: var(--paper);
+}
+
+.masthead h1 .up {
+  color: var(--ink-3);
+  text-decoration: none;
+  font-weight: 400;
+}
+.masthead h1 .up:hover { color: var(--seal); }
+
+.docs {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 3rem 1.75rem 5rem;
+}
+
+.docs-loading { color: var(--ink-3); padding: 4rem 0; text-align: center; }
+
+/* ---------- groups ------------------------------------------------------- */
+
+.grp { margin: 0 0 3.25rem; }
+
+.grp > h2 {
+  margin: 0 0 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.grp > h2 .tag {
+  display: inline-block;
+  margin-right: 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--seal);
+  vertical-align: 0.1em;
+}
+
+/* ---------- one file ----------------------------------------------------- */
+
+.files { list-style: none; margin: 0; padding: 0; }
+
+/* Name takes the space, size sits in its own column so the numbers line up
+   down the page, buttons on the right. */
+.f {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: 1.25rem;
+  padding: 0.62rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.f:first-child { border-top: 1px solid var(--rule); }
+
+.f-name {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ink);
+  text-decoration: none;
+  min-width: 0;
+}
+
+a.f-name:hover { color: var(--seal); text-decoration: underline; text-underline-offset: 3px; }
+
+.f-size {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.f-acts { display: flex; gap: 0.4rem; }
+
+.f-acts .btn { padding: 0.2rem 0.62rem; font-size: 0.72rem; }
+
+.f.is-missing .f-name,
+.f.is-ext .f-name { color: var(--ink-3); }
+
+/* ---------- phones ------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .docs { padding: 1.4rem 1rem 3rem; }
+  .grp { margin-bottom: 2.4rem; }
+
+  .f {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.3rem 0.8rem;
+    padding: 0.6rem 0;
+  }
+  /* the name gets its own line; size and buttons share the next one */
+  .f-name,
+  button.f-name { grid-column: 1 / -1; font-size: 0.88rem; line-height: 1.5; }
+  .f-size { grid-column: 1; align-self: center; }
+  .f-acts { grid-column: 2; justify-self: end; gap: 0.5rem; }
+
+  /* thumb-sized: 0.2rem of padding is a mouse target, not a finger one */
+  .f-acts .btn {
+    min-height: 2.1rem;
+    min-width: 3.6rem;
+    padding: 0 0.7rem;
+    font-size: 0.78rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .masthead h1 { font-size: 0.92rem; }
+}
+
+/* ---------- viewer --------------------------------------------------------
+   A dialog rather than an inline panel: the page is a list, and a 194-page
+   scan opened inline would bury the rest of it.
+
+   Three rows in a column — tools, page, paging — so the stage takes exactly
+   the space left over. The old `height: calc(100% - 2.4rem)` guessed at the
+   bar's height and was wrong the moment the buttons wrapped. */
+
+.viewer {
+  display: none;
+  flex-direction: column;
+  width: min(96vw, 62rem);
+  height: min(94vh, 60rem);
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--rule-2);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.viewer[open] { display: flex; }
+
+.viewer::backdrop { background: rgba(10, 10, 12, 0.62); }
+
+.v-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 0 0 auto;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-2);
+}
+
+.v-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v-tools { display: flex; gap: 0.3rem; flex: 0 0 auto; }
+.v-tools .btn { padding: 0.15rem 0.5rem; font-size: 0.76rem; line-height: 1.5; }
+.v-tools .btn:disabled { opacity: 0.35; cursor: default; }
+
+/* the page itself, on the darker surface a light table would give it.
+   touch-action keeps panning native and leaves the pinch to docs.js — the
+   browser's own pinch would scale the dialog chrome along with the page. */
+.v-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  padding: 1.1rem;
+  background: var(--paper-3);
+  touch-action: pan-x pan-y;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* `margin: auto` and not `justify-content: center`: auto margins collapse to
+   zero once the page outgrows the stage, so a zoomed-in page starts at the
+   top-left and every corner stays scrollable. Centred layout would push the
+   left edge off into negative scroll, where it cannot be reached. */
+#v-canvas {
+  margin: auto;
+  flex: 0 0 auto;
+  background: #fff;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- paging bar --------------------------------------------------- */
+
+.v-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex: 0 0 auto;
+  padding: 0.4rem 0.75rem;
+  border-top: 1px solid var(--rule);
+  background: var(--paper-2);
+}
+
+.v-nav .btn {
+  padding: 0.1rem 0.85rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.v-nav .btn:disabled { opacity: 0.3; cursor: default; }
+
+.v-count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  color: var(--ink-2);
+}
+
+.v-of { color: var(--ink-3); }
+
+.v-num {
+  width: 3.2em;
+  padding: 0.15rem 0.2rem;
+  border: 1px solid var(--rule-2);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  text-align: center;
+}
+
+.v-num:focus { outline: none; border-color: var(--seal); }
+
+/* the live zoom percentage; hidden until the reader leaves a fit mode */
+.v-hint {
+  position: absolute;
+  right: 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
+.v-nav { position: relative; }
+
+/* the file name doubles as the open control, so it must not look like a button */
+button.f-name {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+button.f-name:hover,
+button.f-name:focus-visible {
+  color: var(--seal);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  outline: none;
+}
+
+/* ---------- viewer on phones ---------------------------------------------
+   Edge to edge, chrome pushed clear of the notch and the home indicator, and
+   every control at least a finger wide. The title goes: on a 375pt screen it
+   would eat the room the buttons need, and the reader just chose the file. */
+
+@media (max-width: 640px), (max-height: 480px) {
+  .viewer {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border: 0;
+  }
+
+  .v-bar {
+    gap: 0.4rem;
+    justify-content: flex-end;
+    padding: 0.4rem 0.6rem;
+    padding-top: max(0.4rem, env(safe-area-inset-top));
+    padding-right: max(0.6rem, env(safe-area-inset-right));
+    padding-left: max(0.6rem, env(safe-area-inset-left));
+  }
+
+  /* zoom on the left, leave/keep on the right — five evenly spread buttons
+     read as five unrelated things */
+  .v-tools { flex: 1 1 auto; gap: 0.3rem; }
+  .v-tools #v-dl { margin-left: auto; }
+  .v-tools .btn {
+    min-height: 2.2rem;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .v-stage { padding: 0.5rem; }
+
+  .v-nav {
+    gap: 1rem;
+    padding: 0.35rem 0.6rem;
+    padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
+  }
+  .v-nav .btn {
+    min-width: 3.4rem;
+    min-height: 2.3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    padding: 0 0.6rem;
+  }
+  .v-num { width: 3.6em; padding: 0.3rem 0.2rem; font-size: 0.9rem; }
+  .v-count { font-size: 0.82rem; }
+  .v-hint { right: 0.6rem; top: 0.25rem; }
+}
+
+/* Narrow only. Turned sideways there is room for the title, and dropping it
+   there would be throwing away space the reader has. */
+@media (max-width: 640px) {
+  .v-title { display: none; }
+}
+
+/* the page behind a full-screen viewer must not scroll under it on iOS */
+body.has-viewer { overflow: hidden; }

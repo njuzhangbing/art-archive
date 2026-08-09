@@ -1,0 +1,1677 @@
+/* ==========================================================================
+   西夏文　契丹小字 字詞檢索
+   Academic reference stylesheet — print-lexicon typography for the screen.
+
+   Design rules, kept deliberately narrow:
+     - one text serif, one UI sans, one mono. No display faces.
+     - one accent (朱砂 seal red), used only for numbering and citation marks.
+     - hairline rules instead of boxes, shadows or fills.
+     - no decorative motion. Transitions only on state the user just changed.
+   ========================================================================== */
+
+/* -- Script faces ---------------------------------------------------------
+   Subset to the codepoints actually present in the data (tools/build_fonts.py)
+   and served as WOFF2. Filenames are all-lowercase: the previous build
+   referenced mixed-case names that 404 on case-sensitive hosts.            */
+
+@font-face {
+  font-family: 'Tangut Serif';
+  src: url('fonts/tangut-serif.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+17000-187FF, U+18800-18AFF, U+18D00-18D08, U+16FE0-16FE4;
+}
+
+@font-face {
+  font-family: 'Khitan KSS';
+  src: url('fonts/khitan-kss.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+E000-E7F3;
+}
+
+@font-face {
+  font-family: 'Mongolian';
+  src: url('fonts/mongolian.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+1800-18AF, U+180B-180F;
+}
+
+/* Noto Serif Old Uyghur v1.005 (SIL OFL), subset to the 26 assigned codepoints.
+   A cursive joining script, so the subset keeps GSUB — init/medi/fina/rlig —
+   and the letters connect. The app still asks the Font Loading API whether the
+   face resolved and falls back to transliteration if it ever does not. */
+@font-face {
+  font-family: 'Old Uyghur';
+  src: url('fonts/olduyghur.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+10F70-10FAF;
+  /* The letters draw only ~0.30 em tall — the em box is sized for the long
+     connecting strokes, not for the letterforms — so at a shared font-size the
+     script reads about a third the height of the Latin beside it. 1.6× brings
+     the letter body up to Latin x-height, which is the usual target when two
+     scripts share a line. Line boxes are unaffected: every container that
+     carries script sets its own line-height. */
+  size-adjust: 160%;
+}
+
+@font-face {
+  font-family: 'Old Turkic';
+  src: url('fonts/oldturkic.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+10C00-10C48;
+}
+
+/* These three carry no headword — they appear inline, inside Sogdian corpus
+   forms and inside etymologies, which is precisely where the generic stacks
+   used to leave tofu. Sogdian and Manichaean join; Old Sogdian does not. */
+@font-face {
+  font-family: 'Sogdian';
+  src: url('fonts/sogdian.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+10F30-10F59;
+}
+
+@font-face {
+  font-family: 'Old Sogdian';
+  src: url('fonts/oldsogdian.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+10F00-10F27;
+}
+
+@font-face {
+  font-family: 'Manichaean';
+  src: url('fonts/manichaean.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+10AC0-10AF6;
+}
+
+:root {
+  --paper:      #fcfbf8;
+  --paper-2:    #f4f2ea;   /* recessed surfaces: index pane, note blocks */
+  --paper-3:    #eae7dc;   /* hover                                      */
+  --ink:        #17171a;
+  --ink-2:      #55555e;   /* secondary text                             */
+  --ink-3:      #8b8a91;   /* labels, metadata                           */
+  --rule:       #e4e0d5;
+  --rule-2:     #cbc5b5;
+  --seal:       #9c3024;   /* 朱砂 — numbering, citations, current item   */
+  --seal-soft:  rgba(156, 48, 36, 0.09);
+  --link:       #2f5d78;
+  --mark:       rgba(196, 158, 42, 0.30);   /* literal query match        */
+  --mark-2:     rgba(47, 93, 120, 0.14);    /* synonym-expansion match    */
+  --kw:         rgba(214, 222, 74, 0.62);   /* headword inside a quotation */
+  --kw-glow:    rgba(190, 200, 40, 0.55);
+
+  /* The script faces lead every stack. Their @font-face rules are
+     unicode-range scoped, so they only ever apply to Tangut / KSS codepoints —
+     which appear inline inside Chinese glosses and bibliography entries, not
+     just in headwords. */
+  --script: 'Tangut Serif', 'Khitan KSS', 'Old Turkic', 'Mongolian', 'Old Uyghur',
+            'Sogdian', 'Old Sogdian', 'Manichaean';
+  --serif: var(--script), 'Charis SIL', 'Doulos SIL', 'Gentium Book Plus',
+           'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman',
+           'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC', STSong, SimSun, serif;
+  --sans:  var(--script), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+           'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --mono:  var(--script), ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --tangut: 'Tangut Serif', 'Noto Serif Tangut', 'BabelStone Tangut', serif;
+  --khitan: 'Khitan KSS', 'CCAMC KSS Kaiti', serif;
+  --otk:    'Old Turkic', 'Noto Sans Old Turkic', 'Segoe UI Historic', sans-serif;
+  --mongol: 'Mongolian', 'Noto Sans Mongolian', 'Mongolian Baiti', sans-serif;
+  --ouy:    'Old Uyghur', 'Noto Serif Old Uyghur', 'Noto Sans Old Uyghur', serif;
+  --sog:    'Sogdian', 'Old Sogdian', 'Manichaean', 'Noto Sans Sogdian', serif;
+
+  --measure: 34rem;        /* comfortable reading measure for glosses */
+}
+
+:root[data-theme="dark"] {
+  --paper:     #131318;
+  --paper-2:   #1a1a20;
+  --paper-3:   #23232b;
+  --ink:       #e9e7e1;
+  --ink-2:     #a8a59d;
+  --ink-3:     #78766f;
+  --rule:      #2b2b33;
+  --rule-2:    #3e3e48;
+  --seal:      #d4705f;
+  --seal-soft: rgba(212, 112, 95, 0.12);
+  --link:      #83b3ce;
+  --mark:      rgba(196, 158, 42, 0.26);
+  --mark-2:    rgba(131, 179, 206, 0.18);
+  --kw:        rgba(206, 226, 96, 0.30);
+  --kw-glow:   rgba(206, 226, 96, 0.60);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:     #131318;
+    --paper-2:   #1a1a20;
+    --paper-3:   #23232b;
+    --ink:       #e9e7e1;
+    --ink-2:     #a8a59d;
+    --ink-3:     #78766f;
+    --rule:      #2b2b33;
+    --rule-2:    #3e3e48;
+    --seal:      #d4705f;
+    --seal-soft: rgba(212, 112, 95, 0.12);
+    --link:      #83b3ce;
+    --mark:      rgba(196, 158, 42, 0.26);
+    --mark-2:    rgba(131, 179, 206, 0.18);
+    --kw:        rgba(206, 226, 96, 0.30);
+    --kw-glow:   rgba(206, 226, 96, 0.60);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  height: 100dvh;
+}
+
+::selection { background: var(--seal-soft); }
+
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+/* Script-specific glyph faces, applied wherever a headword is rendered. */
+.glyph                { font-family: var(--tangut); }
+body.is-khitan .glyph    { font-family: var(--khitan); }
+body.is-oldturkic .glyph { font-family: var(--otk); }
+body.is-mongolian .glyph { font-family: var(--mongol); }
+body.is-olduyghur .glyph { font-family: var(--ouy); }
+body.is-sogdian .glyph   { font-family: var(--sog); }
+
+/* ==========================================================================
+   Masthead
+   ========================================================================== */
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.1rem 1.75rem 0.9rem;
+  border-bottom: 1px solid var(--rule-2);
+  flex-wrap: wrap;
+}
+
+.masthead h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.masthead h1 .en {
+  font-weight: 400;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--ink-3);
+  margin-left: 0.6rem;
+  letter-spacing: 0;
+}
+
+.masthead-sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  letter-spacing: 0.02em;
+}
+
+.masthead-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+}
+
+.masthead-nav .divider {
+  width: 1px;
+  height: 1.1em;
+  background: var(--rule-2);
+  margin: 0 0.5rem;
+}
+
+/* Script switch — two states of one control, not two buttons. */
+.script-switch {
+  display: inline-flex;
+  border: 1px solid var(--rule-2);
+}
+
+.script-switch button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.script-switch button + button { border-left: 1px solid var(--rule-2); }
+.script-switch button:hover    { background: var(--paper-3); }
+
+.script-switch button[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.linkbtn {
+  appearance: none;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink-2);
+  cursor: pointer;
+  padding: 0.3rem 0.4rem;
+  border-bottom: 1px solid transparent;
+}
+
+.linkbtn:hover { color: var(--ink); border-bottom-color: var(--rule-2); }
+
+/* ==========================================================================
+   Search
+   ========================================================================== */
+
+.search {
+  padding: 0.9rem 1.75rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.search-field {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  border-bottom: 1.5px solid var(--rule-2);
+  padding-bottom: 0.35rem;
+  transition: border-color 0.15s;
+}
+
+.search-field:focus-within { border-bottom-color: var(--seal); }
+
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  appearance: none;
+  border: 0;
+  background: none;
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  line-height: 1.4;
+  color: var(--ink);
+  padding: 0.1rem 0;
+}
+
+.search-field input:focus        { outline: none; }
+.search-field input::placeholder { color: var(--ink-3); font-size: 0.95rem; font-style: italic; }
+
+.search-status {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.search-clear {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  font-size: 1.1rem; line-height: 1; color: var(--ink-3); padding: 0 0.2rem;
+  visibility: hidden;
+}
+
+.search-clear.on   { visibility: visible; }
+.search-clear:hover { color: var(--seal); }
+
+/* Options row: modes on the left, toggles on the right. */
+.search-opts {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+  font-family: var(--sans);
+  font-size: 0.74rem;
+  color: var(--ink-3);
+  flex-wrap: wrap;
+}
+
+.opt-label {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  margin-right: 0.15rem;
+}
+
+.mode {
+  appearance: none;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink-2);
+  cursor: pointer;
+  padding: 0.15rem 0.35rem;
+  border-bottom: 1.5px solid transparent;
+}
+
+.mode:hover                { color: var(--ink); }
+.mode[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--seal); }
+
+.search-opts .spacer { flex: 1; }
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.check input { accent-color: var(--seal); margin: 0; }
+
+/* ==========================================================================
+   Two-pane body: index (left) + entry (right)
+   ========================================================================== */
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(19rem, 27rem) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.pane-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.5rem 1.1rem;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.pane-head .count { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+
+/* -- Index pane ---------------------------------------------------------- */
+
+.index-pane {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  border-right: 1px solid var(--rule-2);
+  background: var(--paper-2);
+  min-height: 0;
+}
+
+.index-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.index-item {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(2.6rem, auto) minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: baseline;
+  padding: 0.5rem 1.1rem;
+  border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+}
+
+.index-item:hover { background: var(--paper-3); }
+
+.index-item[aria-current="true"] {
+  background: var(--paper);
+  box-shadow: inset 3px 0 0 var(--seal);
+}
+
+.index-n {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.index-glyph {
+  font-size: 1.5rem;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+/* Multi-character Khitan words stack in two columns, the canonical
+   契丹小字 reading order: left→right within a row, then top→bottom. */
+.glyph-stack {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  justify-content: start;
+  gap: 0 0.12em;
+  line-height: 1.05;
+}
+
+.index-body { min-width: 0; }
+
+.index-gloss {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.index-gloss .sense-sep { color: var(--ink-3); padding: 0 0.15em; }
+
+/* A character with no gloss of its own, matched through the words it occurs
+   in — shown, but never dressed up as the character's own meaning. */
+.index-gloss.is-derived { color: var(--ink-2); font-style: italic; }
+
+.index-derived-mark {
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+  border: 1px solid var(--rule-2);
+  padding: 0 0.25em;
+  margin-right: 0.35em;
+  vertical-align: 0.12em;
+}
+
+.index-sub {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  color: var(--ink-3);
+  margin-top: 0.15rem;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.index-empty, .entry-empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.pane-foot {
+  padding: 0.4rem 1.1rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+mark, .match {
+  background: var(--mark);
+  color: inherit;
+  padding: 0 0.08em;
+}
+
+.match.syn { background: var(--mark-2); }
+
+/* ==========================================================================
+   Entry — the article. This is the part that has to read like a dictionary.
+   ========================================================================== */
+
+.entry-pane { overflow-y: auto; min-height: 0; }
+
+.entry {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 2rem 2.25rem 5rem;
+}
+
+.entry-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.6rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 2px solid var(--ink);
+}
+
+.entry-glyph {
+  font-size: 4.6rem;
+  line-height: 1;
+  flex: none;
+}
+
+.entry-glyph .glyph-stack { gap: 0 0.08em; }
+
+.entry-headword { padding-top: 0.35rem; min-width: 0; }
+
+.entry-headword h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.entry-headword h2 .en {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-3);
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+.entry-meta {
+  margin-top: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.1rem;
+}
+
+.entry-meta .k { color: var(--ink-3); }
+
+.entry-actions {
+  margin-top: 0.7rem;
+  display: flex;
+  gap: 0.4rem;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+}
+
+.btn {
+  appearance: none;
+  background: none;
+  border: 1px solid var(--rule-2);
+  color: var(--ink-2);
+  font: inherit;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.btn:hover  { border-color: var(--ink-2); color: var(--ink); }
+.btn kbd    { font-family: var(--mono); font-size: 0.9em; color: var(--ink-3); margin-left: 0.3em; }
+
+/* -- Blocks -------------------------------------------------------------- */
+
+.block { margin-top: 1.9rem; }
+
+.block > h3 {
+  margin: 0 0 0.7rem;
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.block > h3 .cn {
+  letter-spacing: 0.06em;
+  text-transform: none;
+  font-size: 0.78rem;
+  color: var(--ink-2);
+}
+
+/* -- Senses: numbered, hanging indent, tag + citation --------------------- */
+
+.senses {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: var(--measure);
+}
+
+.sense {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.sense-n {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--seal);
+  text-align: right;
+  padding-top: 0.22em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sense-tag {
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.07em;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  padding: 0.05em 0.35em;
+  margin-left: 0.45em;
+  vertical-align: 0.12em;
+  white-space: nowrap;
+}
+
+/* Superscript citation marker → footnote at the foot of the entry. */
+.cite {
+  font-family: var(--mono);
+  font-size: 0.62em;
+  color: var(--seal);
+  cursor: pointer;
+  vertical-align: super;
+  line-height: 0;
+  margin-left: 0.15em;
+  padding: 0 0.1em;
+  border: 0;
+  background: none;
+}
+
+.cite:hover              { background: var(--seal-soft); }
+.cite + .cite::before    { content: ","; color: var(--ink-3); }
+
+.no-gloss {
+  font-style: italic;
+  color: var(--ink-3);
+  font-size: 0.92rem;
+  max-width: var(--measure);
+}
+
+.no-gloss strong { color: var(--ink-2); font-style: normal; font-weight: 600; }
+
+/* -- Reconstructions: a definition list, each attributed ------------------ */
+
+.recon {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.15rem 1.3rem;
+  align-items: baseline;
+}
+
+.recon dt {
+  font-family: var(--sans);
+  font-size: 0.74rem;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.recon dt .attrib {
+  display: block;
+  font-size: 0.66rem;
+  color: var(--ink-3);
+}
+
+.recon dd {
+  margin: 0;
+  font-size: 1.08rem;
+  letter-spacing: 0.01em;
+  padding-bottom: 0.4rem;
+}
+
+.recon dd.empty { color: var(--ink-3); font-style: italic; font-size: 0.88rem; }
+
+/* -- Related words / composition ------------------------------------------ */
+
+.rel-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.rel-item {
+  appearance: none;
+  background: none;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 3rem;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.rel-item:hover { border-color: var(--ink-2); background: var(--paper-2); }
+
+.rel-glyph { font-size: 1.5rem; line-height: 1.1; color: var(--ink); }
+
+.rel-sub {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--ink-3);
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* -- Unicode table -------------------------------------------------------- */
+
+.uni {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.2rem 1.3rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+}
+
+.uni dt { color: var(--ink-3); font-size: 0.72rem; white-space: nowrap; }
+.uni dd { margin: 0; }
+
+.copyable       { cursor: pointer; border-bottom: 1px dotted var(--rule-2); }
+.copyable:hover { border-bottom-color: var(--seal); }
+
+/* -- Footnotes ------------------------------------------------------------ */
+
+.entry-notes {
+  margin-top: 2.4rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule-2);
+}
+
+.entry-notes h3 {
+  margin: 0 0 0.5rem;
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+.notes-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.notes-list li {
+  display: grid;
+  grid-template-columns: 2.1rem minmax(0, 1fr);
+  gap: 0.4rem;
+  padding: 0.16rem 0;
+}
+
+.notes-list .note-n {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--seal);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.notes-list li.flash { background: var(--seal-soft); }
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.colophon-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.4rem 1.75rem;
+  border-top: 1px solid var(--rule-2);
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  color: var(--ink-3);
+  flex-wrap: wrap;
+}
+
+.colophon-bar .spacer { flex: 1; }
+.colophon-bar em      { font-style: normal; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+/* ==========================================================================
+   Dialogs — 凡例 and the bibliography
+   ========================================================================== */
+
+dialog {
+  border: 1px solid var(--rule-2);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0;
+  max-width: 52rem;
+  width: calc(100vw - 3rem);
+  max-height: 82dvh;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.16);
+}
+
+dialog::backdrop { background: rgba(20, 20, 24, 0.42); }
+
+.dlg-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1rem 1.5rem 0.7rem;
+  border-bottom: 1px solid var(--rule-2);
+  position: sticky;
+  top: 0;
+  background: var(--paper);
+}
+
+.dlg-head h2     { margin: 0; font-size: 1rem; font-weight: 600; }
+.dlg-head .en    { font-style: italic; color: var(--ink-3); font-size: 0.8rem; margin-left: 0.5rem; font-weight: 400; }
+
+.dlg-body { padding: 1.2rem 1.5rem 2rem; overflow-y: auto; }
+
+.dlg-body h3 {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 1.6rem 0 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.dlg-body h3:first-child { margin-top: 0; }
+.dlg-body p  { margin: 0.5rem 0; max-width: var(--measure); font-size: 0.92rem; }
+.dlg-body dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.25rem 1.2rem; margin: 0.5rem 0; font-size: 0.9rem; }
+.dlg-body dt { color: var(--ink-3); font-family: var(--sans); font-size: 0.78rem; white-space: nowrap; }
+.dlg-body dd { margin: 0; }
+
+.refs-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.refs-list li {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  gap: 0.5rem;
+  padding: 0.22rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.refs-list .ref-n {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--seal);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.refs-list li.flash { background: var(--seal-soft); }
+
+/* ==========================================================================
+   Loading / responsive / motion
+   ========================================================================== */
+
+.loading {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .workspace     { grid-template-columns: 1fr; grid-template-rows: 15rem minmax(0, 1fr); }
+  .index-pane    { border-right: 0; border-bottom: 1px solid var(--rule-2); }
+  .entry         { padding: 1.5rem 1.25rem 4rem; }
+  .entry-glyph   { font-size: 3.4rem; }
+  .masthead      { padding: 0.85rem 1.1rem 0.7rem; }
+  .search        { padding: 0.75rem 1.1rem 0.6rem; }
+  .colophon-bar  { padding: 0.4rem 1.1rem; }
+}
+
+/* ---------- phones --------------------------------------------------------
+   812 px of height, and the header was taking 700 of them: the six section
+   tabs had wrapped 西夏文 onto three lines each because the row ran out of
+   width, which turned a 40 px strip into a 200 px block and left three rows of
+   index visible. The tabs scroll sideways instead, and everything the header
+   repeats in two languages is dropped — the page is already in Chinese. */
+
+@media (max-width: 560px) {
+  /* The scrolling tab strip must scroll INSIDE itself. Without these two the
+     strip widens its parent instead, the whole page gains a horizontal scroll,
+     and the masthead ends up half off the left edge — a flex child defaults to
+     min-width:auto, so it refuses to be narrower than its content. */
+  html, body { overflow-x: hidden; }
+  /* The grid item itself is what widens — `min-width: auto` on a grid child
+     means "at least as wide as my content", so the masthead grew to 494 px in a
+     375 px frame and every row under it shifted left with it. Constraining the
+     children was not enough; the row has to be allowed to be narrow. */
+  body > * { min-width: 0; max-width: 100%; }
+  .masthead { overflow: hidden; }
+  .masthead-nav { width: 100%; }
+
+  .masthead { padding: 0.6rem 0.9rem 0.5rem; }
+  .masthead .en-sub,
+  .masthead-sub { display: none; }        /* the bilingual restatement */
+  .masthead h1 { font-size: 1.02rem; }
+
+  /* Scrolling the whole nav put 凡例, 契丹资料 and 引用文献 at x = 425, 455 and
+     528 in a 346 px row: off the edge, in a strip with nothing to say it
+     scrolled. Only the six tabs scroll now — they are a segmented control and
+     want to stay one strip — and the three links wrap to a row of their own,
+     where they are simply visible. */
+  .masthead-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.5rem;
+    padding-bottom: 0.2rem;
+  }
+
+  .masthead-nav .script-switch {
+    flex: 1 0 100%;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* six tabs need ~385 px and never fit, so the fade is always honest: it
+       is the only thing telling a thumb there is more strip to the right */
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+  }
+  .masthead-nav .script-switch::-webkit-scrollbar { display: none; }
+  .masthead-nav .divider { display: none; }
+
+  .masthead-nav [role="tab"] {
+    flex: none;
+    white-space: nowrap;                  /* 西夏文 on one line, not three */
+    padding: 0.32rem 0.6rem;
+    font-size: 0.82rem;
+  }
+
+  .search { padding: 0.6rem 0.9rem 0.45rem; }
+  .search input { font-size: 1rem; }      /* 16 px: anything less zooms on iOS */
+
+  .search-opts { gap: 0.45rem 0.6rem; font-size: 0.76rem; }
+  .search-opts .mode { padding: 0.35rem 0.5rem; }
+
+  /* 17 × 18 px, and it is the only way to empty the field */
+  .search-clear {
+    min-width: 2.2rem;
+    min-height: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+  .search-opts .spacer { display: none; }   /* no room to push the checks right */
+
+  /* Index and entry split the height evenly rather than 15 rem / rest: on a
+     phone the entry is what you came for, but an index of three rows is not
+     usable either. */
+  .workspace { grid-template-rows: 38vh minmax(0, 1fr); }
+  .entry { padding: 1.1rem 0.9rem 3.5rem; }
+  .entry-glyph { font-size: 2.8rem; }
+
+  /* 复制条目引文 / 复制链接 were breaking mid-word into two lines */
+  .btn, .say { white-space: nowrap; }
+  .btn { padding: 0.3rem 0.6rem; font-size: 0.74rem; }
+  .btn kbd { display: none; }
+
+  .colophon-bar { padding: 0.35rem 0.9rem; font-size: 0.62rem; }
+
+  /* Notch and home indicator. `viewport-fit=cover` lets the layout run under
+     both, which is what the full-bleed map wants — but the type has to step
+     back out. env() is 0 on every device without them, and on any page that
+     does not opt into cover, so this is free elsewhere. */
+  .masthead {
+    padding-top: calc(0.6rem + env(safe-area-inset-top));
+    padding-left: max(0.9rem, env(safe-area-inset-left));
+    padding-right: max(0.9rem, env(safe-area-inset-right));
+  }
+  .colophon-bar {
+    padding-bottom: calc(0.35rem + env(safe-area-inset-bottom));
+    padding-left: max(0.9rem, env(safe-area-inset-left));
+    padding-right: max(0.9rem, env(safe-area-inset-right));
+  }
+
+  /* 44 px is the smallest thing a thumb hits reliably; 0.3rem of padding gave
+     31 px, which is a cursor target that happens to be tappable. */
+  .btn {
+    min-height: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+}
+/* 句读's phone rules are NOT here — see the end of the file. The .sent-*
+   base rules are declared at line 1457 onwards, after this block, so at equal
+   specificity they win and anything written here is dead. */
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+/* Marks a dataset that is loaded but not yet fully structured. */
+.data-state:not(:empty) {
+  color: var(--seal);
+  border: 1px solid var(--seal);
+  padding: 0 0.4em;
+  font-size: 0.9em;
+}
+
+/* Bilingual labels: the English sits off the Chinese on whitespace alone,
+   no separator glyph. */
+.en-sub {
+  margin-left: 0.7rem;
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-3);
+}
+
+/* ==========================================================================
+   Old Turkic — a lexicon entry rather than a character entry, so it carries
+   morphology, relations, a descendant tree, attested quotations and etymology.
+   ========================================================================== */
+
+/* The Chinese gloss leads; the source's English sits under it so a reader can
+   check the translation without leaving the entry. */
+.sense-en {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--ink-3);
+  font-style: italic;
+  line-height: 1.45;
+  margin-top: 0.1rem;
+}
+
+/* -- forms -- */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.3rem 1.2rem;
+}
+
+.form-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.15rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.form-t {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  color: var(--ink-3);
+  min-width: 4.5rem;
+}
+
+.form-row .glyph { font-size: 1.15rem; }
+
+/* -- relations -- */
+.rel-line {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: start;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.rel-kind {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  color: var(--ink-3);
+  padding-top: 0.35rem;
+}
+
+.rel-items { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+.rel-word {
+  appearance: none;
+  background: none;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  padding: 0.15rem 0.45rem;
+  font-size: 1.2rem;
+  line-height: 1.3;
+  color: var(--ink);
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.rel-word:hover { border-color: var(--ink-2); background: var(--paper-2); }
+
+/* -- descendant tree: indent carries the generation depth -- */
+.desc-tree { display: grid; gap: 0.1rem; }
+
+.desc-row {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: baseline;
+  padding: 0.22rem 0 0.22rem calc((var(--depth) - 1) * 1.1rem);
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.9rem;
+}
+
+.desc-row[style*="--depth:1"] { border-bottom-color: var(--rule-2); }
+.desc-lang { font-family: var(--sans); font-size: 0.72rem; color: var(--ink-2); }
+.desc-word i { color: var(--ink-3); font-size: 0.85em; }
+.desc-note  { font-family: var(--sans); font-size: 0.66rem; color: var(--ink-3); text-align: right; }
+
+/* -- attestations: the inscription line, its transliteration, then translation -- */
+.quotes { display: grid; gap: 1.1rem; }
+
+.quote {
+  margin: 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--rule-2);
+}
+
+.quote-otk {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  word-break: break-all;
+  margin-bottom: 0.2rem;
+}
+
+.quote-tr {
+  font-size: 0.85rem;
+  color: var(--ink-2);
+  word-break: break-all;
+  margin-bottom: 0.25rem;
+}
+
+.quote-zh { font-size: 0.98rem; line-height: 1.6; }
+.quote-en { font-size: 0.82rem; color: var(--ink-3); font-style: italic; line-height: 1.5; margin-top: 0.15rem; }
+
+.quote figcaption {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  color: var(--ink-3);
+  margin-top: 0.35rem;
+}
+
+/* -- etymology: rendered Chinese first, source prose folded away -- */
+.ety-zh { margin: 0; font-size: 0.98rem; line-height: 1.65; max-width: var(--measure); }
+
+.ety-src { margin-top: 0.5rem; }
+
+.ety-src summary {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  color: var(--ink-3);
+  cursor: pointer;
+  list-style: none;
+}
+
+.ety-src summary::before { content: "▸ "; }
+.ety-src[open] summary::before { content: "▾ "; }
+.ety-src summary:hover { color: var(--ink-2); }
+
+.ety-src p {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+  line-height: 1.55;
+  max-width: var(--measure);
+}
+
+/* ==========================================================================
+   Traditional Mongolian — written top-to-bottom, columns running left to right.
+   Setting it horizontally would misrepresent the script, so the block uses real
+   vertical typesetting; the subset font keeps GSUB so the cursive joining forms
+   still shape correctly.
+   ========================================================================== */
+
+.mn-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.4rem;
+}
+
+.mn-vertical {
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  font-family: var(--mongol);
+  font-size: 1.9rem;
+  line-height: 1.35;
+  max-height: 16rem;
+  padding: 0.2rem 0.1rem;
+  border-left: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+}
+
+.mn-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding-top: 0.3rem;
+}
+
+.mn-prov {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  color: var(--ink-3);
+  border: 1px solid var(--rule-2);
+  padding: 0.1rem 0.4rem;
+}
+
+/* The index cell shows the traditional spelling beside the Cyrillic headword. */
+.index-mn {
+  font-family: var(--mongol);
+  writing-mode: vertical-lr;
+  font-size: 1rem;
+  line-height: 1.2;
+  max-height: 3.2rem;
+  color: var(--ink-2);
+  margin-left: 0.4rem;
+}
+
+/* ==========================================================================
+   Headword inside a quotation — a highlighter stroke that draws itself.
+
+   The one place motion earns its keep: an attestation is only useful once you
+   have found the word in it, and in an unfamiliar script that is genuinely
+   hard. The sweep does the finding for you. It runs once per entry, staggered
+   down the list, then settles and stays put.
+   ========================================================================== */
+
+.kw {
+  background:
+    linear-gradient(transparent 6%, var(--kw) 6%, var(--kw) 94%, transparent 94%)
+    no-repeat 0 0 / 0% 100%;
+  color: inherit;
+  padding: 0 0.06em;
+  border-radius: 1px;
+  animation: kw-sweep 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(0.18s + var(--i, 0) * 0.09s);
+}
+
+/* The glyph line is the one people scan first, so it also gets a brief bloom. */
+.quote-otk .kw {
+  animation: kw-sweep 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+             kw-bloom 1.5s ease-out;
+  animation-delay: calc(0.18s + var(--i, 0) * 0.09s);
+}
+
+@keyframes kw-sweep {
+  from { background-size: 0% 100%; }
+  to   { background-size: 100% 100%; }
+}
+
+@keyframes kw-bloom {
+  0%, 25% { text-shadow: none; }
+  45%     { text-shadow: 0 0 10px var(--kw-glow), 0 0 3px var(--kw-glow); }
+  100%    { text-shadow: none; }
+}
+
+/* Reduced motion: keep the highlight, drop the drawing. */
+@media (prefers-reduced-motion: reduce) {
+  .kw, .quote-otk .kw {
+    animation: none;
+    background-size: 100% 100%;
+  }
+}
+
+/* -- Transliteration-led headword (Old Uyghur) --------------------------------
+   316 of 423 Old Uyghur headwords are in a script most systems have no font
+   for. The Latin transliteration therefore leads, at headword size, with the
+   script form beneath it — readable whether or not the face is installed. */
+
+.head-lead {
+  font-family: var(--serif);
+  font-size: 2.6rem;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+.head-script {
+  font-size: 2.1rem;
+  line-height: 1.3;
+  color: var(--ink-2);
+  margin-top: 0.35rem;
+}
+
+/* -- Concordance lines -------------------------------------------------------
+   Denser than an attestation block: many short lines, each a citation. */
+
+.quote.conc { padding-left: 0.75rem; }
+
+.quote.conc .quote-tr {
+  font-size: 0.95rem;
+  color: var(--ink);
+  margin-bottom: 0.1rem;
+  word-break: normal;
+}
+
+.quote.conc figcaption { margin-top: 0.1rem; font-size: 0.66rem; }
+.quotes:has(.conc) { gap: 0.7rem; }
+
+/* Transliteration standing in for a script with no available face. */
+.glyph-sub { font-family: var(--serif); font-size: 0.82em; color: var(--ink-2); }
+
+.head-nofont {
+  margin-top: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-3);
+}
+
+.head-nofont i {
+  font-style: normal;
+  border: 1px solid var(--rule-2);
+  padding: 0 0.3em;
+  margin-left: 0.3em;
+}
+
+/* The masthead title is also the way back to the landing page. Styled as text,
+   not as a link — an underlined heading would read as a mistake. */
+.home-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 200ms ease;
+}
+.home-link:hover,
+.home-link:focus-visible { border-bottom-color: currentColor; }
+
+/* -- Reading a reconstruction aloud ----------------------------------------
+   The button sits inside the value, so it must not look like part of it. */
+
+.recon dd { position: relative; }
+
+.say {
+  margin-left: 0.7rem;
+  padding: 0.06rem 0.5rem;
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  background: none;
+  border: 1px solid var(--rule-2);
+  border-radius: 1px;
+  cursor: pointer;
+  vertical-align: 0.12em;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.say:hover:not(:disabled),
+.say:focus-visible { color: var(--seal); border-color: var(--seal); background: var(--seal-soft); }
+.say:disabled { opacity: 0.55; cursor: progress; }
+
+.recon-note {
+  margin: 0.9rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.8;
+  color: var(--ink-3);
+  border-left: 1px solid var(--rule-2);
+  padding-left: 0.8rem;
+}
+
+/* ==========================================================================
+   句读 — whole-sentence reading
+   The sentence is set vertically, right to left. Word boundaries are BREAKS in
+   the column, not marks inserted into it: a reader should still be able to read
+   the sentence as a sentence, with the parse visible in the margin the way a
+   commentator would write it.
+   ========================================================================== */
+
+/* Exactly one of .workspace / .sentence occupies the third grid row, so the
+   body's four-row template holds either way. */
+.sentence { display: none; min-height: 0; overflow: hidden; }
+
+body.is-sentence .sentence { display: block; }
+body.is-sentence .workspace { display: none; }
+
+.sent-idle,
+.sent-loading {
+  padding: 3rem 2rem;
+  color: var(--ink-3);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.sent-pane {
+  display: grid;
+  grid-template-columns: minmax(11rem, 22rem) minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+/* ---------- the column --------------------------------------------------- */
+
+.sent-column {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  padding: 2.4rem 2rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--paper-2);
+  border-right: 1px solid var(--rule);
+  font-family: var(--serif);
+  font-size: 1.55rem;
+  line-height: 2.5;          /* room for the ruby beside each column */
+  letter-spacing: 0.06em;
+}
+
+/* One word. The gap between words IS the segmentation — nothing is inserted
+   into the text itself. */
+.tok {
+  display: inline-block;
+  position: relative;
+  margin-block-end: 0.52em;        /* the cut */
+  padding: 0.1em 0.06em;
+  cursor: pointer;
+  border-inline-start: 2px solid transparent;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.tok:last-child { margin-block-end: 0; }
+
+.tok:hover,
+.tok:focus-visible { background: var(--seal-soft); outline: none; }
+.tok.is-on { border-inline-start-color: var(--seal); background: var(--seal-soft); }
+
+/* function words and punctuation are not looked up, and say so by receding */
+.tok.is-skip { opacity: 0.42; cursor: default; }
+.tok.is-skip:hover { background: none; }
+
+/* a content word with no match is not a failure, but it is worth seeing */
+.tok.is-empty .tok-w { color: var(--ink-2); }
+
+/* The interlinear gloss. In vertical writing `ruby-position: over` puts the
+   annotation to the RIGHT of the column, which is where a commentator writes
+   it — and unlike an absolutely-positioned label it travels with the text when
+   the column wraps. */
+.tok ruby {
+  ruby-position: over;
+  ruby-align: center;
+}
+
+.tok rt {
+  font-family: var(--sans);
+  font-size: 0.36em;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  text-orientation: upright;
+  white-space: nowrap;
+}
+
+.tok.is-empty > ruby { color: var(--ink-2); }
+
+/* ---------- the side ----------------------------------------------------- */
+
+.sent-side {
+  overflow-y: auto;
+  padding: 1.8rem 2rem 4rem;
+}
+
+.sent-note {
+  margin: 0 0 1.6rem;
+  padding-left: 0.85rem;
+  border-left: 1px solid var(--rule-2);
+  font-size: 0.74rem;
+  line-height: 1.85;
+  color: var(--ink-3);
+  max-width: var(--measure);
+}
+
+.sent-card {
+  margin: 0 0 1.5rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--rule);
+  scroll-margin-top: 1rem;
+}
+
+.sent-card.is-on { background: var(--seal-soft); box-shadow: 0 0 0 0.6rem var(--seal-soft); }
+
+.sent-card h4 {
+  margin: 0 0 0.7rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.sc-pos {
+  margin-left: 0.6rem;
+  font-family: var(--sans);
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+
+.sent-hits { list-style: none; margin: 0; padding: 0; }
+
+.sent-hit {
+  display: grid;
+  grid-template-columns: minmax(2.4rem, auto) minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 0.42rem 0.2rem;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--rule-2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.sent-hit:hover,
+.sent-hit:focus-visible { background: var(--paper-2); outline: none; }
+
+.sh-glyph { font-size: 1.3rem; line-height: 1.2; }
+.sh-gloss { font-size: 0.84rem; color: var(--ink-2); }
+
+.sh-why {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.sc-none,
+.sc-more {
+  margin: 0.3rem 0 0;
+  font-size: 0.74rem;
+  color: var(--ink-3);
+}
+
+@media (max-width: 780px) {
+  .sent-pane { grid-template-columns: 1fr; grid-template-rows: 44% 1fr; }
+  .sent-column { border-right: 0; border-bottom: 1px solid var(--rule); }
+}
+
+/* per-character fallback: labelled, and set apart from a whole-word match */
+.sc-fallback {
+  margin: 0 0 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+}
+
+/* ---------- 句读 on phones ------------------------------------------------
+   These have to sit at the end of the file. They were written in the ≤560 px
+   block near line 959, which is before every .sent-* base rule above — same
+   specificity, earlier position, so the desktop values won and the column
+   stayed at 1.55rem inside 2.4rem of padding on a 375 px screen.
+
+   The column and the cards stack, and the column takes the smaller share: it
+   is the parse, the cards are the answer. */
+
+@media (max-width: 560px) {
+  /* 朗读 sits at 0.06rem of padding — a 15 px target next to the 龚煌城
+     reconstruction. Its base rule is above, so this has to be here too. */
+  .say {
+    min-height: 1.9rem;
+    padding: 0.1rem 0.7rem;
+    margin-left: 0.5rem;
+    font-size: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .sent-pane { grid-template-columns: 1fr; grid-template-rows: 40% 1fr; }
+
+  /* 1.55rem with 2.4rem of padding fitted three characters in a column, so a
+     seventeen-character sentence ran five columns sideways. */
+  .sent-column {
+    padding: 1rem 0.85rem;
+    font-size: 1.12rem;
+    line-height: 2.3;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sent-side { padding: 1.1rem 0.9rem 3rem; }
+  .sent-note { font-size: 0.68rem; line-height: 1.75; }
+  .sent-hit { grid-template-columns: minmax(2rem, auto) minmax(0, 1fr); }
+  .sh-why { display: none; }            /* the reason moves into the card head */
+}
+
+.sent-char {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+  margin-bottom: 0.5rem;
+}
+
+.sch-c {
+  font-size: 1rem;
+  color: var(--ink-2);
+  text-align: center;
+  border-right: 1px solid var(--rule-2);
+  padding-top: 0.4rem;
+}
+
+.tok-n.is-char { color: var(--ink-3); }

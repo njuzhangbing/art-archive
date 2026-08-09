@@ -1,0 +1,774 @@
+/* ==========================================================================
+   内亚古文字字词检索 — landing page
+   A single black-and-white satellite plate under a projector gate. Hovering a
+   period on the timeline flies the camera to the landscape that script was
+   written in.
+
+   Every artefact here is one a real print or projector produces: grain that
+   moves because each frame is a different piece of film, gate weave because the
+   registration pin has play in it, halation because light scatters back off the
+   base, flicker because the shutter is not perfectly even. Nothing is baked
+   into the images — the plates are clean, so the effects can move.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Tangut Serif';
+  src: url('fonts/tangut-serif.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+17000-187FF;
+}
+@font-face {
+  font-family: 'Khitan KSS';
+  src: url('fonts/khitan-kss.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+E000-E7F3;
+}
+@font-face {
+  font-family: 'Old Turkic';
+  src: url('fonts/oldturkic.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+10C00-10C48;
+}
+@font-face {
+  font-family: 'Mongolian';
+  src: url('fonts/mongolian.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+1800-18AF, U+180B-180F;
+}
+@font-face {
+  font-family: 'Old Uyghur';
+  src: url('fonts/olduyghur.woff2') format('woff2');
+  font-display: swap;
+  unicode-range: U+10F70-10FAF;
+  size-adjust: 160%;      /* see styles.css — the letters draw ~0.30 em tall */
+}
+
+:root {
+  --stock:   #0b0b0c;      /* the black the print never quite reaches */
+  --light:   #e8e4d9;      /* projected white, warm */
+  --dim:     #9a968c;
+  --faint:   #8b877e;      /* over a bright plate #5f5c56 vanished */
+  --klein:   #002fa7;      /* International Klein Blue */
+  --klein-lit: #3157e0;    /* IKB is very dark against a night plate —
+                              the lit tint is what actually reads as a glow */
+  --serif: 'Tangut Serif', 'Khitan KSS', 'Old Turkic', 'Mongolian', 'Old Uyghur',
+           'Charis SIL', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia,
+           'Songti SC', 'Source Han Serif SC', STSong, serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --dive: 1700ms;                              /* one camera move */
+  --ease: cubic-bezier(0.42, 0.02, 0.16, 1);   /* ease in, long ease out —
+                                                  a camera has mass */
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--stock);
+  color: var(--light);
+  font-family: var(--serif);
+  overflow: hidden;
+}
+
+/* ---------- the gate ------------------------------------------------------
+   Gate weave: the frame is never quite where it was. Sub-pixel, irregular,
+   and applied to the image only — captions that weave read as a bug. */
+
+.gate {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--stock);
+}
+
+.frame {
+  position: absolute;
+  inset: -1.5%;                      /* room to weave into */
+  animation: weave 6.1s steps(1, end) infinite;
+}
+
+@keyframes weave {
+  0%   { transform: translate3d(0,      0,      0) }
+  8%   { transform: translate3d(0.10%, -0.07%, 0) }
+  17%  { transform: translate3d(-0.06%, 0.09%, 0) }
+  26%  { transform: translate3d(0.04%,  0.03%, 0) }
+  35%  { transform: translate3d(-0.11%,-0.04%, 0) }
+  44%  { transform: translate3d(0.07%,  0.10%, 0) }
+  53%  { transform: translate3d(-0.03%,-0.09%, 0) }
+  62%  { transform: translate3d(0.09%,  0.02%, 0) }
+  71%  { transform: translate3d(-0.08%, 0.06%, 0) }
+  80%  { transform: translate3d(0.02%, -0.10%, 0) }
+  89%  { transform: translate3d(-0.05%, 0.04%, 0) }
+  100% { transform: translate3d(0,      0,      0) }
+}
+
+/* ---------- the world ------------------------------------------------------
+   A resolution pyramid under one camera. Every layer is transformed from the
+   same geographic state, so any two layers agree exactly on where the ground
+   is; the only thing that differs between them is how much detail they hold.
+   Fading a sharper one in is therefore invisible as a movement — it reads as
+   the picture simply coming into focus, which is what a descent should look
+   like. The transform is written per frame from JS, so there is no CSS
+   transition on it: interpolating between two transforms would give a straight
+   line through scale-space, and a camera does not fly that way. */
+
+.world {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+}
+
+.world .layer {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: cover;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  /* sharpness cross-fade only; position is never animated by CSS */
+  transition: opacity 700ms ease;
+}
+
+/* The accumulation buffer. Each sample is the camera a few frames ago, so the
+   smear traces the real path and is exactly as long as the camera is fast.
+   At rest the history is constant, the samples land on the picture, and they
+   contribute nothing — which is why nothing is blurred while standing still. */
+.world .layer.trail {
+  transition: opacity 240ms ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Plain classes. `calc(0.26 / var(--i))` is invalid CSS — a calc() divisor has
+   to be a number the parser can see — and an attribute selector on the inline
+   style is at the mercy of how the browser serialises it. Neither worked. */
+.world.is-flying .trail-1 { opacity: 0.26; }
+.world.is-flying .trail-2 { opacity: 0.15; }
+.world.is-flying .trail-3 { opacity: 0.09; }
+
+/* ---------- the dissolve --------------------------------------------------
+   Coarser than the running grain and far stronger, but only for the ~900 ms of
+   a hand-off. It peaks slightly BEFORE the image changes, so the eye is already
+   full of noise when the swap happens and never sees an edge. */
+
+.dissolve {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-size: 260px 260px;
+  opacity: 0;
+  mix-blend-mode: overlay;
+}
+
+.gate.is-splicing .dissolve {
+  animation: grain 0.5s steps(9, end) infinite, splice 940ms cubic-bezier(0.3,0,0.4,1);
+}
+
+@keyframes splice {
+  0%   { opacity: 0;    }
+  40%  { opacity: 0.30; }
+  60%  { opacity: 0.26; }
+  100% { opacity: 0;    }
+}
+
+/* the gate flares as the splice goes through — a print change always does */
+.gate.is-splicing .halation { animation: flare 940ms cubic-bezier(0.3,0,0.4,1); }
+
+@keyframes flare {
+  0%, 100% { opacity: 1;   }
+  45%      { opacity: 1.9; }
+  65%      { opacity: 1.6; }
+}
+
+.scratches { overflow: hidden; }
+
+.scratches i {
+  position: absolute;
+  top: -6%;
+  height: 112%;
+  width: 1px;
+  background: linear-gradient(to bottom,
+    transparent, rgba(255,252,240,0.5) 12%, rgba(255,252,240,0.14) 45%,
+    rgba(255,252,240,0.42) 72%, transparent);
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+
+/* Each scratch lives a few seconds, drifts, and is replaced — a scratch that
+   sat still would read as a rendering seam. */
+@keyframes scratch {
+  0%        { opacity: 0;    transform: translateX(0)     scaleY(1) }
+  6%        { opacity: 0.85; }
+  40%       { opacity: 0.5;  transform: translateX(3px)   scaleY(1.02) }
+  72%       { opacity: 0.7;  transform: translateX(-2px)  scaleY(0.98) }
+  92%, 100% { opacity: 0;    transform: translateX(1px)   scaleY(1) }
+}
+
+.scratches u {                    /* dust and hairs on the gate */
+  position: absolute;
+  display: block;
+  background: rgba(250,246,232,0.55);
+  border-radius: 40%;
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: speck 0.28s steps(2, end) infinite;
+}
+
+@keyframes speck { 0%, 60% { opacity: 0 } 61%, 100% { opacity: 0.8 } }
+
+.vignette {
+  background:
+    radial-gradient(124% 100% at 50% 46%,
+      transparent 46%, rgba(6,6,7,0.26) 78%, rgba(6,6,7,0.62) 100%);
+}
+
+/* Shutter flicker: never regular, never more than a few percent. */
+.flicker {
+  background: rgba(0,0,0,0.9);
+  opacity: 0;
+  animation: flick 4.3s linear infinite;
+}
+
+@keyframes flick {
+  0%, 100% { opacity: 0.013 }
+  7%       { opacity: 0.026 }
+  13%      { opacity: 0.008 }
+  22%      { opacity: 0.032 }
+  31%      { opacity: 0.012 }
+  47%      { opacity: 0.022 }
+  55%      { opacity: 0.006 }
+  68%      { opacity: 0.028 }
+  79%      { opacity: 0.010 }
+  91%      { opacity: 0.020 }
+}
+
+/* ---------- scrims --------------------------------------------------------
+   The plate under the type changes every time the camera moves, and some of
+   these landscapes are near-white. Text shadows alone cannot carry pale type
+   over a pale desert, so each block of text sits on its own gradient — dark
+   where the words are, gone within a screen-width. */
+
+.scrim {
+  position: fixed;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.scrim.left {
+  left: 0; top: 0; bottom: 0;
+  width: min(46rem, 62vw);
+  background: linear-gradient(to right,
+    rgba(6,6,8,0.80) 0%, rgba(6,6,8,0.62) 26%, rgba(6,6,8,0.28) 58%, transparent 100%);
+}
+
+.scrim.top {
+  left: 0; right: 0; top: 0;
+  height: clamp(7rem, 22vh, 13rem);
+  background: linear-gradient(to bottom,
+    rgba(6,6,8,0.70) 0%, rgba(6,6,8,0.30) 55%, transparent 100%);
+}
+
+.scrim.bottom {
+  left: 0; right: 0; bottom: 0;
+  height: clamp(8rem, 26vh, 15rem);
+  background: linear-gradient(to top,
+    rgba(6,6,8,0.78) 0%, rgba(6,6,8,0.40) 45%, transparent 100%);
+}
+
+/* ---------- masthead ------------------------------------------------------ */
+
+.masthead {
+  position: fixed;
+  top: clamp(1.6rem, 4vh, 3.2rem);
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.masthead h1 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.6vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;               /* letter-spacing pads the right edge */
+  color: var(--light);
+  text-shadow: 0 0 26px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.9);
+}
+
+.masthead .en {
+  margin: 0.5rem 0 0;
+  font-size: clamp(0.62rem, 1vw, 0.76rem);
+  font-style: italic;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: var(--dim);
+  text-shadow: 0 0 18px rgba(0,0,0,0.9);
+}
+
+/* ---------- timeline ------------------------------------------------------ */
+
+.timeline {
+  position: fixed;
+  left: clamp(1.4rem, 4.5vw, 4.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  width: min(23rem, 40vw);
+  height: min(30rem, 62vh);
+}
+
+.timeline .axis {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom,
+    transparent, rgba(232,228,217,0.30) 8%, rgba(232,228,217,0.30) 92%, transparent);
+}
+
+.timeline ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  position: relative;
+}
+
+/* Each entry is placed by century and given the height of its attested span,
+   so the 8th-to-13th-century crowding is data, not layout. */
+.timeline .links {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 60px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.timeline .link {
+  fill: none;
+  stroke: rgba(232,228,217,0.22);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transition: stroke 420ms ease;
+}
+
+.timeline .link.is-on { stroke: rgba(49,87,224,0.95); }
+
+/* top is the label's centre line, set in px by layoutTimeline() */
+.tl-item {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  transform: translateY(-50%);
+}
+
+.tl-item .bar {
+  position: absolute;
+  left: -1px;
+  width: 3px;
+  background: rgba(232,228,217,0.26);
+  transition: background 420ms ease, width 420ms ease, box-shadow 420ms ease;
+}
+
+.tl-item .hit {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin-left: 3.4rem;
+  padding: 0.5rem 0.9rem 0.5rem 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+  opacity: 0.78;
+  transition: opacity 420ms ease, transform 620ms var(--ease);
+  transform: translateX(0);
+}
+
+.tl-item .era {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  white-space: nowrap;
+  flex: none;
+  transition: color 420ms ease;
+}
+
+.tl-item .name {
+  font-size: clamp(1.0rem, 1.7vw, 1.35rem);
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
+  white-space: nowrap;
+  text-shadow: 0 0 22px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.95);
+}
+
+/* The script's own name for itself, in its own script. Verified against the
+   corpora — nothing here is transliterated back by hand. */
+.tl-item .self {
+  font-size: clamp(0.9rem, 1.5vw, 1.15rem);
+  color: var(--dim);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-0.5rem);
+  transition: opacity 520ms ease, transform 620ms var(--ease);
+  text-shadow: 0 0 20px rgba(0,0,0,0.95);
+}
+
+.tl-item.is-on .hit   { opacity: 1; transform: translateX(0.55rem); }
+.tl-item.is-on .era   { color: var(--dim); }
+.tl-item.is-on .self  { opacity: 1; transform: translateX(0); }
+.tl-item.is-on .bar   {
+  width: 5px;
+  background: var(--klein-lit);
+  box-shadow: 0 0 20px rgba(0,47,167,0.95), 0 0 6px rgba(49,87,224,0.9);
+}
+
+.tl-item .hit:focus-visible {
+  outline: 1px solid var(--light);
+  outline-offset: 4px;
+}
+
+/* ---------- reconnaissance overlay ----------------------------------------
+   Sections of the frame re-printed as contour, and points called out with what
+   is actually known about them. The contour inside a window is the SAME plate
+   the world is showing, under the SAME camera transform — the window is only a
+   hole cut in it. That is why panning does not slide the contour against the
+   terrain underneath: they are the same picture, twice. */
+
+.recon {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* A single hairline vanishes: over a dark ridge it is too dark, over a bright
+   desert too bright. Two strokes — a dark one outside a light one — read on
+   anything, which is why every reticle and every map key is drawn that way. */
+.win {
+  position: absolute;
+  overflow: hidden;
+  outline: 1px solid rgba(6,6,8,0.75);
+  outline-offset: 0;
+  border: 1px solid rgba(120,150,255,0.92);
+  box-shadow: 0 0 0 2px rgba(6,6,8,0.5), 0 0 30px rgba(0,47,167,0.55);
+  background: #05070f;
+  opacity: 0;
+  transition: opacity 620ms ease;
+}
+
+.win.is-on { opacity: 1; }
+
+/* Tinted, not just re-printed. A grey contour print over a grey landscape is
+   invisible on a dark plate however heavy the border — the eye has no cue to
+   separate them. Mapping the window to the blue the timeline already uses says
+   "this is an instrument reading, not the photograph" without a caption, and
+   works on a snow-bright desert and a dark forested ridge alike. */
+.win-inner {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: cover;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  filter: brightness(1.9) contrast(1.4) sepia(1) hue-rotate(178deg) saturate(4);
+}
+
+/* corner ticks, the way a reticle is drawn */
+.win::before,
+.win::after {
+  content: '';
+  position: absolute;
+  width: 13px; height: 13px;
+  border: 2px solid rgba(150,175,255,0.95);
+  filter: drop-shadow(0 0 3px rgba(6,6,8,0.95));
+}
+.win::before { left: -1px;  top: -1px;    border-right: 0; border-bottom: 0; }
+.win::after  { right: -1px; bottom: -1px; border-left: 0;  border-top: 0; }
+
+.win-tag {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  color: rgba(150,175,255,0.96);
+  white-space: nowrap;
+  text-shadow: 0 0 4px rgba(6,6,8,1), 0 0 10px rgba(6,6,8,0.95);
+}
+
+.pin {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+.pin.is-on { opacity: 1; }
+
+.pin i {
+  position: absolute;
+  left: -5px; top: -5px;
+  width: 10px; height: 10px;
+  border: 1px solid rgba(232,228,217,0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(6,6,8,0.9);
+}
+.pin i::before,
+.pin i::after {
+  content: '';
+  position: absolute;
+  background: rgba(232,228,217,0.85);
+}
+.pin i::before { left: 4px; top: -6px; width: 1px; height: 5px; }
+.pin i::after  { left: 4px; bottom: -6px; width: 1px; height: 5px; }
+
+.pin b {
+  position: absolute;
+  left: 12px;
+  top: -7px;
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.09em;
+  color: rgba(240,238,232,0.95);
+  white-space: nowrap;
+  text-shadow: 0 0 3px rgba(6,6,8,1), 0 0 10px rgba(6,6,8,1), 0 1px 2px rgba(6,6,8,1);
+}
+.pin.flip b { left: auto; right: 12px; text-align: right; }
+
+/* ---------- standing name -------------------------------------------------
+   The script's own name, set vertically down the right edge. Vertical setting
+   is not decoration here — Mongolian is written this way, and the others are
+   being given the same courtesy. */
+
+.standing {
+  position: fixed;
+  right: clamp(1.1rem, 3.4vw, 3.4rem);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: clamp(1.5rem, 3.4vw, 2.9rem);
+  letter-spacing: 0.34em;
+  line-height: 1;
+  color: var(--light);
+  text-shadow: 0 0 26px rgba(6,6,8,0.98), 0 0 8px rgba(6,6,8,1);
+  pointer-events: none;
+  max-height: 78vh;
+  opacity: 0;
+  transition: opacity 620ms ease, letter-spacing 900ms var(--ease);
+}
+
+.standing.is-on { opacity: 1; }
+
+/* The script's own name for itself runs underneath, smaller. Old Uyghur and
+   Mongolian are genuinely vertical scripts; the rest are laid out upright
+   character by character, which is how Chinese typography sets them. */
+.standing .self {
+  display: block;
+  margin-right: 0.5em;
+  font-size: 0.42em;
+  letter-spacing: 0.2em;
+  color: var(--dim);
+  text-orientation: mixed;
+}
+
+/* ---------- readout ------------------------------------------------------- */
+
+.readout {
+  position: fixed;
+  right: clamp(1.2rem, 3.6vw, 3.6rem);
+  bottom: clamp(1.4rem, 4vh, 3rem);
+  z-index: 6;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  line-height: 2;
+  letter-spacing: 0.11em;
+  color: var(--dim);
+  text-shadow: 0 0 12px rgba(6,6,8,0.98);
+  pointer-events: none;
+}
+
+.readout .big {
+  display: block;
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  color: var(--light);
+  margin-bottom: 0.15rem;
+}
+
+.readout .dim { color: var(--faint); }
+
+/* ---------- colophon ------------------------------------------------------ */
+
+.colophon {
+  position: fixed;
+  left: clamp(1.4rem, 4.5vw, 4.5rem);
+  bottom: clamp(1.4rem, 4vh, 3rem);
+  z-index: 6;
+}
+
+.enter {
+  font-size: 0.84rem;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: var(--light);
+  text-decoration: none;
+  padding: 0.62rem 1.9rem;
+  border: 1px solid rgba(232,228,217,0.32);
+  background: rgba(8,8,9,0.32);
+  backdrop-filter: blur(2px);
+  transition: background 320ms ease, border-color 320ms ease, letter-spacing 420ms ease;
+}
+
+.enter:hover,
+.enter:focus-visible {
+  background: rgba(232,228,217,0.1);
+  border-color: rgba(232,228,217,0.7);
+  letter-spacing: 0.38em;
+  text-indent: 0.38em;
+}
+
+
+
+/* ---------- narrow screens ------------------------------------------------ */
+
+/* ---------- phones --------------------------------------------------------
+   Upright, the frame is taller than it is wide and every fixed corner competes
+   for the same few hundred pixels. The map keeps the middle; the type is moved
+   out to the edges it can have to itself. */
+
+@media (max-width: 720px), (max-height: 520px) {
+  .masthead {
+    top: 1.1rem;
+    width: 100%;
+    padding: 0 0.8rem;
+  }
+  /* letter-spacing at 0.42em is what pushed 内亚古文字字词检索 onto two lines
+     in a 375 px frame; the title is a single line or it is not a masthead */
+  .masthead h1 {
+    font-size: clamp(0.98rem, 4.6vw, 1.5rem);
+    letter-spacing: 0.16em;
+    text-indent: 0.16em;
+    white-space: nowrap;
+  }
+  .masthead .en { font-size: 0.56rem; letter-spacing: 0.12em; text-indent: 0.12em; }
+
+  /* the timeline keeps the left edge but gives up the connector column */
+  .timeline {
+    left: 0.9rem;
+    width: min(17rem, 62vw);
+    height: min(24rem, 46vh);
+    top: 46%;
+  }
+  .timeline .links { display: none; }
+  .tl-item .hit { margin-left: 1.1rem; gap: 0.5rem; }
+  .tl-item .era { font-size: 0.54rem; }
+  .tl-item .name { font-size: 1.02rem; letter-spacing: 0.1em; text-indent: 0.1em; }
+  .tl-item .self { display: none; }
+
+  /* the standing name shrinks and hugs the right edge */
+  .standing {
+    right: 0.5rem;
+    font-size: 1.35rem;
+    letter-spacing: 0.2em;
+    max-height: 46vh;
+  }
+  .standing .self { display: none; }
+
+  /* The readout ran off the right edge and landed on the button. Full width,
+     left-aligned under the timeline, and the two metadata lines drop: on a
+     phone the coordinates are the part worth keeping. */
+  .readout {
+    right: auto;
+    left: 0.9rem;
+    bottom: 4.6rem;
+    text-align: left;
+    font-size: 0.5rem;
+    line-height: 1.9;
+    letter-spacing: 0.06em;
+  }
+  .readout .big { font-size: 0.66rem; letter-spacing: 0.08em; }
+  .readout .dim:last-of-type { display: none; }
+
+  .colophon { left: 0.9rem; bottom: 1.1rem; }
+  .enter { font-size: 0.72rem; padding: 0.5rem 1.2rem; letter-spacing: 0.2em; text-indent: 0.2em; }
+
+  /* The map is meant to run under the notch and the home indicator — that is
+     the point of viewport-fit=cover. The type is not: every fixed corner steps
+     back by whatever the device reserves, and by nothing at all on a device
+     that reserves nothing. */
+  .masthead  { top: calc(1.1rem + env(safe-area-inset-top)); }
+  .timeline  { left: max(0.9rem, env(safe-area-inset-left)); }
+  .standing  { right: max(0.5rem, env(safe-area-inset-right)); }
+  .readout   { left: max(0.9rem, env(safe-area-inset-left));
+               bottom: calc(4.6rem + env(safe-area-inset-bottom)); }
+  .colophon  { left: max(0.9rem, env(safe-area-inset-left));
+               bottom: calc(1.1rem + env(safe-area-inset-bottom)); }
+
+  /* Fewer, smaller reconnaissance windows: they are an accent, and at this size
+     three of them would be the picture. */
+  .win-tag { font-size: 0.46rem; letter-spacing: 0.08em; }
+  .pin b { font-size: 0.48rem; }
+
+  /* One motion-blur sample instead of three. A phone GPU compositing four
+     full-screen layers through a blur drops frames, and the smear is the first
+     thing to suffer — better one clean sample than three stuttering ones. */
+  .world.is-flying .trail-2,
+  .world.is-flying .trail-3 { opacity: 0; }
+}
+
+/* Landscape phone: the timeline and the standing name would meet in the middle */
+@media (max-height: 460px) {
+  .timeline { height: 62vh; top: 52%; }
+  .masthead { top: calc(0.5rem + env(safe-area-inset-top)); }
+  .readout { bottom: calc(0.7rem + env(safe-area-inset-bottom)); font-size: 0.46rem; }
+  .readout .dim { display: none; }
+  .colophon {
+    bottom: calc(0.7rem + env(safe-area-inset-bottom));
+    left: auto;
+    right: max(0.9rem, env(safe-area-inset-right));
+  }
+}
+
+/* ---------- reduced motion ------------------------------------------------
+   Keep the picture and the grade; drop everything that moves. The dive becomes
+   a cut, which is still a change of shot. */
+
+@media (prefers-reduced-motion: reduce) {
+  .frame,
+  .grain,
+  .flicker,
+  .scratches i,
+  .scratches u { animation: none !important; }
+  .gate.is-breathing .frame { animation: none !important; }
+  .gate.is-splicing .dissolve,
+  .gate.is-splicing .halation { animation: none !important; }
+  .world .layer,
+  .detail {
+    transition: opacity 200ms linear !important;
+    filter: none !important;
+  }
+  .world .layer.trail { opacity: 0 !important; }
+  .grain { opacity: 0.3; }
+  .flicker { opacity: 0.03; }
+}
