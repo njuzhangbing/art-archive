@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANGUT.DECRYPT // 西夏文檢字</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;300;400;500;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body>
+
+<!-- BOOT OVERLAY -->
+<div id="boot-overlay">
+  <div class="boot-inner">
+    <div class="boot-logo">
+      <span class="bracket">[</span>
+      <span class="boot-text">SINOXENIC<i>.</i>DECRYPT</span>
+      <span class="bracket">]</span>
+    </div>
+    <div class="boot-bar"><div class="boot-bar-fill"></div></div>
+    <div class="boot-log" id="boot-log"></div>
+  </div>
+</div>
+
+<!-- BACKGROUND GRID -->
+<div class="grid-bg" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- HEADER -->
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="bracket lg">[</span>
+    <div class="brand">
+      <span class="brand-title">SINOXENIC<i>.</i>DECRYPT</span>
+      <span class="brand-ver">v3.0.0/2026.05</span>
+    </div>
+    <span class="bracket lg">]</span>
+
+    <div class="script-switch" role="tablist" aria-label="Script selector">
+      <button class="script-tab active" data-script="tangut" role="tab">
+        <span class="script-tab-cjk">西夏</span>
+        <span class="script-tab-en">TANGUT</span>
+      </button>
+      <button class="script-tab" data-script="khitan" role="tab">
+        <span class="script-tab-cjk">契丹</span>
+        <span class="script-tab-en">KHITAN</span>
+      </button>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="meta-item"><i class="meta-label">DB</i><em id="entries-count">----</em></span>
+    <span class="meta-item"><i class="meta-label">RANGE</i><em id="range-meta">U+17000–U+187FF</em></span>
+    <span class="meta-item"><i class="meta-label">UNI</i><em>15.1</em></span>
+    <span class="meta-item status-online"><i class="dot"></i><em>ONLINE</em></span>
+  </div>
+</header>
+
+<!-- MAIN LAYOUT -->
+<main class="layout">
+
+  <!-- SEARCH PANEL -->
+  <section class="panel search-panel" data-panel="search">
+    <div class="panel-head">
+      <div class="panel-head-l">
+        <span class="corner">┌─</span>
+        <span class="panel-label">// QUERY_INTERFACE</span>
+      </div>
+      <div class="panel-head-r">
+        <span class="panel-id">QI · 01</span>
+        <span class="corner">─┐</span>
+      </div>
+    </div>
+
+    <div class="search-row">
+      <span class="prompt">»</span>
+      <input id="q" type="text" spellcheck="false"
+             placeholder="INPUT  //  中文  ·  𗀀  ·  pronunciation"
+             autocomplete="off" autofocus>
+      <span class="search-stats" id="search-stats">AWAITING INPUT</span>
+      <span class="clear-btn" id="clear-btn" title="CLEAR">×</span>
+    </div>
+
+    <div class="mode-tabs">
+      <span class="tabs-label">MODE&nbsp;»&nbsp;</span>
+      <button class="tab active" data-mode="auto" title="自動偵測類型 · Automatically detect query type">AUTO</button>
+      <button class="tab" data-mode="cn" title="中文檢索 · Search by Chinese meaning (Trad/Simp)">CHN</button>
+      <button class="tab" data-mode="tng" title="按字檢索 · Search by Tangut/Khitan character">TANGUT</button>
+      <button class="tab" data-mode="phon" title="拟音檢索 · Search by phonetic reconstruction">PHONETIC</button>
+      <span class="tabs-spacer"></span>
+      <label class="toggle" title="模糊匹配 · enable similar-meaning fuzzy match">
+        <input type="checkbox" id="fuzzy-toggle" checked>
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-label">FUZZY</span>
+      </label>
+      <label class="toggle" title="自動複製選中字 · auto-copy selected char to clipboard">
+        <input type="checkbox" id="autocopy-toggle">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-label">AUTOCOPY</span>
+      </label>
+    </div>
+
+    <div class="panel-foot">
+      <span class="corner">└─</span>
+      <span class="hints">
+        <kbd>↑</kbd><kbd>↓</kbd> 切換
+        <kbd>Enter</kbd> 複製
+        <kbd>Esc</kbd> 清空
+        <kbd>/</kbd> 聚焦
+      </span>
+      <span class="corner">─┘</span>
+    </div>
+  </section>
+
+  <!-- TWO COLUMN BODY -->
+  <div class="body-cols">
+
+    <!-- RESULT LIST -->
+    <section class="panel results-panel" data-panel="results">
+      <div class="panel-head">
+        <div class="panel-head-l">
+          <span class="corner">┌─</span>
+          <span class="panel-label">// HIT_LIST</span>
+        </div>
+        <div class="panel-head-r">
+          <span class="result-count"><i class="meta-label">N</i><em id="result-count">0000</em></span>
+          <span class="panel-id">RX · 02</span>
+          <span class="corner">─┐</span>
+        </div>
+      </div>
+
+      <div class="results-list" id="results" tabindex="0"></div>
+
+      <div class="panel-foot">
+        <span class="corner">└─</span>
+        <span class="ranks-meta"><span id="rank-meta">no query active</span></span>
+        <span class="corner">─┘</span>
+      </div>
+    </section>
+
+    <!-- DETAIL VIEW -->
+    <section class="panel detail-panel" data-panel="detail">
+      <div class="panel-head">
+        <div class="panel-head-l">
+          <span class="corner">┌─</span>
+          <span class="panel-label">// CHAR_DETAIL</span>
+        </div>
+        <div class="panel-head-r">
+          <span class="panel-id" id="detail-id">CD · 03</span>
+          <span class="corner">─┐</span>
+        </div>
+      </div>
+
+      <div class="detail-content" id="detail">
+        <div class="detail-empty">
+          <div class="empty-hex">
+            <svg viewBox="0 0 240 240" class="empty-hex-svg">
+              <polygon points="120,8 232,72 232,168 120,232 8,168 8,72"
+                       fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="6 4"/>
+              <polygon points="120,40 200,84 200,156 120,200 40,156 40,84"
+                       fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            </svg>
+            <div class="empty-text">
+              <span class="bracket-l">◄</span>
+              <span>NO TARGET<br><i>SELECT FROM HIT LIST</i></span>
+              <span class="bracket-r">►</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-foot">
+        <span class="corner">└─</span>
+        <span class="detail-foot-meta" id="detail-foot">stand by</span>
+        <span class="corner">─┘</span>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- STATUSBAR -->
+<footer class="statusbar">
+  <span class="status-block"><i class="dot live"></i><span id="status-text">SYS BOOT OK</span></span>
+  <span class="status-block">PROC <em id="proc-time">0.00</em> ms</span>
+  <span class="status-block">MEM <em id="mem-load">000</em>/6051</span>
+  <span class="status-block">MODE <em id="mode-display">AUTO</em></span>
+  <span class="spacer"></span>
+  <span class="status-block">CLK <em id="clock">--:--:--</em></span>
+  <span class="status-block">SEC <em>NJU · zhang.b</em></span>
+</footer>
+
+<!-- COPY FLASH -->
+<div id="copy-flash" class="copy-flash">
+  <span class="bracket">[</span>
+  <span class="copy-flash-text">COPIED</span>
+  <span class="copy-flash-payload" id="copy-flash-payload"></span>
+  <span class="bracket">]</span>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tooltip" class="tooltip"></div>
+
+<script src="tc-sc.js?v=4"></script>
+<script src="pinyin.js?v=4"></script>
+<script src="cilin-syn.js?v=4"></script>
+<script src="data.js?v=4"></script>
+<script src="khitan.js?v=4"></script>
+<script src="app.js?v=4"></script>
+</body>
+</html>

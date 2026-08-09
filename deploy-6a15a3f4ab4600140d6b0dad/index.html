@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>内亚古文字字词检索 — Inner Asian Scripts &amp; Lexica</title>
+<meta name="description" content="西夏文、契丹小字、古突厥语、蒙古语、回鹘文、粟特语字词检索。">
+<link rel="stylesheet" href="home.css?v=9">
+<script>
+/* This file used to be the search tool, so links of the form …/#tangut are
+   already out in the world. Forward them before anything paints — landing on a
+   map when you asked for a headword is a broken link with extra steps. */
+(function () {
+  var k = location.hash.replace('#', '');
+  if (/^(tangut|khitan|oldturkic|mongolian|olduyghur|sogdian)/.test(k)) {
+    location.replace('lexica.html#' + k);
+  }
+})();
+</script>
+</head>
+<body>
+
+<!-- The projector gate. Everything inside weaves; the UI outside it does not. -->
+<div class="gate" id="gate">
+  <div class="frame" id="frame">
+    <!-- The world: one continuous map the camera travels across. `lead` is the
+         sharp copy; the `trail` layers are the same image running a few tens of
+         milliseconds behind it, which is how a game accumulates motion blur —
+         the smear follows the real path instead of being a uniform blur. -->
+    <div class="world" id="world">
+      <!-- one .layer per plate is inserted here, coarsest at the back -->
+      <div class="layer trail trail-1"></div>
+      <div class="layer trail trail-2"></div>
+      <div class="layer trail trail-3"></div>
+    </div>
+
+    <!-- The dissolve. A splice in a worn print does not cut cleanly: the grain
+         swells, the frame flares, and the new shot is already there when the
+         noise falls away. Running the hand-off inside that is what stops it
+         reading as two images being swapped. -->
+    <div class="dissolve" aria-hidden="true" id="dissolve"></div>
+
+    <!-- Reconnaissance overlay: a few sections of the frame re-printed as
+         contour, and a few points called out with what is actually known about
+         them. It sits above the world and below the film artefacts, so the
+         grain and the vignette fall on it too. -->
+    <div class="recon" id="recon" aria-hidden="true"></div>
+
+    <!-- film artefacts, in the order light would meet them -->
+    <div class="halation" aria-hidden="true"></div>
+    <div class="grain"    aria-hidden="true" id="grain"></div>
+    <div class="scratches" aria-hidden="true" id="scratches"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="flicker"  aria-hidden="true"></div>
+  </div>
+</div>
+
+<div class="scrim top"    aria-hidden="true"></div>
+<div class="scrim left"   aria-hidden="true"></div>
+<div class="scrim bottom" aria-hidden="true"></div>
+
+<header class="masthead">
+  <h1>内亚古文字字词检索</h1>
+  <p class="en">Inner Asian Scripts &amp; Lexica</p>
+</header>
+
+<!-- The timeline. Bars are positioned from real attested ranges, so the
+     clustering between the 8th and 13th centuries is the actual history. -->
+<nav class="timeline" id="timeline" aria-label="按文字与年代选择">
+  <div class="axis" aria-hidden="true" id="axis"></div>
+  <svg class="links" id="tl-links" aria-hidden="true" preserveAspectRatio="none"></svg>
+  <ul id="tl-list"></ul>
+</nav>
+
+<!-- The name of whatever the camera is looking at, set vertically down the
+     right-hand edge — the one place on the frame the map never needs. -->
+<div class="standing" id="standing" aria-hidden="true"></div>
+
+<!-- Everything here is measured, not dressed up: the centre of frame in degrees,
+     which plate is carrying the picture and at what ground resolution, and the
+     imagery it was cut from. -->
+<div class="readout" id="readout" aria-live="polite"></div>
+
+<footer class="colophon">
+  <a class="enter" href="lexica.html">进入检索<span aria-hidden="true"> →</span></a>
+</footer>
+
+<script src="home.js?v=10"></script>
+</body>
+</html>

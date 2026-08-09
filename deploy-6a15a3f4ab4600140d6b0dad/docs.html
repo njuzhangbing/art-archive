@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>契丹小字 语法与拟音 — 文件</title>
+<meta name="description" content="契丹小字语法与拟音研究的开放获取文献，可阅览与下载。">
+<link rel="stylesheet" href="styles.css?v=41">
+<link rel="stylesheet" href="docs.css?v=7">
+</head>
+<body class="is-docs">
+
+<header class="masthead">
+  <h1><a class="up" href="index.html">内亚古文字字词检索</a>　契丹小字 语法与拟音</h1>
+  <nav class="masthead-nav">
+    <a class="btn" href="lexica.html#khitan">契丹小字检索</a>
+    <button class="btn" type="button" id="theme">切换明暗</button>
+  </nav>
+</header>
+
+<main class="docs" id="docs">
+  <p class="docs-loading">读取中…</p>
+</main>
+
+<!-- The viewer. pdf.js rasterises to this canvas, so it does not depend on the
+     browser shipping a PDF component — which this preview pane does not.
+     Paging sits in a bar of its own at the foot, where a thumb can reach it. -->
+<dialog class="viewer" id="viewer" aria-label="阅览">
+  <div class="v-bar">
+    <span class="v-title" id="v-title"></span>
+    <span class="v-tools">
+      <button class="btn" type="button" id="v-fit">适宽</button>
+      <button class="btn" type="button" id="v-out" aria-label="缩小">−</button>
+      <button class="btn" type="button" id="v-in" aria-label="放大">＋</button>
+      <a class="btn" id="v-dl" href="#" download>下载</a>
+      <button class="btn" type="button" id="v-close" aria-label="关闭">×</button>
+    </span>
+  </div>
+
+  <div class="v-stage" id="v-stage"><canvas id="v-canvas"></canvas></div>
+
+  <div class="v-nav">
+    <button class="btn" type="button" id="v-prev" aria-label="上一页">‹</button>
+    <span class="v-count">
+      <input class="v-num" id="v-page" type="text" inputmode="numeric"
+             pattern="[0-9]*" aria-label="页码" value="1">
+      <span class="v-of">/</span>
+      <span id="v-total">—</span>
+    </span>
+    <button class="btn" type="button" id="v-next" aria-label="下一页">›</button>
+    <span class="v-hint" id="v-status"></span>
+  </div>
+</dialog>
+
+<footer class="colophon-bar">
+  <span id="tally"></span>
+  <span class="spacer"></span>
+  <span class="dim">镜像自各开放获取来源，版权归原作者与原出版方</span>
+</footer>
+
+<script type="module" src="docs.js?v=7"></script>
+</body>
+</html>

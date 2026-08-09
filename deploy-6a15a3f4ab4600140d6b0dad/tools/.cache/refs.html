@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Language" content="zh-CN" />
+<meta name="robots" content="all" />
+<meta name="author" content="ccamc.co" />
+<meta name="author" content="ccamc.org" />
+<meta name="description" content="古今文字集成,集古今文字释義、字形更革、音韻演變之大全" />
+<meta content="中文,汉语,漢語,国语,國語,简体字,簡體字,简化字,簡化字,繁体字,繁體字,正体字,正體字,异体字,異體字,汉语字典,漢語字典,汉语大字典,漢語大字典,汉语大词典,漢語大詞典,成语词典,成語詞典,叶典,中文字典,说文解字,說文解字,康熙字典" name="keywords" />
+<meta content="方言,方言地图,韵书,汉语音韵学,韵书集成,上古音系,上古音,广韵,廣韻,集韵,集韻,中古音,蒙古字韻,中原音韻,洪武正韻牋,分韻撮要" name="keywords" />
+<meta content="契丹字,契丹文,契丹大字,契丹小字,契丹小字原字,契丹小字词汇,女真文,女真字,西夏字,西夏文,西夏文字典,夏汉字典,夏漢字典,简明夏汉字典,簡明夏漢字典,夏俄英汉字典,夏俄英漢詞典,在线西夏文字典,在線西夏文字典,八思巴文,八思巴字,女书,女書" name="keywords" />
+<meta content="开放古文字字形库,字源,汉字字源,金文,甲骨文,楚简,楚简文字,秦简,秦简文字,传抄古文字,敦煌异体字" name="keywords" />
+<meta content="Unicode, Unicode CJK Extension, Unihan Database, Chinese characters, Chinese Dictionary, Chinese-English Dictionary, Kangxi Dictionary, Shuowen Jiezi, hanzi, zhongwen, hanyu, guoyu"  name="keywords" />
+<meta content="Chinese Dialects, Historical Chinese Phonology, Guangyun, Menggu Ziyun" name="keywords" />
+<meta content="Khitan, Khitan script, Khitan Large Script, Khitan Small Script, Khitan Dictionary, Jurchen, Jurchen script, Jurchen Dictionary, Tangut, Tangut Script, Tangut Dictionary, Tangut-Chinese Dictionary, Tangut-Russian-English-Chinese Dictionary, Online Tangut Dictionary,'Phags-pa, Phagspa, Nvshu, Nvshu Dictionary" name="keywords" />
+<meta content="Open Ancient Chinese Characters Glyphs Dictionary, Oracle Bone Script, Chinese bronze inscriptions, Bronze script, Chu slip script, Qin slip script, Shuowen Small seal script, Transcribed Ancient Chinese Characters, Dunhuang Variants" name="keywords" />
+<link rel="icon" href="css/zi2.ico" />
+<!-- For iPhone -->
+<link rel="apple-touch-icon" href="css/logo-apple-icon.png">
+<!-- For iPhone Retina display -->
+<link rel="apple-touch-icon" sizes="180x180" href="css/logo-apple-icon.png">
+<!-- For iPad -->
+<link rel="apple-touch-icon" sizes="152x152" href="css/logo-apple-icon.png">
+<!-- For iPad Retina display -->
+<link rel="apple-touch-icon" sizes="167x167" href="css/logo-apple-icon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<title>契丹小字詞彙參考文獻 | 古今文字集成</title>
+	<style type="text/css">
+		span.khitan{
+			font-family: "CCAMC KSS Kaiti", 
+						"CCAMC Khitan & Jurchen Std L", 
+						"CCAMC Khitan & Jurchen Std";
+		}
+	</style>
+</head>
+
+<body>
+	<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59455086-1', 'auto');
+  ga('send', 'pageview');
+
+</script>  <style type="text/css">
+		table.phagspa{
+		border: 0px solid #000;
+	}
+	tr.rp{
+		color: #336699;
+	}
+	button.phagspa, p.phagspa {
+		text-align: left;
+		font-family: 'Microsoft Phagspa', phags_pa;
+		-webkit-transform: rotate(90deg);
+		-moz-transform: rotate(90deg);
+		-ms-transform: rotate(90deg);
+		-o-transform: rotate(90deg);
+		transform: rotate(90deg);
+
+		-webkit-transform-origin:50% 50%;
+		-moz-transform-origin:50% 50%;
+		-ms-transform-origin:50% 50%;
+		-o-transform-origin:50% 50%;
+		transform-origin:50% 50%;
+		writing-mode: lr-tb;
+	}
+	p.phagspa{
+		font-family: 'Microsoft Phagspa', phags_pa;
+		pointer-events: none;
+		margin: 20px;
+		font-size: 1.5em;
+		text-align: center;
+	}
+	#vertical_phagspa: {
+		font-family: 'Microsoft Phagspa', phags_pa;
+		float: left;
+	}
+	.rp{
+		display: none;
+	}
+</style>
+<script type="text/javascript">
+function khimh(e) {
+	if (e.target) {
+		var obj = e.target;
+	} else {
+		var obj = e.srcElement
+	}
+	if (obj.value) {
+		var v = obj.value;
+	} else if (obj.textContent) {
+		var v = obj.textContent;
+	} else if (obj.innerText) {
+		var v = obj.innerText;
+	} else if (obj.text) {
+		var v = obj.text;
+	} else {
+		var v = '';
+	}
+	insert(document.form_phagspa.charPhagspa, v);
+}
+function insert(field, v) {
+	if (document.selection) {
+		field.focus();
+		sel = document.selection.createRange();
+		sel.text = v;
+		sel.select();
+	} else if (field.selectionStart || field.selectionStart == '0') {
+		var startPos = field.selectionStart;
+		var endPos = field.selectionEnd;
+		var newEndPos = startPos + v.length;
+		field.value = field.value.substring(0, startPos) + v + field.value.substring(endPos, field.value.length);
+		field.setSelectionRange(newEndPos, newEndPos);
+	} else {
+		var newEndPos = field.value.length + v.length;
+		field.value += v;
+		field.setSelectionRange(newEndPos, newEndPos);
+	}
+	field.focus();
+}
+</script><link href='fonts/tangut_component_v17/stylesheet.css' rel='stylesheet'>
+<script type='text/javascript' src='js/tangutime.js'></script>
+
+<nav class="navbar navbar-inverse navbar-static-top" id="topnavbar" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="index.php"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+	<ul class="nav navbar-nav">
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">漢字<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="cjkv_intro.php">漢字簡介</a></li>
+				<li><a href="cjkv_radical.php">部首檢字</a></li>
+				<li><a href="cjkv_traditional_radical.php">Unihan部首檢字</a></li>
+				<li><a href="cjkv_mojikiban_radical.php">文字情報基盤データベース</a></li>
+				<li><a href="cjkv_kangxi.php">康熙字典</a></li>
+				<li><a href="cjkv_shuowen.php">說文解字</a></li>
+				<li><a href="cjkv_oaccgd.php">開放古文字字形庫</a></li>
+				<li><a href="cjkv_strokenumber.php">總筆畫數檢字</a></li>
+				<li><a href="cjkv_yunshu.php">韻書集成</a></li>
+				<li><a href="source.php#cjkv">漢字參考資料</a></li>
+				<li><a href="cjkv_statistics.php">漢字總筆畫數分佈圖</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">西夏文<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="tangut_intro.php">西夏文簡介</a></li>
+				<li><a href="blog/?p=77">★如何通過漢字查詢西夏字</a></li>
+				<li><a href="tangut_index.php">西夏文索引</a></li>
+				<li><a href="tangut_unicode_index.php">西夏文Unicode索引</a></li>
+				<li><a href="tangut_sijiao.php">西夏文四角號碼檢字法</a></li>
+				<li><a href="tangut_ids_intro.php">西夏文部件檢字法</a></li>
+				<li><a href="tangut_radical.php">夏漢字典部首檢字</a></li>
+				<li><a href="tangut_unicode_radical.php">Unicode部首檢字</a></li>
+				<li><a href="tangut_trecd_radical.php">夏俄英漢詞典部首檢字</a></li>
+				<li><a href="tangut_xxwcd_radical.php">西夏文詞典部首檢字</a></li>
+				<li><a href="tangut_reconstructed_pronunciation.php">西夏文擬音方案</a></li>
+				<li><a href="tangut_wenhai.php">文海</a></li>
+				<li><a href="tangut_text/index.php">西夏文語句翻譯</a></li>
+				<li><a href="tangut_ms.php">西夏文獻目錄</a></li>
+				<li><a href="source.php#tangut">西夏文參考資料</a></li>
+				
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">契丹文<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="khitan_intro.php">契丹文簡介</a></li>
+				<li><a href="khitan_large_script_index.php">契丹大字索引</a></li>
+				<li><a href="khitan_small_script_index.php">契丹小字索引</a></li>
+				<li><a href="khitan_small_script_vocabulary_index.php">契丹小字詞彙索引</a></li>
+				<li><a href="khitan_large_script_strokenumber.php">契丹大字總筆畫數檢字</a></li>
+				<li><a href="khitan_small_script_strokenumber.php">契丹小字總筆畫數檢字</a></li>
+				<li><a href="source.php#khitan">契丹文參考資料</a></li>
+				<li><a href="khitan_small_script_voc_exp_source.php">契丹小字詞彙參考文獻</a></li>
+				<li><a href="khitan_statistics.php">契丹文總筆畫數分佈圖</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">女真文<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="jurchen_intro.php">女真文簡介</a></li>
+				<li><a href="jurchen_index.php">女真文索引</a></li>
+				<li><a href="jurchen_radical.php">女真文部首檢字</a></li>
+				<li><a href="jurchen_strokenumber.php">女真文總筆畫數檢字</a></li>
+				<li><a href="source.php#jurchen">女真文參考資料</a></li>
+				<li><a href="jurchen_statistics.php">女真文總筆畫數分佈圖</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">女書<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="nvshu_intro.php">女書簡介</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">八思巴文<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="phagspa_intro.php">八思巴文簡介</a></li>
+				<li><a href="phagspa_alphabet.php">八思巴文字母表</a></li>
+				<li><a href="phagspa_mengguziyun_index.php">蒙古字韻</a></li>
+				<li><a href="source.php#phagspa">八思巴文參考資料</a></li>
+			</ul>
+		</li>
+	</ul>
+	<ul class="nav navbar-nav navbar-right">
+		<li><a href="introduction.php"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> 關於</a></li>
+		<li><a href="donation.php"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> 捐贈</a></li>
+		<li><a href="fonts.php"><span class="glyphicon glyphicon-text-color" aria-hidden="true"></span> 字體和輸入法</a></li>
+		<li><a href="blog/"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> 博客</a></li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">其他<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="buddhist_glossaries.php">佛典術語</a></li>
+				<li><a href="chinese_historical_map/index.php"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> 中國歷史地圖集</a></li>
+			</ul>
+		</li>
+	</ul>
+</div><!-- /.navbar-collapse -->	</div><!-- /.container-fluid -->
+</nav>
+<div style="width:auto; position:relative; top:-30px; padding-top:40px; padding-bottom:25px; background-color:#fafbfc; border-bottom:1px solid #ddd; box-shadow: 0px 5px 10px 0px #ccc; -webkit-box-shadow: 0px 5px 10px 0px #ccc; -moz-box-shadow: 0px 5px 10px 0px #ccc; -o-box-shadow: 0px 5px 10px 0px #ccc;">
+		<div class="container">
+			<style type="text/css">
+		.tangut-search-container {
+		display: none;
+		margin-bottom: 15px;
+	}
+	.tangut-search-container.active {
+		display: block;
+	}
+	.tangut-radio-group {
+		margin-top: 10px;
+		display: flex; 
+		gap: 15px; 
+		justify-content: center;
+	}
+	.tangut-radio-group label {
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+	}
+	/* 添加选中效果 */
+	input[type="radio"]:checked + span {
+		color: #158cba;
+	}
+
+	.tangut, .tgStrokes{
+		font-family: tangut_components_v17, "Tangut N4694";
+	}
+	.zitou{
+		font-size: 1.6em;
+	}
+	.highlight{
+		color: #C7254E;
+	}
+	div#candidateList{
+		/*margin: 10px auto 0 auto;*/
+		max-height: 300px;
+		overflow: auto;
+	}
+	.tgStrokes{
+		font-size: 1.6em;
+		margin: 5px 0px;
+	}
+	div#strokeIME, div#alphabetIME{
+		display: none;
+	}
+	img.tangut-com-example{
+		vertical-align: baseline;
+		height: 50px;
+	}
+</style>
+<div class="row">
+	<div class="col-md-10 col-lg-10 col-sm-12 col-xs-12 col-md-offset-1 col-lg-offset-1">
+		<div>
+			<ul class="nav nav-pills" style="text-align:center;">
+				<li class="active cjk" style="float:none;display:inline-block"><a data-toggle="tab" href="#CJKV">漢字</a></li>
+				<li class="tangut" style="float:none;display:inline-block;"><a data-toggle="tab" href="#TANGUT">西夏文</a></li>
+				<li class="khitan" style="float:none;display:inline-block;"><a data-toggle="tab" href="#KHITAN">契丹文</a></li>
+				<li class="jurchen" style="float:none;display:inline-block;"><a data-toggle="tab" href="#JURCHEN">女真文</a></li>
+				<li class="nvshu" style="float:none;display:inline-block;"><a data-toggle="tab" href="#NVSHU">女書</a></li>
+				<li class="phagspa" style="float:none;display:inline-block;"><a data-toggle="tab" href="#PHAGSPA">八思巴文</a></li>
+			</ul>
+		</div>
+
+		<div class="tab-content">
+			<div id="CJKV" class="tab-pane fade active in">
+				<br />
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" id="charChn" name="cjkv" placeholder="漢字、詞語、成語" style="font-family: 'TsukiMincho', 'HanaMinB';">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="10" class="form-control" id="pinyin" name="pinyin" placeholder="拼音">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="7" class="form-control" id="shurufa" name="imecode" placeholder="倉頡、五筆或鄭碼">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="6" class="form-control" id="unicode" name="unicode" placeholder="Unicode碼位">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="8" class="form-control" id="MJ" name="MJ" placeholder="MJ文字図形名">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="6" class="form-control" id="sjhm" name="sijiao" placeholder="四角號碼">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 navigation">
+					<ul class="list-inline" style="text-align: center; margin-top: 10px">
+						<li><a href="cjkv_radical.php">部首檢字</a></li>
+						<li><a href="cjkv_traditional_radical.php">Unihan部首</a></li>
+						<li><a href="cjkv_strokenumber.php">總筆畫數</a></li>
+						<li><a href="cjkv_shuowen.php">說文解字</a></li>
+						<li><a href="cjkv_kangxi.php">康熙字典</a></li>
+						<li><a href="cjkv_yunshu.php">韻書集成</a></li>
+						<li><a href="cjkv_oaccgd.php">開放古文字字形庫</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="TANGUT" class="tab-pane fade">
+				<br />
+				<div class="tangut-search-container active" id="tsc1">
+					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="number" min="1" max="6077" maxlength="4" class="form-control" name="XHZDid" id="charTang" placeholder="夏漢字典序號">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="number" min="1" max="5819" maxlength="4" class="form-control" name="Sofronovid" id="charTangSofronov" placeholder="Sofronov序號">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+				</div>
+				<div class="tangut-search-container" id="tsc2">
+					<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut_sijiao.php" method="get">
+							<div class="input-group">
+								<input type="text" maxlength="20" class="form-control" name="sj" id="charTangSJ" placeholder="四角號碼">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+				</div>
+				<div class="tangut-search-container" id="tsc3">
+					<div class="col-md-4 col-lg-4 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="text" class="form-control" name="jys" id="charTangJYS" placeholder="景永時字體">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+					<div class="col-md-4 col-lg-4 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="text" class="form-control" name="n4694" id="charTangN4694" placeholder="Unicode字符（字或詞）" style="font-family: 'Tangut N4694', 'Tangut Yinchuan', 'Mojikyo Tangut'">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+					<div class="col-md-4 col-lg-4 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="text" maxlength="6" class="form-control" name="unicode" id="charTangUnicode" placeholder="Unicode碼位">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+				</div>
+				<div class="tangut-search-container" id="tsc4">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut_ids.php" method="get">
+							<div class="input-group">
+								<input type="text" class="form-control tangut" name="com" id="tangutcomponents" placeholder="請輸入要查詢的部件">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+									<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu" aria-labelledby="imeMenu">
+										<li><a href="javascript:;" id="openAlphabetIME">
+											<span class="glyphicon glyphicon-text-background" aria-hidden="true"> 字母輸入</a>
+										</li>
+										<li><a href="javascript:;" id="openStrokeIME">
+											<span class="glyphicon glyphicon-pencil" aria-hidden="true"> 筆畫輸入</a>
+										</li>
+										<li role="separator" class="divider"></li>
+										<li><a href="javascript:;" id="closeIME"><span class="glyphicon glyphicon-remove" aria-hidden="true"> 關閉</a></li>
+									</ul>
+								</span>
+							</div>
+						</form>
+					</div>
+					<p></p>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div id="alphabetIME">
+							<input type="text" class="form-control tangut" id="comAlphabetIME" placeholder="請輸入部件筆畫">
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div id="strokeIME">
+							<div class="tangut">
+								<button type="button" class="btn btn-primary tgStrokes" title="橫">𘠀</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="豎">𘠁</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="撇">𘠂</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="點">𘶃</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折彎鉤"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫撇">𘠃</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折折撇">𘠄</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折折折折撇">𘠅</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折折折鉤"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折橫"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="撇折"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="豎彎鉤">𘠆</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫撇點提"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="撇點提">𘠈</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="撇捺">𘠉</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="捺">𘶂</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫撇捺"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="豎折折"></button>
+								<button type="button" class="btn btn-warning tgStrokes" id="backspace" title="刪除">←</button>
+								<button type="button" class="btn btn-warning tgStrokes" id="clearText" title="清除">×</button>
+							</div>
+							<p class="tangut zitou" id="comStrokeIME"></p>
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div id="candidateList"></div>
+					</div>
+				</div>
+						
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+					<div class="tangut-radio-group">
+						<label>
+							<input type="radio" name="tangutSearchbox" class="tsc1" checked>
+							&nbsp;<span>序號</span>
+						</label>
+						<label>
+							<input type="radio" name="tangutSearchbox" class="tsc3">
+							&nbsp;<span>字符</span>
+						</label>
+						<label>
+							<input type="radio" name="tangutSearchbox" class="tsc2">
+							&nbsp;<span>四角號碼</span>
+						</label>
+						<label>
+							<input type="radio" name="tangutSearchbox" class="tsc4">
+							&nbsp;<span>部件</span>
+						</label>
+					</div>
+				</div>
+
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 navigation">
+					<ul class="list-inline" style="text-align: center; margin-top: 10px">
+						<li><a href="tangut_sijiao.php">四角號碼</a></li>
+						<li><a href="tangut_ids_intro.php">部件檢字</a></li>
+						<li><a href="tangut_radical.php">夏漢字典</a></li>
+						<li><a href="tangut_unicode_radical.php">Unicode部首</a></li>
+						<li><a href="tangut_trecd_radical.php">夏俄英漢詞典</a></li>
+						<li><a href="tangut_xxwcd_radical.php">西夏文詞典</a></li>
+						<li><a href="tangut_reconstructed_pronunciation.php">擬音方案</a></li>
+						<li><a href="tangut_ms.php">西夏文獻目錄</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="KHITAN" class="tab-pane fade">
+				<br />
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="kls" placeholder="契丹大字" style="font-family: 'CCAMC Khitan & Jurchen Std'">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="kss" placeholder="契丹小字" style="font-family: 'CCAMC Khitan & Jurchen Std'">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan_large_script_strokeorder.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="18" class="form-control" name="so" placeholder="契丹大字筆順">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan.php" method="get">
+						<div class="input-group">
+							<input type="number" min='1' max="2218" maxlength="4" class="form-control" name="N4631_id" placeholder="契丹大字序號">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan.php" method="get">
+						<div class="input-group">
+							<input type="number" min="1" max="411" maxlength="3" class="form-control" name="kss_id" placeholder="契丹小字序號">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan_small_script_strokeorder.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="10" class="form-control" name="so" id="charKts" placeholder="契丹小字筆順">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 navigation">
+					<ul class="list-inline" style="text-align: center; margin-top: 10px">
+						<li><a href="khitan_large_script_index.php">契丹大字索引</a></li>
+						<li><a href="khitan_small_script_index.php">契丹小字索引</a></li>
+						<li><a href="khitan_small_script_vocabulary_index.php">契丹小字詞彙索引</a></li>
+						<li><a href="khitan_large_script_strokenumber.php">契丹大字總筆畫數</a></li>
+						<li><a href="khitan_small_script_strokenumber.php">契丹小字總筆畫數</a></li>
+						<!-- <li><a href="khitan_small_script_vocabulary_index.php">契丹小字詞組索引</a></li> -->
+					</ul>
+				</div>
+			</div>
+
+			<div id="JURCHEN" class="tab-pane fade">
+				<br />
+				<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="jurchen.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="jurchen" placeholder="女真文" style="font-family: 'CCAMC Khitan & Jurchen Std'">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="jurchen.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="5" class="form-control" name="N3788" placeholder="N3788序號">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="jurchen_strokenumber.php" method="get">
+						<div class="input-group">
+							<input type="number" min="1" max="10" maxlength="2" class="form-control" name="ts" placeholder="總筆畫數">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="jurchen_strokeorder.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="10" class="form-control" name="so" placeholder="請輸入筆順">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 navigation">
+					<ul class="list-inline" style="text-align: center; margin-top: 10px">
+						<li><a href="jurchen_index.php">女真文索引</a></li>
+						<li><a href="jurchen_radical.php">女真文部首</a></li>
+						<li><a href="jurchen_strokenumber.php">女真文總筆畫數</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="NVSHU" class="tab-pane fade">
+				<br />
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="nvshu.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="2" class="form-control" name="nvshu" placeholder="女書" style="font-family: 'Noto女书传统体Regular'">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="nvshu.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="5" class="form-control" name="unicode" placeholder="Unicode碼位">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="nvshu.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="2" class="form-control" name="cjkv" placeholder="漢字">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+			</div>
+
+			<div id="PHAGSPA" class="tab-pane fade">
+				<br />
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="phagspa.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="chnp" id="charChnPhagspa" placeholder="漢字">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="phagspa.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="pyp" id="charChnPinyin" placeholder="現代漢語拼音">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="form_phagspa" role="form" action="phagspa.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="4" class="form-control" name="pp" id="charPhagspa" placeholder="八思巴文">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" id="searchPsp">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="row">
+					<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" id="vertical_phagspa"></div>
+					<div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+						<div class="table-responsive">
+	<table class="table phagspa">
+		<tbody>
+			<tr>
+				<!-- velars -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡂ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡁ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡀ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡃ</button></td>
+				<!-- Labials -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡎ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡍ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡌ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡏ</button></td>
+				<td></td>
+				<td></td>
+				<td><button id="toggleRp">顯示擬音</button></td>
+			</tr>
+			<tr class="rp">
+				<!-- velars -->
+				<td>g 見</td>
+				<td>kh 溪</td>
+				<td>k 群</td>
+				<td>ng 疑</td>
+				<!-- Labials -->
+				<td>b 幫</td>
+				<td>ph 滂</td>
+				<td>p 並</td>
+				<td>m 明</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+
+			<tr>
+				<!-- Labiodentals -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡤ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡰ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡤ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡓ</button></td>
+				<!-- Dentals -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡊ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡉ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡈ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡋ</button></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr class="rp">
+				<!-- Labiodentals -->
+				<td>Hw 非</td>
+				<td>hw 敷</td>
+				<td>Hw 奉</td>
+				<td>w 微</td>
+				<!-- Dentals -->
+				<td>d 端</td>
+				<td>th 透</td>
+				<td>t 定</td>
+				<td>n 泥</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+
+			<tr>
+				<!-- Retroflexes and the Palatal Nasal -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡆ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡅ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡄ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡮ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡚ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡇ</button></td>
+				<!-- Sibilants -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡒ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡑ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡐ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡛ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡕ</button></td>
+			</tr>
+			<tr class="rp">
+				<!-- Retroflexes and the Palatal Nasal -->
+				<td>j 知、照</td>
+				<td>ch 徹、穿</td>
+				<td>c 澄、床</td>
+				<td>sh 審</td>
+				<td>zh 禪</td>
+				<td>ñ 娘</td>
+				<!-- Sibilants -->
+				<td>dz 精</td>
+				<td>tsh 清</td>
+				<td>ts 從</td>
+				<td>s 心</td>
+				<td>z 邪</td>
+			</tr>
+
+			<tr>
+				<!-- Laryngeals and Semivowels -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡜ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡣ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡯ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡖ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡗ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡝ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡭ</button></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr class="rp">
+				<!-- Laryngeals and Semivowels -->
+				<td>h 曉</td>
+				<td>X 匣</td>
+				<td>H 匣</td>
+				<td>' 影</td>
+				<td>Y 影</td>
+				<td>x 喻</td>
+				<td>y 喻</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+
+			<tr>
+				<!-- Liquids -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡙ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡔ</button></td>
+				<!-- Vowels -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡞ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡟ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡠ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡡ</button></td>
+				<!-- Medial Semivowels -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡧ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡨ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡦ</button></td>
+				<td></td>
+				<td></td>
+			</tr>
+
+			<tr class="rp">
+				<!-- Liquids -->
+				<td>l 來</td>
+				<td>Zh 日</td>
+				<!-- Vowels -->
+				<td>i</td>
+				<td>u</td>
+				<td>e</td>
+				<td>o</td>
+				<!-- Medial Semivowels -->
+				<td>w</td>
+				<td>y</td>
+				<td>ÿ</td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+</div>					</div>
+				</div>
+				<ul class="list-inline" style="text-align: center; margin-top: 10px">
+					<li><a href="phagspa_alphabet.php">八思巴文字母表</a></li>
+					<li><a href="phagspa_mengguziyun_index.php">蒙古字韻</a></li>
+				</ul>
+			</div>
+		</div>
+
+	</div>
+</div>		</div>
+</div>
+<script type="text/javascript">
+	function returnPhagsPa(){
+		var input = document.getElementById("charPhagspa").value;
+		document.getElementById("vertical_phagspa").innerHTML = "<p class='phagspa'>"+input+"</p>";
+	}
+	function clear(){
+		document.getElementById("charPhagspa").value = "";
+	}
+	document.getElementById("charPhagspa").addEventListener("focus", returnPhagsPa, false);
+	document.getElementById("charPhagspa").addEventListener("keyup", returnPhagsPa, false);
+
+	$(document).ready(function(){
+		$("#toggleRp").click(function(){
+			$(".rp").fadeToggle(500);
+			if ($("#toggleRp").text() == "顯示擬音") {
+				$("#toggleRp").text("隱藏擬音");
+			}else if($("#toggleRp").text() == "隱藏擬音"){
+				$("#toggleRp").text("顯示擬音");
+			}
+		});
+
+		// 西夏文部分
+		let tgSelected = '';
+		if (localStorage.getItem('tgSelected') !== null) {
+			tgSelected = localStorage.getItem('tgSelected');
+			// console.log('当前选中1：'+tgSelected);
+			$('.tangut-search-container').removeClass('active');
+			$("div#"+tgSelected).addClass('active');
+			$("input."+tgSelected).prop('checked', true);
+		}else{
+			tgSelected = $('input[name="tangutSearchbox"]:checked').attr('class');
+			$("div#"+tgSelected).addClass('active');
+		}
+		// console.log('当前选中2：'+tgSelected);
+		
+		$('input[type="radio"]').change(function() {
+			// 隐藏所有输入框
+			$('.tangut-search-container').removeClass('active');
+			
+			// 显示选中radio对应的输入框
+			let tgSelected = $(this).attr("class");
+			localStorage.setItem('tgSelected', tgSelected);
+			// console.log('当前选中：'+tgSelected);
+			$("div#"+tgSelected).addClass('active');
+		});
+
+		// 西夏文部件查詢
+		let isNumeric = function(input){
+			if (input.length > 0) {
+				let line = input.trim();
+				let len = Array.from(line).length;
+				if (len > 0) {
+					for (let zi of line) {
+						code = zi.charCodeAt(0);
+						if (code > 47 && code < 58) // 0-9
+						{
+							return true;
+						}
+					}
+					return false;
+				}else{
+					return false;
+				}
+			}
+			return false;
+		}
+
+		let candidate = []; //儲存臨時查詢的結果列表
+		let userInput = '';
+		let displayStrokes = ''; //用笔画显示用户输入的笔顺
+		let userInputAlpha = ''; //用户输入的笔顺转字母
+
+		// 从缓存中加载上一次使用的输入法
+		let curIME = localStorage.getItem('tangutcompime');
+		switch (curIME){
+			case 'alphabet':
+				$("div#alphabetIME").show();
+				break;
+			case 'stroke':
+				$("div#strokeIME").show();
+				break;
+			case 'close':
+				$("div#alphabetIME").hide();
+				$("div#strokeIME").hide();
+				break;
+		}
+
+
+		$(document).on("input change keyup", "#comAlphabetIME", function(event){
+			//字母输入法
+			let userCode = $(this).val().trim();
+			if (userCode.length > 0) {
+				let lastDigit = userCode[userCode.length-1];
+				if(isNumeric(lastDigit)){
+					let selected = $("#com"+lastDigit).text();
+					// console.log('选中：'+selected);
+					userInput += selected;
+					// $("#userInput").text(userInput);
+					$("#tangutcomponents").val(userInput);
+					$(this).val('');
+				}
+				// console.log('輸入1：'+userCode);
+				// console.log('用戶輸入：'+userInput);
+				// console.log('最後位：'+lastDigit);
+				let candidate = tangutComList.filter(function(items) {  
+					return items.ime.startsWith(userCode);  
+				});
+				let candidateText = '';
+				for (var i = 0; i < candidate.length; i++) {
+					let id = i + 1;
+					let curCode = candidate[i]['ime'];
+					let curCom = candidate[i]['com'];
+					if (curCode.length > userCode.length) {
+						curCode = userCode + "<span class='highlight'>" + curCode.replace(userCode, '') + "</span>"; //给未输入的编码部分高亮加颜色
+					}
+
+					candidateText += "<p class='tangut zitou'>"+id+". <a class='op' href='#'><span id='com"+id+"'>"+curCom+"</span> ("+curCode+")</a></p>";;
+				}
+				$("#candidateList").html(candidateText);
+				// console.log(candidate);
+			}else{
+				$("#candidateList").html('');
+				$("#userInput").html('');
+			}
+		});
+		$(document).on("click", "button.tgStrokes", function(event){
+			//笔画输入法
+			let keyId = $(this).attr('id');
+			switch (keyId){
+				case 'backspace':
+					// 退格键按下，移除用户输入笔画的最后一个
+					// console.log($(this).attr('id'));
+					let line = $("#comStrokeIME").text().trim();
+					line = Array.from(line);
+					let len = line.length;
+					// console.log(line + ': ' + len);
+					if (len > 0) {
+						line.pop(); //移除笔画的最后一个
+						// console.log(line);
+						line = line.join('');
+						displayStrokes = line;
+						$("#comStrokeIME").text(displayStrokes); //更新显示笔画
+						userInputAlpha = userInputAlpha.slice(0, userInputAlpha.length-1); //更新笔顺转字母
+					}
+					break;
+				case 'clearText':
+					// 清除键按下，清楚用户输入的数据
+					$("#comStrokeIME").text('');
+					$("#candidateList").html('');
+					displayStrokes = ''; //更新笔画显示用户输入的笔顺
+					userInputAlpha = ''; //更新用户输入的笔顺转字母
+					break;
+				default:
+					let stroke = $(this).text();
+					displayStrokes += stroke;
+					// console.log(stroke);
+					$("#comStrokeIME").text(displayStrokes);
+					let strokeAlpha = ''; //笔画对应的字母
+					switch (stroke){
+						case '𘠀':
+							strokeAlpha = 'a';
+							break;
+						case '𘠁':
+							strokeAlpha = 'b';
+							break;
+						case '𘠂':
+							strokeAlpha = 'c';
+							break;
+						case '𘶃':
+							strokeAlpha = 'd';
+							break;
+						case '':
+							strokeAlpha = 'e';
+							break;
+						case '':
+							strokeAlpha = 'f';
+							break;
+						case '𘠃':
+							strokeAlpha = 'g';
+							break;
+						case '𘠄':
+							strokeAlpha = 'h';
+							break;
+						case '𘠅':
+							strokeAlpha = 'i';
+							break;
+						case '':
+							strokeAlpha = 'j';
+							break;
+						case '':
+							strokeAlpha = 'k';
+							break;
+						case '':
+							strokeAlpha = 'l';
+							break;
+						case '𘠆':
+							strokeAlpha = 'm';
+							break;
+						case '':
+							strokeAlpha = 'n';
+							break;
+						case '𘠈':
+							strokeAlpha = 'o';
+							break;
+						case '𘠉':
+							strokeAlpha = 'p';
+							break;
+						case '𘶂':
+							strokeAlpha = 'q';
+							break;
+						case '':
+							strokeAlpha = 'r';
+							break;
+						case '':
+							strokeAlpha = 's';
+							break;
+					}
+					userInputAlpha += strokeAlpha;
+					break;
+			}
+
+			if (userInputAlpha.length > 0) {
+				// console.log('輸入2：'+userInputAlpha);
+				// console.log('用戶輸入：'+userInput);
+				// console.log('最後位：'+lastDigit);
+				let candidate = tangutComList.filter(function(items) {  
+					return items.ime.startsWith(userInputAlpha);  
+				});
+				let candidateText = '';
+				for (var i = 0; i < candidate.length; i++) {
+					let id = i + 1;
+					let curCode = candidate[i]['ime'];
+					let curCom = candidate[i]['com'];
+					if (curCode.length > userInputAlpha.length) {
+						curCode = userInputAlpha + "<span class='highlight'>" + curCode.replace(userInputAlpha, '') + "</span>"; //给未输入的编码部分高亮加颜色
+					}
+					candidateText += "<p class='tangut zitou'>"+id+". <a class='op' href='#'><span id='com"+id+"'>"+curCom+"</span> ("+curCode+")</a></p>";
+				}
+				$("#candidateList").html(candidateText);
+				// console.log(candidate);
+			}else{
+				$("#candidateList").html('');
+				$("#userInput").html('');
+			}
+		});
+		$(document).on("click", "a.op", function(e){
+			// 点击候選字
+			// alert('!');
+			e.preventDefault();
+			let selected = $(this).find('span').first().text().trim();
+			// console.log('選中：' + selected);
+			userInput += selected;
+			displayStrokes = '';
+			userInputAlpha = '';
+			$("#tangutcomponents").val(userInput);
+			$("#candidateList").html('');
+			$("#comAlphabetIME").val('');
+			$("#comStrokeIME").html('');
+		});
+		$(document).on("click", "a#openAlphabetIME", function(e){
+			// 打开字母输入法
+			e.preventDefault();
+			$("div#alphabetIME").show();
+			$("div#strokeIME").hide();
+			localStorage.setItem('tangutcompime', 'alphabet');
+			$("#candidateList").html('');
+			$("#comAlphabetIME").val('');
+			$("#comStrokeIME").html('');
+		});
+		$(document).on("click", "a#openStrokeIME", function(e){
+			// 打开笔画输入法
+			e.preventDefault();
+			$("div#strokeIME").show();
+			$("div#alphabetIME").hide();
+			localStorage.setItem('tangutcompime', 'stroke');
+			$("#candidateList").html('');
+			$("#comAlphabetIME").val('');
+			$("#comStrokeIME").html('');
+		});
+		$(document).on("click", "a#closeIME", function(e){
+			// 关闭输入法
+			e.preventDefault();
+			$("div#strokeIME").hide();
+			$("div#alphabetIME").hide();
+			$("#candidateList").html('');
+			$("#comStrokeIME").text('');
+			localStorage.setItem('tangutcompime', 'close');
+		});
+		$(document).on("change", "#tangutcomponents", function(e){
+			userInput = $(this).val().trim();
+		});
+	});
+</script>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+				<div class="page-header">
+					<h1>契丹小字詞彙參考文獻</h1>
+				</div>
+
+				<div>
+					<ol>
+						<li>厉鼎煃：《热河契丹国书碑考》，《国学季刊》3卷4号，1932年12月。</li>
+						<li>罗福成：《辽宣懿皇后哀册释文》，《满洲学报》第2号，1933年7月。</li>
+						<li>王静如：《辽道宗及宣懿皇后契丹国字哀册初释》，《历史语言研究所集刊》第3本第4分，1933年12月。</li>
+						<li>厉鼎煃（署名天德）：《热河辽碑二种考》，《大学杂志》第1卷第5期，1933年12月。</li>
+						<li>罗福成：《兴宗皇帝哀册文释文》，金毓黻编《辽陵石刻集录》卷四，奉天图书馆刊，1934年4月。</li>
+						<li>罗福成：《兴宗仁懿皇后哀册文释文》，金毓黻编《辽陵石刻集录》卷四，奉天图书馆刊，1934年4月。</li>
+						<li>罗福成：《道宗皇帝哀册文释文》，金毓黻编《辽陵石刻集录》卷四，奉天图书馆刊，1934年4月。</li>
+						<li>罗福成：《道宗宣懿皇后哀册文释文》，金毓黻编《辽陵石刻集录》卷四，奉天图书馆刊，1934年4月。</li>
+						<li>罗福成：《道宗皇帝及宣懿皇后哀册篆盖释文》，金毓黻编《辽陵石刻集录》卷四，奉天图书馆刊，1934年4月。</li>
+						<li>罗福成：《道宗仁圣皇帝国书哀册考》，金毓黻编《辽陵石刻集录》卷四，奉天图书馆刊，1934年4月。</li>
+						<li>罗福成：《道宗宣懿皇后国书哀册考》，金毓黻编《辽陵石刻集录》卷四，奉天图书馆刊，1934年4月。</li>
+						<li>罗福成：《金国书鱼符跋》，金毓黻编《辽陵石刻集录》卷五，奉天图书馆刊，1934年4月。</li>
+						<li>罗福成：《玉盏释文》，金毓黻编《辽陵石刻集录》卷五，奉天图书馆刊，1934年4月。</li>
+						<li>罗福成：《大金皇弟都统经略郎君行记石刻》，金毓黻编《辽陵石刻集录》卷五，奉天图书馆刊，1934年4月。</li>
+						<li>厉鼎煃：《契丹国书略说》，仁声印刷所，1934年5月。</li>
+						<li>王静如：《契丹国字再释》，《历史语言研究所集刊》第5本第4分，1935年12月。</li>
+						<li>辛兑铉：《契丹文哀册に就いて》，朝鲜京城青丘学会《青丘学丛》第28号，1937年5月。</li>
+						<li>山路广明：《契丹大字考》，《浮田和民博士还历纪念史学论文集》，1943年9月。</li>
+						<li>山路广明：《契丹語の研究》第1辑，油印本，1951年7月。</li>
+						<li>山路广明：《契丹語の研究》第2辑，油印本，1952年1月。</li>
+						<li>李文信：《义县清河门辽墓发掘报告》，《考古学报》第8册，1954年12月。</li>
+						<li>厉鼎煃：《义县出土契丹文墓志铭考释》，《考古学报》第8册，1954年12月。</li>
+						<li>爱宕松男：《契丹Kitai文字の解読について》，《东北大学文学部研究年报》第7号，1956年12月。</li>
+						<li>厉鼎煃：《试用古回鹘文比较研究契丹文字》，《中山大学学报》（社会科学版）1957年第2期。</li>
+						<li>阎万章：《锦西西孤山出土契丹文墓志研究》，《考古学报》1957年第2期。</li>
+						<li>厉鼎煃：《〈汉语拼音方案〉帮助了我考释契丹文字》，《语文知识》第72期，1958年4月。</li>
+						<li>丰田五郎：《契丹隸字考——女真文字の源流》，《东洋学报》46卷1号，1963年6月。</li>
+						<li>山路广明：《若干の契丹文字の解読》，《早稻田大学图书馆纪要》第9号，1968年3月。</li>
+						<li>陈述：《跋吉林大安出土契丹文铜镜》，《文物》1973年第8期。</li>
+						<li>郑绍宗：《兴隆县梓木林子发现的契丹文墓志铭》，《考古》1973年第5期。</li>
+						<li>王静如：《兴隆出土金代契丹文墓志铭解》，《考古》1973年第5期。</li>
+						<li>契丹文字研究小组：《关于契丹小字研究》，《内蒙古大学学报》（哲学社会科学版）1977年第4期。</li>
+						<li>刘凤翥、于宝麟：《契丹小字〈许王墓志〉考释》，《文物资料丛刊》第1期，1977年12月。</li>
+						<li>陈述：《契丹文字的历史概况》，《中央民族学院学报》1978年第3期。</li>
+						<li>清格尔泰、陈乃雄、邢茀里、刘凤翥、于宝麟：《契丹小字解读新探》，《考古学报》1978年第3期。</li>
+						<li>契丹文研究小组：《契丹小字研究方法简论》，内蒙古大学蒙古语文研究室，1979年10月。</li>
+						<li>苏赫：《〈耶律氏铭石〉初考》，昭乌达盟文物工作站《文物通讯》第8期，1979年。</li>
+						<li>沈汇：《论契丹小字的创制与解读——兼论达斡尔族的族源》，《中央民族学院学报》1980年第4期。</li>
+						<li>刘凤翥：《解读契丹小字的两个方法》，《社会科学战线》1981年第2期。</li>
+						<li>黄振华：《契丹文“<span class="khitan"></span>”、“<span class="khitan"></span>”考——契丹文字构造规律新探》，《社会科学战线》1981年第2期。</li>
+						<li>刘凤翥、于宝林：《契丹小字〈萧仲恭墓志〉考释》，《民族研究》1981年第2期。</li>
+						<li>即实：《契丹字源一斑》，《社会科学辑刊》1981年第3期。</li>
+						<li>昭乌达盟文物工作站、翁牛特旗文化馆：《内蒙古山嘴子“故耶律氏”墓发掘报告》，《文物资料丛刊》第5期，1981年12月。</li>
+						<li>苏赫：《〈故耶律氏铭石〉考释》，《文物资料丛刊》第5期，1981年12月。</li>
+						<li>刘凤翥、于宝林：《〈故耶律氏铭石〉跋尾》，《文物资料丛刊》第5期，1981年12月。</li>
+						<li>刘凤翥：《从契丹小字解读探达斡尔为东胡之裔》，《黑龙江文物丛刊》1982年第1期。</li>
+						<li>刘凤翥、翁善珍、郑瑞峰、金永田：《内蒙古喀喇沁旗出土契丹小字铜镜考释》，《考古》1982年第3期。</li>
+						<li>即实：《契丹小字字源举隅》，《民族语文》1982年第3期。</li>
+						<li>即实：《关于<span class="khitan"></span>、<span class="khitan"></span>二字》，《内蒙古大学学报》（哲学社会科学版）1982年第3、4期合刊。</li>
+						<li>阎万章：《契丹文辽道宗皇帝皇后哀册和〈故耶律氏铭石〉的撰写人初探》，《辽宁大学学报》（哲学社会科学版）1982年第4期。</li>
+						<li>阎万章：《河北兴隆金墓出土契丹文墓志铭考释》，《东北考古与历史》第1辑，文物出版社，1982年9月。</li>
+						<li>沈汇：《契丹小字石刻撰人考》，《考古与文物》1982年第6期。</li>
+						<li>即实：《契丹国号解》，《社会科学辑刊》1983年第2期。</li>
+						<li>刘凤翥：《契丹小字解读再探》，《考古学报》1983年第2期。</li>
+						<li>即实：《解<span class="khitan"></span>及其他》，《民族语文》1984年第2期。</li>
+						<li>刘凤翥：《辽代的语言和文字》（下），《博物馆研究》1984年第3期。</li>
+						<li>王弘力：《对〈契丹小字字源举隅〉的几点商榷》，《民族语文》1984年第3期。</li>
+						<li>刘凤翥：《契丹小字道宗哀册篆盖的解读》，《民族研究》1984年第5期。</li>
+						<li>髙路加：《契丹小字词语杂考》，《辽金契丹女真史研究》1985年第2期。</li>
+						<li>黄振华：《契丹文天干名称考》，《考古与文物》1985年第4期。</li>
+						<li>清格尔泰、刘凤翥、陈乃雄、于宝林、邢复礼：《契丹小字研究》，中国社会科学出版社，1985年8月。</li>
+						<li>黄振华：《契丹文〈郎君行记〉新释》，《宋辽金史论丛》第1辑，中华书局，1985年8月。</li>
+						<li>刘凤翥：《契丹小字<span class="khitan"></span>和<span class="khitan"></span>的解读及其它》，《宋辽金史论丛》第1辑，中华书局，1985年8月。</li>
+						<li>丰田五郎：《关于契丹小字“<span class="khitan"></span>”的新解釈》，《京都产业大学国际语言科学研究所报》7卷第1号，1985年9月。</li>
+						<li>即实：《关于契丹小字的几个问题》，《民族语文》1986年第3期。</li>
+						<li>王弘力：《契丹小字墓志研究》，《民族语文》1986年第4期。</li>
+						<li>即实：《关于契丹数词音读问题》，《内蒙古大学学报》（哲学社会科学版）1986年第4期。</li>
+						<li>即实：《契丹小字解读拾零》，《东北地方史研究》1986年第4期。</li>
+						<li>刘凤翥：《若干契丹小字的解读》，《民族语文》1987年第1期。</li>
+						<li>黄振华：《契丹文年月日数字名称考》，《民族古籍》1987年第3期。</li>
+						<li>王弘力：《契丹小字中之契丹》，《民族语文》1987年第5期。</li>
+						<li>刘凤翥：《契丹小字解读三探》，香港中文大学《联合书院三十周年纪念论文集》，1987年。</li>
+						<li>即实：《清宫玉卮契丹文铭补释》，《社会科学辑刊》1988年第2期。</li>
+						<li>髙路加：《契丹小字复数符号探索》，《内蒙古大学学报》（哲学社会科学版）1988年第2期。</li>
+						<li>即实：《从<span class="khitan"> </span>说起》，《内蒙古大学学报》（哲学社会科学版）1988年第4期。</li>
+						<li>高路加：《契丹姓氏耶律音义新探》，《内蒙古大学学报》（哲学社会科学版）1988年第4期。</li>
+						<li>丰田五郎著、刘凤翥译：《关于契丹小字“<span class="khitan"></span>”的新解释》，《民族语文研究情报资料集》第11集，1988年12月。</li>
+						<li>王弘力：《契丹小字宫殿解》，《内蒙古大学学报》（哲学社会科学版）1990年第1期。</li>
+						<li>阎万章：《关于契丹大字墓志纪年的考释问题》，《辽海文物学刊》1990年第1期。</li>
+						<li>即实：《契丹小字解读拾零续》，《东北地方史研究》1990年第3期。</li>
+						<li>宝玉柱：《契丹小字文献汉语借词释读》，《中央民族学院学报》1990年增刊。</li>
+						<li>韩宝兴：《契丹小字〈耶律仁先墓志〉考释》，《内蒙古大学学报》（哲学社会科学版）1991年第1期。</li>
+						<li>爱宕松男：《遼道宗宣懿皇后キタイ文哀冊撰者考》，《史窗》第48号，1991年3月。</li>
+						<li>丰田五郎：《契丹小字〈仁先墓誌〉の新釈》，未刊稿，1991年4月29日。</li>
+						<li>丰田五郎著、那顺乌日图译：《关于契丹小字的几点探索》，《内蒙古社会科学》1991年第3期。</li>
+						<li>高路加：《契丹字词拾零》，《内蒙古大学学报》（哲学社会科学版）1991年第4期。</li>
+						<li>丰田五郎：《契丹小字“北南府宰相”の探索》，未刊稿，1991年7月25日。</li>
+						<li>即实：《〈糺邻墓志〉释读述略》，《东北地方史研究》1991年第4期。</li>
+						<li>刘凤翥：《契丹大字“？”的读音》，《民族语文》1992年第1期。</li>
+						<li>阁万章：《北票出土契丹小字〈耶律仁先墓志铭〉考释》，《辽海文物学刊》1992年第2期。</li>
+						<li>清格尔泰：《契丹小字中的动词附加成分》，《民族语文》1992年第2期。</li>
+						<li>西田龙雄著、沈力译：《〈关于契丹小字研究〉中的基本性问题》，《民族语文》1992年第2期。</li>
+						<li>吕振奎、袁海波：《辽宁阜新海棠山发现契丹小字造像碑》，《考古》1992年第8期。</li>
+						<li>丰田五郎著、沈力译：《关于契丹小字的方位和一些数词》，《中国民族史研究》第4辑，改革出版社，1992年11月。</li>
+						<li>阔万章：《契丹小字〈耶律宗教墓志铭〉考释》，《辽海文物学刊》1993年第2期。</li>
+						<li>阮廷焯：《契丹小字铜镜新考》，《汉学研究》11卷1期，1993年6月。</li>
+						<li>贾敬颜：《关于契丹文〈许王墓志〉的若干问题》，《东北古代民族古代地理丛考》，中国社会科学出版社、新西兰霍兰德出版有限公司联合出版，1993年12月。</li>
+						<li>刘凤翥：《契丹小字解读四探》，《第三十五届世界阿尔泰学会会议记录》，台北《联合报》国学文献馆，1993年。</li>
+						<li>周建奇：《“女真”与契丹小字“<span class="khitan"></span>”》，《内蒙古大学学报》（哲学社会科学版）1994年第4期。</li>
+						<li>即实：《一个契丹原字的辨读》，《民族语文》1994年第5期。</li>
+						<li>丰田五郎：《契丹小字の四季の称呼について》，未刊稿，1994年10月31日。</li>
+						<li>吕振奎：《海棠山契丹小字墓志残石补释》，《民族语文》1995年第4期。</li>
+						<li>朱志民：《内蒙古敖汉旗老虎沟金代博州防御使墓》，《考古》1995年第9期。</li>
+						<li>刘凤翥、周洪山、赵杰、朱志民：《契丹小字解读五探》，《汉学研究》13卷第2期，1995年12月。</li>
+						<li>即实：《哀册拾读》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《〈福留墓志〉臆解》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《〈戈也昆墓志〉释读》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《〈森讷墓志〉释读》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《〈铭石〉琐解》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《〈糺邻墓志〉释读》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《〈郎君行记〉补释》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《鱼符铭文改释》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《天干语义解》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《几个地支的音读问题》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《年号问题析议》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《解读总表》，《谜林问径——契丹小字解读新程》，辽宁民族出版社，1996年1月。</li>
+						<li>即实：《谜林问径——契丹小字解读新程·后记》，辽宁民族出版社，1996年1月。</li>
+						<li>丰田五郎：《契丹小字〈耶律宗教墓誌銘〉釈読補遺》，未刊稿，1996年5月。</li>
+						<li>阎万章：《关于契丹小字〈辽道宗皇帝哀册〉的考释问题》，《辽海文物学刊》1997年第2期。</li>
+						<li>清格尔泰：《契丹语数词及契丹小字拼读法》，《内蒙古大学学报》（人文社会科学版）1997年第4期。</li>
+						<li>丰田五郎：《契丹小字对四季的称呼》，《民族语文》1998年第1期。</li>
+						<li>丰田五郎：《耶律宗教墓誌に見える契丹小字官名》，未刊稿，1998年6月。</li>
+						<li>丰田五郎：《契丹小字所保留下来的中古蒙古语之痕迹——永福·春秋·数词》，《日中联合文字文化研讨会发表论文集》，日本文字文化研究所，1998年7月。</li>
+						<li>刘凤翥：《从契丹文推测汉语“爷”的来源》，《内蒙古大学学报》（人文社会科学版）1998年第4期。</li>
+						<li>王未想：《契丹小字〈泽州刺史墓志〉残石考释》，《民族语文》1999年第2期。</li>
+						<li>陈乃雄、杨杰：《乌日根塔拉辽墓出土的契丹小字墓志铭考释》，《西北民族研究》1999年第2期。</li>
+						<li>丰田五郎：《契丹大字の親族称呼について》，未刊稿，1999年10月。</li>
+						<li>卢迎红、周峰：《契丹小字〈耶律迪烈墓志铭〉考释》，《民族语文》2000年第1期。</li>
+						<li>石金民、于泽民：《契丹小字〈耶律奴墓志铭〉考释》，《民族语文》2001年第2期。</li>
+						<li>丰田五郎著、萧爱民译：《〈耶律仁先墓志〉所见的契丹小字官名》，《北方民族文化新论》，哈尔滨出版社，2001年4月。</li>
+						<li>赵志伟、包瑞军：《契丹小字〈耶律智先墓志铭〉考释》，《民族语文》2001年第3期。</li>
+						<li>清格尔泰：《契丹小字釋読問题》，东京外国语大学亚非言语文化研究所，2002年3月。</li>
+						<li>郑晓光：《契丹小字〈耶律永宁郎君墓志铭〉考释》，《民族语文》2002年第2期。</li>
+						<li>清格尔泰：《关于契丹小字“大契丹国”的释读问题》，《内蒙古大学学报》（人文社会科学版）2002年第3期。</li>
+						<li>刘凤翥：《契丹小字〈韩高十墓志〉考释》，《揖芬集——张政烺先生九十华诞纪念文集》，社会科学文献出版社，2002年5月。</li>
+						<li>吴英喆：《契丹小字〈耶律仁先墓志〉补释》，《内蒙古大学学报》（人文社会科学版)2002年第5期。</li>
+						<li>唐彩兰、刘凤翥、康立君：《契丹小字〈韩敌烈墓志铭〉考释》，《民族语文》2002年第6期。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹小字的语音构拟》，《立命馆文学》第577号，2002年12月。</li>
+						<li>刘凤翥：《解读契丹文字与深化辽史研究》，台北《史学彙刊》第18期，兰台出版社2003年4月。</li>
+						<li>爱新觉罗·乌拉熙春：《辽金史札记》，《立命馆言语文化研究》15卷1号，2003年6月。</li>
+						<li>爱新觉罗·乌拉熙春：《〈耶律迪烈墓志铭〉与〈故耶律氏铭石〉所载墓主人世系考》，《立命馆文学》第580号，2003年6月。</li>
+						<li>梁振晶：《阜新四家子辽墓发掘简报》，辽宁省文物考古研究所编《辽宁考古文集》，辽宁民族出版社，2003年7月。</li>
+						<li>爱新觉罗·乌拉熙春：《〈耶律仁先墓志铭〉与〈耶律智先墓志铭〉之比较研究》，《立命馆文学》第581号，2003年9月。</li>
+						<li>青格勒、刘凤翥：《契丹小字〈皇太叔祖哀册文〉考释》，《民族语文》2003年第5期。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹小字的表意文字》，《立命馆言语文化研究》15卷2号，2003年10月。</li>
+						<li>杨杰：《乌日根塔拉辽墓出土的契丹小字墓志铭再考》，《西北民族研究》2003年第4期。</li>
+						<li>刘凤翥、青格勒：《契丹小字〈宋魏国妃墓志铭〉和〈耶律弘用墓志铭〉考释》，《文史》2003年第4辑。</li>
+						<li>爱新觉罗·乌拉熙春：《匣马葛考》，《立命馆文学》第582号，2004年1月。</li>
+						<li>吴英喆：《关于契丹小字中的方位名称“东”》，《内蒙古大学学报》（人文社会科学)2004年第1期。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹横帐考》，《立命馆文学》第584号，2004年3月。</li>
+						<li>刘凤翥、唐彩兰、高娃：《辽代萧乌卢本等三人的墓志铭考释》，《文史》2004年第2辑。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹小字的“字源”与“字流”》，《契丹语言文字研究》，京都大学东亚历史文化研究会，2004年5月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹语与蒙古语》，《契丹语言文字研究》，京都大学东亚历史文化研究会，2004年5月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹语与女真语》，《契丹语言文字研究》，京都大学东亚历史文化研究会，2004年5月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹语名词的格与数》，《契丹语言文字研究》，京都大学东亚历史文化研究会，2004年5月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹语的动词后缀》，《契丹语言文字研究》，京都大学东亚历史文化研究会，2004年5月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹语的序数词》，《契丹语言文字研究》，京都大学东亚历史文化研究会，2004年5月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹小字的亲属称谓及相关名词》，《契丹语言文字研究》，京都大学东亚历史文化研究会，2004年5月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹人的命名特征——兼论契丹语派生形容词的后缀》，《契丹语言文字研究》，京都大学东亚历史文化研究会，2004年5月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹小字墓志综考》，《契丹语言文字研究》，京都大学东亚历史文化研究会，2004年5月。</li>
+						<li>爱新觉罗·乌拉熙春：《辽代汉语无入声考》，《立命馆言语文化研究》16卷1号，2004年6月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹国舅帐考》，《辽金史与契丹、女真文》，京都大学东亚历史文化研究会，2004年7月。</li>
+						<li>爱新觉罗·乌拉熙春：《耶律氏、萧氏及其相关问题考》，《辽金史与契丹、女真文》，京都大学东亚历史文化研究会，2004年7月。</li>
+						<li>爱新觉罗·乌拉熙春：《高九大王世系考》，《辽金史与契丹、女真文》，京都大学东亚历史文化研究会，2004年7月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹蒙古札记》，《辽金史与契丹、女真文》，京都大学东亚历史文化研究会，2004年7月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹突厥札记》，《辽金史与契丹、女真文》，京都大学东亚历史文化研究会，2004年7月。</li>
+						<li>吴英喆：《关于契丹小字中的“大金国”的“金”》，《中央民族大学学报》（哲学社会科学版）2004年第6期。</li>
+						<li>宝玉柱：《契丹小字183号、227号原字研究》，《中央民族大学学报》（哲学社会科学版)2005年第1期。</li>
+						<li>袁海波、刘凤翥：《契丹小字〈萧大山和永清公主墓志〉考释》，《文史》2005年第1辑。</li>
+						<li>刘凤翥、青格勒：《契丹小字〈萧特每·阔哥驸马第二夫人韩氏墓志铭〉考释——纪念金启棕先生逝世一周年》，金适、吉本道雅、乌拉熙春编《金启琮先生逝世周年纪念文集》，京都大学东亚历史文化研究会，2005年4月。</li>
+						<li>刘凤翥、青格勒：《辽代〈韩德昌墓志铭〉和〈耶律（韩）高十墓志铭〉考释》，《国学研究》第15卷，北京大学出版社，2005年6月。</li>
+						<li>刘浦江、康鹏：《契丹名、字初释——文化人类学视野下的父子连名制》，《文史》2005年第3辑。</li>
+						<li>爱新觉罗·乌拉熙春：《韩知古家族世系考——纪念金启孮先生逝世一周年》，《立命馆文学》第591号，2005年10月。</li>
+						<li>刘凤翥：《契丹大字〈耶律祺墓志铭〉考释》，《内蒙古文物考古》2006年第1期。</li>
+						<li>宝玉柱：《契丹小字<span class="khitan"></span>及其替换字研究》，《内蒙古大学学报》（人文社会科学版)2006年第1期。</li>
+						<li>爱新觉罗·乌拉熙春：《遼朝皇族——金啟孮先生逝去二周年に寄せて》，《立命馆文学》第594号，2006年3月。</li>
+						<li>刘凤翥：《从契丹文字的解读谈辽代契丹语中的双国号——兼论“哈喇契丹”》，《东北史研究》2006年第2期。</li>
+						<li>刘凤翥、丛艳双、于志新、娜仁高娃：《契丹小字〈耶律慈特·兀里本墓志铭〉考释》，《燕京学报》新20期，2006年5月。</li>
+						<li>爱新觉罗·乌拉熙春、王禹浪：《契丹小字〈梁国王位志铭〉考》，《辽东史地》创刊号，2006年9月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹の社会組織——金啟孮先生逝去二周年に寄せて》，《立命馆文学》第596号，2006年11月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹文墓誌より見た遼史》，日本松香堂，2006年11月。</li>
+						<li>刘凤翥、唐彩兰、高娃、李建奎：《辽代〈耶律隆祐墓志铭〉和〈耶律贵墓志铭〉考释》，《文史》2006年第4辑。</li>
+						<li>刘浦江：《“糺邻王”与“阿保谨”——契丹小字〈耶律仁先墓志〉二题》，《文史》2006年第4辑。</li>
+						<li>沈钟伟：《辽代北方汉语方言的语音特征》，《中国语文》2006年第6期。</li>
+						<li>吴英喆：《从带点与不带点的原字论说契丹语“性”语法范畴》，《中央民族大学学报》（哲学社会科学版），2006年第6期。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹小字〈金代博州防御使墓志銘〉墓主非移剌斡里朵——兼论金朝初期无“女真国”之国号》，《满语研究》2007年第1期。</li>
+						<li>韩世明、吉本智慧子：《梁国王墓志铭文初释》，《民族研究》2007年第2期。</li>
+						<li>刘凤翥、董新林：《契丹小字〈撒懒·室鲁太师墓志碑〉考释》，《考古》2007年第5期。</li>
+						<li>吴英喆：《契丹小字中的汉语入声韵尾的痕迹》，《汉字文化》2007年第3期。</li>
+						<li>吴英喆：《契丹小字中的“元音附加法”》，《民族语文》2007年第4期。</li>
+						<li>爱新觉罗·乌拉熙春：《“孛堇匀德实”与“空宁曷鲁”》，《中国古代社会与思想文化研究论集》第二辑，黑龙江人民出版社，2007年9月。</li>
+						<li>吴英喆：《契丹语静词语法范畴研究》，内蒙古大学出版社，2007年12月。</li>
+						<li>盖之庸、齐晓光、刘凤翥：《契丹小字〈耶律副部署墓志铭〉考释》，《内蒙古文物考古》2008年第1期。</li>
+						<li>刘凤翥、梁振晶：《契丹小字〈萧奋勿腻·图古辞墓志铭〉考释》，《文史》2008年第1辑。</li>
+						<li>万雄飞、韩世明、刘凤翥：《契丹小字〈梁国王墓志铭〉考释》，《燕京学报》新25期，2008年11月。</li>
+						<li>刘凤翥：《契丹大字〈耶律习涅墓志铭〉再考释》，《国学研究》第22卷，北京大学出版社，2008年12月。</li>
+						<li>郭添刚、崔嵩、王义、刘凤翥：《契丹小字金代〈萧居士墓志铭〉考释》，《文史》2009年第1辑。</li>
+						<li>爱新觉罗·乌拉熙春：《辽朝国号非“哈喇契丹（辽契丹）”考——兼拟契丹大字<span class="khitan"></span>及契丹小字<span class="khitan"></span>的音值》，《爱新觉罗·乌拉熙春女真契丹学研究》，日本松香堂，2009年2月。</li>
+						<li>爱新觉罗·乌拉熙春：《〈梁国王位志铭〉新考——兼拟契丹小字<span class="khitan"></span>的音值》，《爱新觉罗·乌拉熙春女真契丹学研究》，日本松香堂，2009年2月。</li>
+						<li>刘凤翥、唐彩兰、青格勒：《辽上京地区出土的辽代碑刻汇辑》，社会科学文献出版社，2009年8月。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹文〈惕隐司孟父房白隐太傅位志碑铭〉〈故显武将军上师居士拔里公墓志〉合考》，《立命馆文学》614号，2009年12月。</li>
+						<li>刘浦江：《关于契丹小字〈耶律糺里墓志铭〉的若干问题》，《北大史学》第14辑，北京大学出版社，2009年12月。</li>
+						<li>辽宁省文物考古研究所、沈阳市文物考古研究所：《辽宁法库县叶茂台23号辽墓发掘简报》，《考古》2010年第1期。</li>
+						<li>爱新觉罗·乌拉熙春：《契丹文〈控骨里太尉妻胡覩古娘子墓誌〉と〈大中央契丹フリジ国故廣陵郡王墓誌銘〉合考》，《立命馆文学》第617号，2010年6月。</li>
+						<li>刘凤翥：《契丹小字〈耶律宗教墓志铭〉考释》，《文史》2010年第4辑。</li>
+						<li>爱新觉罗·乌拉熙春：《国舅夷離畢帳と耶律玦家族》，《立命馆文学》第621号，2011年3月。</li>
+						<li>吴英喆：《再论契丹文中之汉语人声韵尾的痕迹》，韩国檀国大学北方文化研究所《北方文化研究》第2卷第1号，2011年6月。</li>
+						<li>康鹏：《萧挞凛家族世系考》，《新亚洲论坛》第4辑，韩国首尔出版社，2011年8月。</li>
+						<li>刘浦江：《再论契丹人的父子连名制——以近年出土的契丹大小字石刻为中心》，《清华元史》创刊号，商务印书馆，2011年9月。</li>
+						<li>爱新觉罗·乌拉熙春、吉本道雅：《韓半島から眺めた契丹·女真》，日本京都大学学术出版会，2011年9月。</li>
+						<li>吴英喆：《契丹小字“迭剌部”考释》，《民族语文》2011年第5期c</li>
+						<li>陈晓伟：《再论契丹“五色纪年说”一以契丹小字<span class="khitan"></span>爲中心》，《文史》2011年第4辑。</li>
+						<li>陈晓伟：《释〈辽史〉中的“大汉”一名一兼论契丹小字原字<span class="khitan"></span>的音值问题》，《民族研究》2012年第2期。</li>
+						<li>即实：《谜田耕耘——契丹小字解读续》，辽宁人民出版社，2012年12月。</li>
+					</ol>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div class="gototop">
+	<a href="javascript:scrollTo(0,0)"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a>
+</div>
+<style type="text/css">
+	div.gototop{
+		display: none;
+		position: fixed;
+		bottom: 80px;
+		right: 5px;
+		width: 1.2em;
+		font-size: 1em;
+	}
+	div.gototop a:hover{
+		text-decoration: none;
+	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$(window).scroll(function(){
+			var scrollPos = $(window).scrollTop();
+			if (scrollPos < 700) {
+				$("div.gototop").fadeOut();
+			}else{
+				$("div.gototop").fadeIn();
+			}
+		});
+	});
+</script>	<div class="footer" role="contentinfo" style="padding-top: 20px; padding-bottom: 20px; margin-top: 50px; color: #767676; border-top: 1px solid #E5E5E5; background-color: #ffffff">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-3 col-lg-3 col-sm-3 col-xs-12">
+				<h4><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> 古今文字集成</h4>
+				<p>“<a href='index.php'>古今文字集成</a>”由Jerry設計、維護</p>
+				<p>Powered by PHP 7 and Bootstrap v3.3.6</p>
+				<p>歡迎轉載，功德無量！</p>
+				<p>轉載時請註明「轉載自“古今文字集成”」。</p>
+				<p>@2026，古今文字集成</p>
+				<p>域名：<a href="http://www.ccamc.org">www.ccamc.org</a> | <a href="http://www.ccamc.co">www.ccamc.co</a></p>
+				<p>博客：<a href="http://blog.ccamc.org">blog.ccamc.org</a> | <a href="http://blog.ccamc.co">blog.ccamc.co</a></p>
+			</div>
+			<div class="col-md-3 col-lg-3 col-sm-3 col-xs-12">
+				<h4><span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span> 古今文字集成</h4>
+				<div>
+					<div><img class="img-responsive" src="images/wechatQR.png" style="width:100px" /></div>
+					<p class="text-left">站長Jerry的微信</p>
+					<p class="text-left">微博 <a href="http://weibo.com/ccamc">@古今文字集成</a></p>
+					<p class="text-left">豆瓣 <a href="https://www.douban.com/people/38087247/">@jerryyou517</a></p>
+					<p class="text-left">bilibili <a href="https://space.bilibili.com/95896613">@jerryyou517</a></p>
+					<p class="text-left"><span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span> <a href="donation.php">贊助我們</a></p>
+				</div>
+			</div>
+			<div class="col-md-3 col-lg-3 col-sm-3 col-xs-12">
+				<h4><span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span> 友情鏈接</h4>
+				<p><a href="https://zi.tools/">字統網</a></p>
+				<p><a href="https://ctext.org/zh">中國哲學書電子化計劃</a></p>
+				<p><a href="https://www.shuge.org">書格</a></p>
+				<p><a href="https://lingdata.org/cn/">文苑英華</a></p>
+				<p><a href="https://lingdata.org">Linguistic Data</a></p>
+				<h4><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> 致謝</h4>
+				<p>喃字資料來自“<a target="_blank" href="https://www.nomfoundation.org/">喃產遺存保會</a>”，其他資料來源見“<a href="source.php">參考資料</a>”。</p>
+			</div>
+			<div class="col-md-3 col-lg-3 col-sm-3 col-xs-12">
+				<h4><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> 最新文章</h4>
+				<p><a href='blog/?p=910'>2026年2月28日更新說明</a></p><p><a href='blog/?p=902'>2025年4月11日更新說明</a></p><p><a href='blog/?p=901'>2025年1月19日更新說明</a></p><p><a href='blog/?p=898'>2024年9月10日字體更新：契丹大字楷體</a></p><p><a href='blog/?p=897'>2024年9月8日更新說明</a></p>			</div>
+		</div>
+	</div>
+</div>
+<div class="gototop">
+	<a href="javascript:scrollTo(0,0)"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a>
+</div>
+<style type="text/css">
+	div.gototop{
+		display: none;
+		position: fixed;
+		bottom: 80px;
+		right: 5px;
+		width: 1.2em;
+		font-size: 1em;
+	}
+	div.gototop a:hover{
+		text-decoration: none;
+	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$(window).scroll(function(){
+			var scrollPos = $(window).scrollTop();
+			if (scrollPos < 700) {
+				$("div.gototop").fadeOut();
+			}else{
+				$("div.gototop").fadeIn();
+			}
+		});
+	});
+</script>	<script type="text/javascript" src="js/effects.js"></script>
+</body>
+
+</html>

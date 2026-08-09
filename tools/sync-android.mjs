@@ -35,7 +35,11 @@ await cp(from, to, {
   recursive: true,
   filter: (src) => {
     const rel = path.relative(from, src)
-    return !rel || !SERVER_ONLY.has(rel.split(path.sep)[0])
+    if (!rel) return true
+    const top = rel.split(path.sep)[0]
+    // Dotfiles are not part of the archive; app-bundle.json travels along, since
+    // the app needs to know which version it was built with.
+    return !SERVER_ONLY.has(top) && !top.startsWith(".")
   }
 })
 

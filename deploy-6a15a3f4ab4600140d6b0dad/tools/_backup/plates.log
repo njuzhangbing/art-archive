@@ -1,0 +1,32 @@
+抓取 NASA GIBS 瓦片并合成黑白底片 …
+  overview   z7  27×18 瓦片  (6912×4608 px)  内亚
+      地形 486/486
+      影像 477/486
+      → plates/overview.jpg  6469 KB
+  sogdian    z11  13×9 瓦片  (3328×2304 px)  粟特 — 撒马尔罕、泽拉夫尚河谷
+      地形 108/117
+      影像 113/117
+      → plates/sogdian.jpg  2373 KB
+  oldturkic  z11  13×9 瓦片  (3328×2304 px)  古突厥 — 鄂尔浑河谷、和硕柴达木
+      地形 117/117
+      影像 115/117
+      → plates/oldturkic.jpg  2071 KB
+  olduyghur  z11  13×9 瓦片  (3328×2304 px)  回鹘 — 吐鲁番、高昌
+      地形 117/117
+      影像 117/117
+      → plates/olduyghur.jpg  2209 KB
+  khitan     z11  13×9 瓦片  (3328×2304 px)  契丹 — 上京临潢府、西拉木伦河
+      地形 108/117
+      影像 117/117
+      → plates/khitan.jpg  2271 KB
+  tangut     z11  13×9 瓦片  (3328×2304 px)  西夏 — 贺兰山、兴庆府
+      地形 116/117
+      影像 110/117
+      → plates/tangut.jpg  2126 KB
+  mongolian  z11  13×9 瓦片  (3328×2304 px)  蒙古 — 哈剌和林、鄂尔浑
+      地形 117/117
+      影像 117/117
+      → plates/mongolian.jpg  2047 KB
+
+合计 19.11 MB → /Users/zhangbing/Downloads/deploy-6a15a3f4ab4600140d6b0dad/plates
+影像来源：NASA GIBS（ASTER GDEM 灰阶晕渲 + Landsat WELD 真彩），公有领域。

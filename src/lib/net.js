@@ -12,8 +12,21 @@
  * instead, kept in app storage that no web page can reach.
  */
 
-/** Set at build time by `npm run build:app`; empty for the website. */
-export const BASE = (import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "")
+/** Where the deployed archive answers from. */
+const SITE = "https://painthub.netlify.app"
+
+/** The origin the Android WebView serves the bundled pages from. */
+const APP_ORIGIN = "https://appassets.androidplatform.net"
+
+/**
+ * Decided when the page loads, not when it was built.
+ *
+ * One bundle now serves both the website and the app, which is what lets the
+ * app update itself over the air: it can compare its files against the ones the
+ * site is serving, because they are the same files. A build-time flag would
+ * have made the two permanently different and the comparison meaningless.
+ */
+export const BASE = location.origin === APP_ORIGIN ? SITE : ""
 
 /** True when this bundle is talking to a server on another origin. */
 export const remote = !!BASE

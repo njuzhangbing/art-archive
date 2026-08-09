@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Language" content="zh-CN" />
+<meta name="robots" content="all" />
+<meta name="author" content="ccamc.co" />
+<meta name="author" content="ccamc.org" />
+<meta name="description" content="古今文字集成,集古今文字释義、字形更革、音韻演變之大全" />
+<meta content="中文,汉语,漢語,国语,國語,简体字,簡體字,简化字,簡化字,繁体字,繁體字,正体字,正體字,异体字,異體字,汉语字典,漢語字典,汉语大字典,漢語大字典,汉语大词典,漢語大詞典,成语词典,成語詞典,叶典,中文字典,说文解字,說文解字,康熙字典" name="keywords" />
+<meta content="方言,方言地图,韵书,汉语音韵学,韵书集成,上古音系,上古音,广韵,廣韻,集韵,集韻,中古音,蒙古字韻,中原音韻,洪武正韻牋,分韻撮要" name="keywords" />
+<meta content="契丹字,契丹文,契丹大字,契丹小字,契丹小字原字,契丹小字词汇,女真文,女真字,西夏字,西夏文,西夏文字典,夏汉字典,夏漢字典,简明夏汉字典,簡明夏漢字典,夏俄英汉字典,夏俄英漢詞典,在线西夏文字典,在線西夏文字典,八思巴文,八思巴字,女书,女書" name="keywords" />
+<meta content="开放古文字字形库,字源,汉字字源,金文,甲骨文,楚简,楚简文字,秦简,秦简文字,传抄古文字,敦煌异体字" name="keywords" />
+<meta content="Unicode, Unicode CJK Extension, Unihan Database, Chinese characters, Chinese Dictionary, Chinese-English Dictionary, Kangxi Dictionary, Shuowen Jiezi, hanzi, zhongwen, hanyu, guoyu"  name="keywords" />
+<meta content="Chinese Dialects, Historical Chinese Phonology, Guangyun, Menggu Ziyun" name="keywords" />
+<meta content="Khitan, Khitan script, Khitan Large Script, Khitan Small Script, Khitan Dictionary, Jurchen, Jurchen script, Jurchen Dictionary, Tangut, Tangut Script, Tangut Dictionary, Tangut-Chinese Dictionary, Tangut-Russian-English-Chinese Dictionary, Online Tangut Dictionary,'Phags-pa, Phagspa, Nvshu, Nvshu Dictionary" name="keywords" />
+<meta content="Open Ancient Chinese Characters Glyphs Dictionary, Oracle Bone Script, Chinese bronze inscriptions, Bronze script, Chu slip script, Qin slip script, Shuowen Small seal script, Transcribed Ancient Chinese Characters, Dunhuang Variants" name="keywords" />
+<link rel="icon" href="css/zi2.ico" />
+<!-- For iPhone -->
+<link rel="apple-touch-icon" href="css/logo-apple-icon.png">
+<!-- For iPhone Retina display -->
+<link rel="apple-touch-icon" sizes="180x180" href="css/logo-apple-icon.png">
+<!-- For iPad -->
+<link rel="apple-touch-icon" sizes="152x152" href="css/logo-apple-icon.png">
+<!-- For iPad Retina display -->
+<link rel="apple-touch-icon" sizes="167x167" href="css/logo-apple-icon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<link href="fonts/kssKaiti/stylesheet.css" rel="stylesheet">	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<title>
+		契丹小字 | 古今文字集成
+	</title>
+</head>
+
+<style type="text/css">
+	span.kls, span.kss{
+		font-family: ccamc_kls_kaitireg, CCAMC_KSS_Kaiti, "CCAMC KSS Kaiti", "CCAMC Khitan & Jurchen Std L", "CCAMC Khitan & Jurchen Std";
+	}
+	span.BabelStone{
+		font-family: "BabelStone Khitan Large Glyphs";
+	}
+	span.big{
+		font-size: 90px;
+		width: 120px;
+		/*height: 120px;*/
+		text-align: center;
+		vertical-align: middle;
+	}
+	span.kssWord{
+		font-size: 3em;
+		font-family: CCAMC_KSS_Kaiti, 
+			"CCAMC KSS Kaiti", 
+			"CCAMC Khitan & Jurchen Std L", 
+			"CCAMC Khitan & Jurchen Std";
+	}
+	p.exp{
+		text-indent: 2em;
+	}
+	span.word{
+		font-size: 1.5em;
+	}
+	div#jbjs, div#xgch{
+		padding: 15px;
+		box-sizing: content-box;
+	}
+</style>
+
+<body>
+	<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59455086-1', 'auto');
+  ga('send', 'pageview');
+
+</script>	<style type="text/css">
+		table.phagspa{
+		border: 0px solid #000;
+	}
+	tr.rp{
+		color: #336699;
+	}
+	button.phagspa, p.phagspa {
+		text-align: left;
+		font-family: 'Microsoft Phagspa', phags_pa;
+		-webkit-transform: rotate(90deg);
+		-moz-transform: rotate(90deg);
+		-ms-transform: rotate(90deg);
+		-o-transform: rotate(90deg);
+		transform: rotate(90deg);
+
+		-webkit-transform-origin:50% 50%;
+		-moz-transform-origin:50% 50%;
+		-ms-transform-origin:50% 50%;
+		-o-transform-origin:50% 50%;
+		transform-origin:50% 50%;
+		writing-mode: lr-tb;
+	}
+	p.phagspa{
+		font-family: 'Microsoft Phagspa', phags_pa;
+		pointer-events: none;
+		margin: 20px;
+		font-size: 1.5em;
+		text-align: center;
+	}
+	#vertical_phagspa: {
+		font-family: 'Microsoft Phagspa', phags_pa;
+		float: left;
+	}
+	.rp{
+		display: none;
+	}
+</style>
+<script type="text/javascript">
+function khimh(e) {
+	if (e.target) {
+		var obj = e.target;
+	} else {
+		var obj = e.srcElement
+	}
+	if (obj.value) {
+		var v = obj.value;
+	} else if (obj.textContent) {
+		var v = obj.textContent;
+	} else if (obj.innerText) {
+		var v = obj.innerText;
+	} else if (obj.text) {
+		var v = obj.text;
+	} else {
+		var v = '';
+	}
+	insert(document.form_phagspa.charPhagspa, v);
+}
+function insert(field, v) {
+	if (document.selection) {
+		field.focus();
+		sel = document.selection.createRange();
+		sel.text = v;
+		sel.select();
+	} else if (field.selectionStart || field.selectionStart == '0') {
+		var startPos = field.selectionStart;
+		var endPos = field.selectionEnd;
+		var newEndPos = startPos + v.length;
+		field.value = field.value.substring(0, startPos) + v + field.value.substring(endPos, field.value.length);
+		field.setSelectionRange(newEndPos, newEndPos);
+	} else {
+		var newEndPos = field.value.length + v.length;
+		field.value += v;
+		field.setSelectionRange(newEndPos, newEndPos);
+	}
+	field.focus();
+}
+</script><link href='fonts/tangut_component_v17/stylesheet.css' rel='stylesheet'>
+<script type='text/javascript' src='js/tangutime.js'></script>
+
+<nav class="navbar navbar-inverse navbar-static-top" id="topnavbar" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="index.php"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+	<ul class="nav navbar-nav">
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">漢字<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="cjkv_intro.php">漢字簡介</a></li>
+				<li><a href="cjkv_radical.php">部首檢字</a></li>
+				<li><a href="cjkv_traditional_radical.php">Unihan部首檢字</a></li>
+				<li><a href="cjkv_mojikiban_radical.php">文字情報基盤データベース</a></li>
+				<li><a href="cjkv_kangxi.php">康熙字典</a></li>
+				<li><a href="cjkv_shuowen.php">說文解字</a></li>
+				<li><a href="cjkv_oaccgd.php">開放古文字字形庫</a></li>
+				<li><a href="cjkv_strokenumber.php">總筆畫數檢字</a></li>
+				<li><a href="cjkv_yunshu.php">韻書集成</a></li>
+				<li><a href="source.php#cjkv">漢字參考資料</a></li>
+				<li><a href="cjkv_statistics.php">漢字總筆畫數分佈圖</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">西夏文<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="tangut_intro.php">西夏文簡介</a></li>
+				<li><a href="blog/?p=77">★如何通過漢字查詢西夏字</a></li>
+				<li><a href="tangut_index.php">西夏文索引</a></li>
+				<li><a href="tangut_unicode_index.php">西夏文Unicode索引</a></li>
+				<li><a href="tangut_sijiao.php">西夏文四角號碼檢字法</a></li>
+				<li><a href="tangut_ids_intro.php">西夏文部件檢字法</a></li>
+				<li><a href="tangut_radical.php">夏漢字典部首檢字</a></li>
+				<li><a href="tangut_unicode_radical.php">Unicode部首檢字</a></li>
+				<li><a href="tangut_trecd_radical.php">夏俄英漢詞典部首檢字</a></li>
+				<li><a href="tangut_xxwcd_radical.php">西夏文詞典部首檢字</a></li>
+				<li><a href="tangut_reconstructed_pronunciation.php">西夏文擬音方案</a></li>
+				<li><a href="tangut_wenhai.php">文海</a></li>
+				<li><a href="tangut_text/index.php">西夏文語句翻譯</a></li>
+				<li><a href="tangut_ms.php">西夏文獻目錄</a></li>
+				<li><a href="source.php#tangut">西夏文參考資料</a></li>
+				
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">契丹文<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="khitan_intro.php">契丹文簡介</a></li>
+				<li><a href="khitan_large_script_index.php">契丹大字索引</a></li>
+				<li><a href="khitan_small_script_index.php">契丹小字索引</a></li>
+				<li><a href="khitan_small_script_vocabulary_index.php">契丹小字詞彙索引</a></li>
+				<li><a href="khitan_large_script_strokenumber.php">契丹大字總筆畫數檢字</a></li>
+				<li><a href="khitan_small_script_strokenumber.php">契丹小字總筆畫數檢字</a></li>
+				<li><a href="source.php#khitan">契丹文參考資料</a></li>
+				<li><a href="khitan_small_script_voc_exp_source.php">契丹小字詞彙參考文獻</a></li>
+				<li><a href="khitan_statistics.php">契丹文總筆畫數分佈圖</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">女真文<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="jurchen_intro.php">女真文簡介</a></li>
+				<li><a href="jurchen_index.php">女真文索引</a></li>
+				<li><a href="jurchen_radical.php">女真文部首檢字</a></li>
+				<li><a href="jurchen_strokenumber.php">女真文總筆畫數檢字</a></li>
+				<li><a href="source.php#jurchen">女真文參考資料</a></li>
+				<li><a href="jurchen_statistics.php">女真文總筆畫數分佈圖</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">女書<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="nvshu_intro.php">女書簡介</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">八思巴文<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="phagspa_intro.php">八思巴文簡介</a></li>
+				<li><a href="phagspa_alphabet.php">八思巴文字母表</a></li>
+				<li><a href="phagspa_mengguziyun_index.php">蒙古字韻</a></li>
+				<li><a href="source.php#phagspa">八思巴文參考資料</a></li>
+			</ul>
+		</li>
+	</ul>
+	<ul class="nav navbar-nav navbar-right">
+		<li><a href="introduction.php"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> 關於</a></li>
+		<li><a href="donation.php"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> 捐贈</a></li>
+		<li><a href="fonts.php"><span class="glyphicon glyphicon-text-color" aria-hidden="true"></span> 字體和輸入法</a></li>
+		<li><a href="blog/"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> 博客</a></li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">其他<span class="caret"></span></a>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="buddhist_glossaries.php">佛典術語</a></li>
+				<li><a href="chinese_historical_map/index.php"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> 中國歷史地圖集</a></li>
+			</ul>
+		</li>
+	</ul>
+</div><!-- /.navbar-collapse -->	</div><!-- /.container-fluid -->
+</nav>
+<div style="width:auto; position:relative; top:-30px; padding-top:40px; padding-bottom:25px; background-color:#fafbfc; border-bottom:1px solid #ddd; box-shadow: 0px 5px 10px 0px #ccc; -webkit-box-shadow: 0px 5px 10px 0px #ccc; -moz-box-shadow: 0px 5px 10px 0px #ccc; -o-box-shadow: 0px 5px 10px 0px #ccc;">
+		<div class="container">
+			<style type="text/css">
+		.tangut-search-container {
+		display: none;
+		margin-bottom: 15px;
+	}
+	.tangut-search-container.active {
+		display: block;
+	}
+	.tangut-radio-group {
+		margin-top: 10px;
+		display: flex; 
+		gap: 15px; 
+		justify-content: center;
+	}
+	.tangut-radio-group label {
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+	}
+	/* 添加选中效果 */
+	input[type="radio"]:checked + span {
+		color: #158cba;
+	}
+
+	.tangut, .tgStrokes{
+		font-family: tangut_components_v17, "Tangut N4694";
+	}
+	.zitou{
+		font-size: 1.6em;
+	}
+	.highlight{
+		color: #C7254E;
+	}
+	div#candidateList{
+		/*margin: 10px auto 0 auto;*/
+		max-height: 300px;
+		overflow: auto;
+	}
+	.tgStrokes{
+		font-size: 1.6em;
+		margin: 5px 0px;
+	}
+	div#strokeIME, div#alphabetIME{
+		display: none;
+	}
+	img.tangut-com-example{
+		vertical-align: baseline;
+		height: 50px;
+	}
+</style>
+<div class="row">
+	<div class="col-md-10 col-lg-10 col-sm-12 col-xs-12 col-md-offset-1 col-lg-offset-1">
+		<div>
+			<ul class="nav nav-pills" style="text-align:center;">
+				<li class="active cjk" style="float:none;display:inline-block"><a data-toggle="tab" href="#CJKV">漢字</a></li>
+				<li class="tangut" style="float:none;display:inline-block;"><a data-toggle="tab" href="#TANGUT">西夏文</a></li>
+				<li class="khitan" style="float:none;display:inline-block;"><a data-toggle="tab" href="#KHITAN">契丹文</a></li>
+				<li class="jurchen" style="float:none;display:inline-block;"><a data-toggle="tab" href="#JURCHEN">女真文</a></li>
+				<li class="nvshu" style="float:none;display:inline-block;"><a data-toggle="tab" href="#NVSHU">女書</a></li>
+				<li class="phagspa" style="float:none;display:inline-block;"><a data-toggle="tab" href="#PHAGSPA">八思巴文</a></li>
+			</ul>
+		</div>
+
+		<div class="tab-content">
+			<div id="CJKV" class="tab-pane fade active in">
+				<br />
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" id="charChn" name="cjkv" placeholder="漢字、詞語、成語" style="font-family: 'TsukiMincho', 'HanaMinB';">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="10" class="form-control" id="pinyin" name="pinyin" placeholder="拼音">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="7" class="form-control" id="shurufa" name="imecode" placeholder="倉頡、五筆或鄭碼">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="6" class="form-control" id="unicode" name="unicode" placeholder="Unicode碼位">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="8" class="form-control" id="MJ" name="MJ" placeholder="MJ文字図形名">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="cjkv_search.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="6" class="form-control" id="sjhm" name="sijiao" placeholder="四角號碼">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" >搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 navigation">
+					<ul class="list-inline" style="text-align: center; margin-top: 10px">
+						<li><a href="cjkv_radical.php">部首檢字</a></li>
+						<li><a href="cjkv_traditional_radical.php">Unihan部首</a></li>
+						<li><a href="cjkv_strokenumber.php">總筆畫數</a></li>
+						<li><a href="cjkv_shuowen.php">說文解字</a></li>
+						<li><a href="cjkv_kangxi.php">康熙字典</a></li>
+						<li><a href="cjkv_yunshu.php">韻書集成</a></li>
+						<li><a href="cjkv_oaccgd.php">開放古文字字形庫</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="TANGUT" class="tab-pane fade">
+				<br />
+				<div class="tangut-search-container active" id="tsc1">
+					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="number" min="1" max="6077" maxlength="4" class="form-control" name="XHZDid" id="charTang" placeholder="夏漢字典序號">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="number" min="1" max="5819" maxlength="4" class="form-control" name="Sofronovid" id="charTangSofronov" placeholder="Sofronov序號">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+				</div>
+				<div class="tangut-search-container" id="tsc2">
+					<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut_sijiao.php" method="get">
+							<div class="input-group">
+								<input type="text" maxlength="20" class="form-control" name="sj" id="charTangSJ" placeholder="四角號碼">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+				</div>
+				<div class="tangut-search-container" id="tsc3">
+					<div class="col-md-4 col-lg-4 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="text" class="form-control" name="jys" id="charTangJYS" placeholder="景永時字體">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+					<div class="col-md-4 col-lg-4 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="text" class="form-control" name="n4694" id="charTangN4694" placeholder="Unicode字符（字或詞）" style="font-family: 'Tangut N4694', 'Tangut Yinchuan', 'Mojikyo Tangut'">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+					<div class="col-md-4 col-lg-4 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut.php" method="get">
+							<div class="input-group">
+								<input type="text" maxlength="6" class="form-control" name="unicode" id="charTangUnicode" placeholder="Unicode碼位">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+								</span>
+							</div>
+						</form> 
+					</div>
+				</div>
+				<div class="tangut-search-container" id="tsc4">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<form class="form-horizontal" name="search" role="form" action="tangut_ids.php" method="get">
+							<div class="input-group">
+								<input type="text" class="form-control tangut" name="com" id="tangutcomponents" placeholder="請輸入要查詢的部件">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" type="submit">搜索</button>
+									<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu" aria-labelledby="imeMenu">
+										<li><a href="javascript:;" id="openAlphabetIME">
+											<span class="glyphicon glyphicon-text-background" aria-hidden="true"> 字母輸入</a>
+										</li>
+										<li><a href="javascript:;" id="openStrokeIME">
+											<span class="glyphicon glyphicon-pencil" aria-hidden="true"> 筆畫輸入</a>
+										</li>
+										<li role="separator" class="divider"></li>
+										<li><a href="javascript:;" id="closeIME"><span class="glyphicon glyphicon-remove" aria-hidden="true"> 關閉</a></li>
+									</ul>
+								</span>
+							</div>
+						</form>
+					</div>
+					<p></p>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div id="alphabetIME">
+							<input type="text" class="form-control tangut" id="comAlphabetIME" placeholder="請輸入部件筆畫">
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div id="strokeIME">
+							<div class="tangut">
+								<button type="button" class="btn btn-primary tgStrokes" title="橫">𘠀</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="豎">𘠁</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="撇">𘠂</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="點">𘶃</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折彎鉤"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫撇">𘠃</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折折撇">𘠄</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折折折折撇">𘠅</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折折折鉤"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫折橫"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="撇折"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="豎彎鉤">𘠆</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫撇點提"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="撇點提">𘠈</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="撇捺">𘠉</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="捺">𘶂</button>
+								<button type="button" class="btn btn-primary tgStrokes" title="橫撇捺"></button>
+								<button type="button" class="btn btn-primary tgStrokes" title="豎折折"></button>
+								<button type="button" class="btn btn-warning tgStrokes" id="backspace" title="刪除">←</button>
+								<button type="button" class="btn btn-warning tgStrokes" id="clearText" title="清除">×</button>
+							</div>
+							<p class="tangut zitou" id="comStrokeIME"></p>
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div id="candidateList"></div>
+					</div>
+				</div>
+						
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+					<div class="tangut-radio-group">
+						<label>
+							<input type="radio" name="tangutSearchbox" class="tsc1" checked>
+							&nbsp;<span>序號</span>
+						</label>
+						<label>
+							<input type="radio" name="tangutSearchbox" class="tsc3">
+							&nbsp;<span>字符</span>
+						</label>
+						<label>
+							<input type="radio" name="tangutSearchbox" class="tsc2">
+							&nbsp;<span>四角號碼</span>
+						</label>
+						<label>
+							<input type="radio" name="tangutSearchbox" class="tsc4">
+							&nbsp;<span>部件</span>
+						</label>
+					</div>
+				</div>
+
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 navigation">
+					<ul class="list-inline" style="text-align: center; margin-top: 10px">
+						<li><a href="tangut_sijiao.php">四角號碼</a></li>
+						<li><a href="tangut_ids_intro.php">部件檢字</a></li>
+						<li><a href="tangut_radical.php">夏漢字典</a></li>
+						<li><a href="tangut_unicode_radical.php">Unicode部首</a></li>
+						<li><a href="tangut_trecd_radical.php">夏俄英漢詞典</a></li>
+						<li><a href="tangut_xxwcd_radical.php">西夏文詞典</a></li>
+						<li><a href="tangut_reconstructed_pronunciation.php">擬音方案</a></li>
+						<li><a href="tangut_ms.php">西夏文獻目錄</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="KHITAN" class="tab-pane fade">
+				<br />
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="kls" placeholder="契丹大字" style="font-family: 'CCAMC Khitan & Jurchen Std'">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="kss" placeholder="契丹小字" style="font-family: 'CCAMC Khitan & Jurchen Std'">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan_large_script_strokeorder.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="18" class="form-control" name="so" placeholder="契丹大字筆順">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan.php" method="get">
+						<div class="input-group">
+							<input type="number" min='1' max="2218" maxlength="4" class="form-control" name="N4631_id" placeholder="契丹大字序號">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan.php" method="get">
+						<div class="input-group">
+							<input type="number" min="1" max="411" maxlength="3" class="form-control" name="kss_id" placeholder="契丹小字序號">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="khitan_small_script_strokeorder.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="10" class="form-control" name="so" id="charKts" placeholder="契丹小字筆順">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 navigation">
+					<ul class="list-inline" style="text-align: center; margin-top: 10px">
+						<li><a href="khitan_large_script_index.php">契丹大字索引</a></li>
+						<li><a href="khitan_small_script_index.php">契丹小字索引</a></li>
+						<li><a href="khitan_small_script_vocabulary_index.php">契丹小字詞彙索引</a></li>
+						<li><a href="khitan_large_script_strokenumber.php">契丹大字總筆畫數</a></li>
+						<li><a href="khitan_small_script_strokenumber.php">契丹小字總筆畫數</a></li>
+						<!-- <li><a href="khitan_small_script_vocabulary_index.php">契丹小字詞組索引</a></li> -->
+					</ul>
+				</div>
+			</div>
+
+			<div id="JURCHEN" class="tab-pane fade">
+				<br />
+				<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="jurchen.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="jurchen" placeholder="女真文" style="font-family: 'CCAMC Khitan & Jurchen Std'">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="jurchen.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="5" class="form-control" name="N3788" placeholder="N3788序號">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="jurchen_strokenumber.php" method="get">
+						<div class="input-group">
+							<input type="number" min="1" max="10" maxlength="2" class="form-control" name="ts" placeholder="總筆畫數">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-6 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="jurchen_strokeorder.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="10" class="form-control" name="so" placeholder="請輸入筆順">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 navigation">
+					<ul class="list-inline" style="text-align: center; margin-top: 10px">
+						<li><a href="jurchen_index.php">女真文索引</a></li>
+						<li><a href="jurchen_radical.php">女真文部首</a></li>
+						<li><a href="jurchen_strokenumber.php">女真文總筆畫數</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="NVSHU" class="tab-pane fade">
+				<br />
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="nvshu.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="2" class="form-control" name="nvshu" placeholder="女書" style="font-family: 'Noto女书传统体Regular'">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="nvshu.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="5" class="form-control" name="unicode" placeholder="Unicode碼位">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="nvshu.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="2" class="form-control" name="cjkv" placeholder="漢字">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+			</div>
+
+			<div id="PHAGSPA" class="tab-pane fade">
+				<br />
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="phagspa.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="chnp" id="charChnPhagspa" placeholder="漢字">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="search" role="form" action="phagspa.php" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control" name="pyp" id="charChnPinyin" placeholder="現代漢語拼音">
+							<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="col-md-6 col-lg-4 col-sm-6 col-xs-12">
+					<form class="form-horizontal" name="form_phagspa" role="form" action="phagspa.php" method="get">
+						<div class="input-group">
+							<input type="text" maxlength="4" class="form-control" name="pp" id="charPhagspa" placeholder="八思巴文">
+														<span class="input-group-btn">
+								<button class="btn btn-primary" type="submit" id="searchPsp">搜索</button>
+							</span>
+						</div>
+					</form> 
+				</div>
+				<div class="row">
+					<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" id="vertical_phagspa"></div>
+					<div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+						<div class="table-responsive">
+	<table class="table phagspa">
+		<tbody>
+			<tr>
+				<!-- velars -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡂ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡁ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡀ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡃ</button></td>
+				<!-- Labials -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡎ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡍ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡌ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡏ</button></td>
+				<td></td>
+				<td></td>
+				<td><button id="toggleRp">顯示擬音</button></td>
+			</tr>
+			<tr class="rp">
+				<!-- velars -->
+				<td>g 見</td>
+				<td>kh 溪</td>
+				<td>k 群</td>
+				<td>ng 疑</td>
+				<!-- Labials -->
+				<td>b 幫</td>
+				<td>ph 滂</td>
+				<td>p 並</td>
+				<td>m 明</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+
+			<tr>
+				<!-- Labiodentals -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡤ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡰ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡤ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡓ</button></td>
+				<!-- Dentals -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡊ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡉ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡈ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡋ</button></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr class="rp">
+				<!-- Labiodentals -->
+				<td>Hw 非</td>
+				<td>hw 敷</td>
+				<td>Hw 奉</td>
+				<td>w 微</td>
+				<!-- Dentals -->
+				<td>d 端</td>
+				<td>th 透</td>
+				<td>t 定</td>
+				<td>n 泥</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+
+			<tr>
+				<!-- Retroflexes and the Palatal Nasal -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡆ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡅ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡄ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡮ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡚ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡇ</button></td>
+				<!-- Sibilants -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡒ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡑ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡐ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡛ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡕ</button></td>
+			</tr>
+			<tr class="rp">
+				<!-- Retroflexes and the Palatal Nasal -->
+				<td>j 知、照</td>
+				<td>ch 徹、穿</td>
+				<td>c 澄、床</td>
+				<td>sh 審</td>
+				<td>zh 禪</td>
+				<td>ñ 娘</td>
+				<!-- Sibilants -->
+				<td>dz 精</td>
+				<td>tsh 清</td>
+				<td>ts 從</td>
+				<td>s 心</td>
+				<td>z 邪</td>
+			</tr>
+
+			<tr>
+				<!-- Laryngeals and Semivowels -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡜ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡣ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡯ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡖ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡗ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡝ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡭ</button></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr class="rp">
+				<!-- Laryngeals and Semivowels -->
+				<td>h 曉</td>
+				<td>X 匣</td>
+				<td>H 匣</td>
+				<td>' 影</td>
+				<td>Y 影</td>
+				<td>x 喻</td>
+				<td>y 喻</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+
+			<tr>
+				<!-- Liquids -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡙ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡔ</button></td>
+				<!-- Vowels -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡞ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡟ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡠ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡡ</button></td>
+				<!-- Medial Semivowels -->
+				<td><button class="phagspa" onclick="khimh(event)">ꡧ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡨ</button></td>
+				<td><button class="phagspa" onclick="khimh(event)">ꡦ</button></td>
+				<td></td>
+				<td></td>
+			</tr>
+
+			<tr class="rp">
+				<!-- Liquids -->
+				<td>l 來</td>
+				<td>Zh 日</td>
+				<!-- Vowels -->
+				<td>i</td>
+				<td>u</td>
+				<td>e</td>
+				<td>o</td>
+				<!-- Medial Semivowels -->
+				<td>w</td>
+				<td>y</td>
+				<td>ÿ</td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+</div>					</div>
+				</div>
+				<ul class="list-inline" style="text-align: center; margin-top: 10px">
+					<li><a href="phagspa_alphabet.php">八思巴文字母表</a></li>
+					<li><a href="phagspa_mengguziyun_index.php">蒙古字韻</a></li>
+				</ul>
+			</div>
+		</div>
+
+	</div>
+</div>		</div>
+</div>
+<script type="text/javascript">
+	function returnPhagsPa(){
+		var input = document.getElementById("charPhagspa").value;
+		document.getElementById("vertical_phagspa").innerHTML = "<p class='phagspa'>"+input+"</p>";
+	}
+	function clear(){
+		document.getElementById("charPhagspa").value = "";
+	}
+	document.getElementById("charPhagspa").addEventListener("focus", returnPhagsPa, false);
+	document.getElementById("charPhagspa").addEventListener("keyup", returnPhagsPa, false);
+
+	$(document).ready(function(){
+		$("#toggleRp").click(function(){
+			$(".rp").fadeToggle(500);
+			if ($("#toggleRp").text() == "顯示擬音") {
+				$("#toggleRp").text("隱藏擬音");
+			}else if($("#toggleRp").text() == "隱藏擬音"){
+				$("#toggleRp").text("顯示擬音");
+			}
+		});
+
+		// 西夏文部分
+		let tgSelected = '';
+		if (localStorage.getItem('tgSelected') !== null) {
+			tgSelected = localStorage.getItem('tgSelected');
+			// console.log('当前选中1：'+tgSelected);
+			$('.tangut-search-container').removeClass('active');
+			$("div#"+tgSelected).addClass('active');
+			$("input."+tgSelected).prop('checked', true);
+		}else{
+			tgSelected = $('input[name="tangutSearchbox"]:checked').attr('class');
+			$("div#"+tgSelected).addClass('active');
+		}
+		// console.log('当前选中2：'+tgSelected);
+		
+		$('input[type="radio"]').change(function() {
+			// 隐藏所有输入框
+			$('.tangut-search-container').removeClass('active');
+			
+			// 显示选中radio对应的输入框
+			let tgSelected = $(this).attr("class");
+			localStorage.setItem('tgSelected', tgSelected);
+			// console.log('当前选中：'+tgSelected);
+			$("div#"+tgSelected).addClass('active');
+		});
+
+		// 西夏文部件查詢
+		let isNumeric = function(input){
+			if (input.length > 0) {
+				let line = input.trim();
+				let len = Array.from(line).length;
+				if (len > 0) {
+					for (let zi of line) {
+						code = zi.charCodeAt(0);
+						if (code > 47 && code < 58) // 0-9
+						{
+							return true;
+						}
+					}
+					return false;
+				}else{
+					return false;
+				}
+			}
+			return false;
+		}
+
+		let candidate = []; //儲存臨時查詢的結果列表
+		let userInput = '';
+		let displayStrokes = ''; //用笔画显示用户输入的笔顺
+		let userInputAlpha = ''; //用户输入的笔顺转字母
+
+		// 从缓存中加载上一次使用的输入法
+		let curIME = localStorage.getItem('tangutcompime');
+		switch (curIME){
+			case 'alphabet':
+				$("div#alphabetIME").show();
+				break;
+			case 'stroke':
+				$("div#strokeIME").show();
+				break;
+			case 'close':
+				$("div#alphabetIME").hide();
+				$("div#strokeIME").hide();
+				break;
+		}
+
+
+		$(document).on("input change keyup", "#comAlphabetIME", function(event){
+			//字母输入法
+			let userCode = $(this).val().trim();
+			if (userCode.length > 0) {
+				let lastDigit = userCode[userCode.length-1];
+				if(isNumeric(lastDigit)){
+					let selected = $("#com"+lastDigit).text();
+					// console.log('选中：'+selected);
+					userInput += selected;
+					// $("#userInput").text(userInput);
+					$("#tangutcomponents").val(userInput);
+					$(this).val('');
+				}
+				// console.log('輸入1：'+userCode);
+				// console.log('用戶輸入：'+userInput);
+				// console.log('最後位：'+lastDigit);
+				let candidate = tangutComList.filter(function(items) {  
+					return items.ime.startsWith(userCode);  
+				});
+				let candidateText = '';
+				for (var i = 0; i < candidate.length; i++) {
+					let id = i + 1;
+					let curCode = candidate[i]['ime'];
+					let curCom = candidate[i]['com'];
+					if (curCode.length > userCode.length) {
+						curCode = userCode + "<span class='highlight'>" + curCode.replace(userCode, '') + "</span>"; //给未输入的编码部分高亮加颜色
+					}
+
+					candidateText += "<p class='tangut zitou'>"+id+". <a class='op' href='#'><span id='com"+id+"'>"+curCom+"</span> ("+curCode+")</a></p>";;
+				}
+				$("#candidateList").html(candidateText);
+				// console.log(candidate);
+			}else{
+				$("#candidateList").html('');
+				$("#userInput").html('');
+			}
+		});
+		$(document).on("click", "button.tgStrokes", function(event){
+			//笔画输入法
+			let keyId = $(this).attr('id');
+			switch (keyId){
+				case 'backspace':
+					// 退格键按下，移除用户输入笔画的最后一个
+					// console.log($(this).attr('id'));
+					let line = $("#comStrokeIME").text().trim();
+					line = Array.from(line);
+					let len = line.length;
+					// console.log(line + ': ' + len);
+					if (len > 0) {
+						line.pop(); //移除笔画的最后一个
+						// console.log(line);
+						line = line.join('');
+						displayStrokes = line;
+						$("#comStrokeIME").text(displayStrokes); //更新显示笔画
+						userInputAlpha = userInputAlpha.slice(0, userInputAlpha.length-1); //更新笔顺转字母
+					}
+					break;
+				case 'clearText':
+					// 清除键按下，清楚用户输入的数据
+					$("#comStrokeIME").text('');
+					$("#candidateList").html('');
+					displayStrokes = ''; //更新笔画显示用户输入的笔顺
+					userInputAlpha = ''; //更新用户输入的笔顺转字母
+					break;
+				default:
+					let stroke = $(this).text();
+					displayStrokes += stroke;
+					// console.log(stroke);
+					$("#comStrokeIME").text(displayStrokes);
+					let strokeAlpha = ''; //笔画对应的字母
+					switch (stroke){
+						case '𘠀':
+							strokeAlpha = 'a';
+							break;
+						case '𘠁':
+							strokeAlpha = 'b';
+							break;
+						case '𘠂':
+							strokeAlpha = 'c';
+							break;
+						case '𘶃':
+							strokeAlpha = 'd';
+							break;
+						case '':
+							strokeAlpha = 'e';
+							break;
+						case '':
+							strokeAlpha = 'f';
+							break;
+						case '𘠃':
+							strokeAlpha = 'g';
+							break;
+						case '𘠄':
+							strokeAlpha = 'h';
+							break;
+						case '𘠅':
+							strokeAlpha = 'i';
+							break;
+						case '':
+							strokeAlpha = 'j';
+							break;
+						case '':
+							strokeAlpha = 'k';
+							break;
+						case '':
+							strokeAlpha = 'l';
+							break;
+						case '𘠆':
+							strokeAlpha = 'm';
+							break;
+						case '':
+							strokeAlpha = 'n';
+							break;
+						case '𘠈':
+							strokeAlpha = 'o';
+							break;
+						case '𘠉':
+							strokeAlpha = 'p';
+							break;
+						case '𘶂':
+							strokeAlpha = 'q';
+							break;
+						case '':
+							strokeAlpha = 'r';
+							break;
+						case '':
+							strokeAlpha = 's';
+							break;
+					}
+					userInputAlpha += strokeAlpha;
+					break;
+			}
+
+			if (userInputAlpha.length > 0) {
+				// console.log('輸入2：'+userInputAlpha);
+				// console.log('用戶輸入：'+userInput);
+				// console.log('最後位：'+lastDigit);
+				let candidate = tangutComList.filter(function(items) {  
+					return items.ime.startsWith(userInputAlpha);  
+				});
+				let candidateText = '';
+				for (var i = 0; i < candidate.length; i++) {
+					let id = i + 1;
+					let curCode = candidate[i]['ime'];
+					let curCom = candidate[i]['com'];
+					if (curCode.length > userInputAlpha.length) {
+						curCode = userInputAlpha + "<span class='highlight'>" + curCode.replace(userInputAlpha, '') + "</span>"; //给未输入的编码部分高亮加颜色
+					}
+					candidateText += "<p class='tangut zitou'>"+id+". <a class='op' href='#'><span id='com"+id+"'>"+curCom+"</span> ("+curCode+")</a></p>";
+				}
+				$("#candidateList").html(candidateText);
+				// console.log(candidate);
+			}else{
+				$("#candidateList").html('');
+				$("#userInput").html('');
+			}
+		});
+		$(document).on("click", "a.op", function(e){
+			// 点击候選字
+			// alert('!');
+			e.preventDefault();
+			let selected = $(this).find('span').first().text().trim();
+			// console.log('選中：' + selected);
+			userInput += selected;
+			displayStrokes = '';
+			userInputAlpha = '';
+			$("#tangutcomponents").val(userInput);
+			$("#candidateList").html('');
+			$("#comAlphabetIME").val('');
+			$("#comStrokeIME").html('');
+		});
+		$(document).on("click", "a#openAlphabetIME", function(e){
+			// 打开字母输入法
+			e.preventDefault();
+			$("div#alphabetIME").show();
+			$("div#strokeIME").hide();
+			localStorage.setItem('tangutcompime', 'alphabet');
+			$("#candidateList").html('');
+			$("#comAlphabetIME").val('');
+			$("#comStrokeIME").html('');
+		});
+		$(document).on("click", "a#openStrokeIME", function(e){
+			// 打开笔画输入法
+			e.preventDefault();
+			$("div#strokeIME").show();
+			$("div#alphabetIME").hide();
+			localStorage.setItem('tangutcompime', 'stroke');
+			$("#candidateList").html('');
+			$("#comAlphabetIME").val('');
+			$("#comStrokeIME").html('');
+		});
+		$(document).on("click", "a#closeIME", function(e){
+			// 关闭输入法
+			e.preventDefault();
+			$("div#strokeIME").hide();
+			$("div#alphabetIME").hide();
+			$("#candidateList").html('');
+			$("#comStrokeIME").text('');
+			localStorage.setItem('tangutcompime', 'close');
+		});
+		$(document).on("change", "#tangutcomponents", function(e){
+			userInput = $(this).val().trim();
+		});
+	});
+</script>
+	<div class="container">
+		<div class="row">
+			<div class='col-md-12 col-lg-12 col-sm-12 col-xs-12'>
+				<div class="row">
+	<div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
+		<p class="title">“<span class="kss"></span>”的基本信息</p>
+		<p class="text-center"><span class="kss big"></span></p>
+	</div>
+		<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
+		<p class="title">序號</p>
+		<p>128</p>
+	</div>
+		<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
+		<p class="title">Kane序號</p>
+		<p>128</p>
+	</div>
+		<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
+		<p class="title">總筆畫數</p>
+		<p><a href="khitan_small_script_strokenumber.php?ts=4">4</a></p>
+	</div>
+		<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
+		<p class="title">魏安字體</p>
+		<p><span class="BabelStone"></span></p>
+	</div>
+		<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
+		<p class="title">劉鳯翥2009擬音</p>
+		<p>ɽï</p>
+	</div>
+		<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
+		<p class="title">Kane擬音</p>
+		<p>zải</p>
+	</div>
+		<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
+		<p class="title">吴英喆&楊虎嫩擬音</p>
+		<p>zhi</p>
+	</div>
+	</div>
+<div class="row">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<ul class="nav nav-tabs">
+			<li class="active">
+				<a href="#jbjs" data-toggle="tab">基本解釋</a>
+			</li>
+						<li>
+				<a href="#xgch" data-toggle="tab">相關詞彙</a>
+			</li>
+					</ul>
+		<div class="tab-content">
+			<div class="tab-pane fade in active" id="jbjs">
+				<p><b>釋義</b></p><p>暫無解釋</p>			</div>
+						<div class="tab-pane fade" id="xgch">
+									<p>
+						<span class="kss word">1. </span>
+					</p>
+					<p class="exp">
+						<p class="exp">知掌 <small>（80）</small></p>					</p>
+									<p>
+						<span class="kss word">2. </span>
+					</p>
+					<p class="exp">
+						<p class="exp">总 <small>（160）</small></p>					</p>
+									<p>
+						<span class="kss word">3. </span>
+					</p>
+					<p class="exp">
+						<p class="exp">知 <small>（107）</small></p>					</p>
+									<p>
+						<span class="kss word">4. </span>
+					</p>
+					<p class="exp">
+						<p class="exp">负责 <small>（155）</small></p>					</p>
+							</div>
+						</div>
+			</div>
+</div>
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript" src="js/effects.js"></script>
+	<div class="footer" role="contentinfo" style="padding-top: 20px; padding-bottom: 20px; margin-top: 50px; color: #767676; border-top: 1px solid #E5E5E5; background-color: #ffffff">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-3 col-lg-3 col-sm-3 col-xs-12">
+				<h4><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> 古今文字集成</h4>
+				<p>“<a href='index.php'>古今文字集成</a>”由Jerry設計、維護</p>
+				<p>Powered by PHP 7 and Bootstrap v3.3.6</p>
+				<p>歡迎轉載，功德無量！</p>
+				<p>轉載時請註明「轉載自“古今文字集成”」。</p>
+				<p>@2026，古今文字集成</p>
+				<p>域名：<a href="http://www.ccamc.org">www.ccamc.org</a> | <a href="http://www.ccamc.co">www.ccamc.co</a></p>
+				<p>博客：<a href="http://blog.ccamc.org">blog.ccamc.org</a> | <a href="http://blog.ccamc.co">blog.ccamc.co</a></p>
+			</div>
+			<div class="col-md-3 col-lg-3 col-sm-3 col-xs-12">
+				<h4><span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span> 古今文字集成</h4>
+				<div>
+					<div><img class="img-responsive" src="images/wechatQR.png" style="width:100px" /></div>
+					<p class="text-left">站長Jerry的微信</p>
+					<p class="text-left">微博 <a href="http://weibo.com/ccamc">@古今文字集成</a></p>
+					<p class="text-left">豆瓣 <a href="https://www.douban.com/people/38087247/">@jerryyou517</a></p>
+					<p class="text-left">bilibili <a href="https://space.bilibili.com/95896613">@jerryyou517</a></p>
+					<p class="text-left"><span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span> <a href="donation.php">贊助我們</a></p>
+				</div>
+			</div>
+			<div class="col-md-3 col-lg-3 col-sm-3 col-xs-12">
+				<h4><span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span> 友情鏈接</h4>
+				<p><a href="https://zi.tools/">字統網</a></p>
+				<p><a href="https://ctext.org/zh">中國哲學書電子化計劃</a></p>
+				<p><a href="https://www.shuge.org">書格</a></p>
+				<p><a href="https://lingdata.org/cn/">文苑英華</a></p>
+				<p><a href="https://lingdata.org">Linguistic Data</a></p>
+				<h4><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> 致謝</h4>
+				<p>喃字資料來自“<a target="_blank" href="https://www.nomfoundation.org/">喃產遺存保會</a>”，其他資料來源見“<a href="source.php">參考資料</a>”。</p>
+			</div>
+			<div class="col-md-3 col-lg-3 col-sm-3 col-xs-12">
+				<h4><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> 最新文章</h4>
+				<p><a href='blog/?p=910'>2026年2月28日更新說明</a></p><p><a href='blog/?p=902'>2025年4月11日更新說明</a></p><p><a href='blog/?p=901'>2025年1月19日更新說明</a></p><p><a href='blog/?p=898'>2024年9月10日字體更新：契丹大字楷體</a></p><p><a href='blog/?p=897'>2024年9月8日更新說明</a></p>			</div>
+		</div>
+	</div>
+</div>
+<div class="gototop">
+	<a href="javascript:scrollTo(0,0)"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a>
+</div>
+<style type="text/css">
+	div.gototop{
+		display: none;
+		position: fixed;
+		bottom: 80px;
+		right: 5px;
+		width: 1.2em;
+		font-size: 1em;
+	}
+	div.gototop a:hover{
+		text-decoration: none;
+	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$(window).scroll(function(){
+			var scrollPos = $(window).scrollTop();
+			if (scrollPos < 700) {
+				$("div.gototop").fadeOut();
+			}else{
+				$("div.gototop").fadeIn();
+			}
+		});
+	});
+</script></body>
+
+</html>

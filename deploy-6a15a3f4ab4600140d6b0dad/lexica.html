@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>西夏文 契丹小字 古突厥语 蒙古语 回鹘文 粟特语 字词检索</title>
+<meta name="description" content="西夏文与契丹小字的字词检索资料库：释义按义项分列，逐条标注出处文献，并列各家拟音。">
+<link rel="stylesheet" href="styles.css?v=41">
+</head>
+<body>
+
+<header class="masthead">
+  <div>
+    <h1><a class="home-link" href="index.html" title="回到首页">内亚古文字字词检索</a><span class="en">Inner Asian Scripts &amp; Lexica</span></h1>
+    <p class="masthead-sub">西夏文　契丹小字　古突厥语　蒙古语　回鹘文　粟特语<span class="en-sub">Tangut, Khitan, Old Turkic, Mongolian, Old Uyghur and Sogdian</span></p>
+  </div>
+
+  <nav class="masthead-nav">
+    <div class="script-switch" role="tablist" aria-label="选择文字">
+      <button role="tab" data-script="tangut" aria-selected="true">西夏文</button>
+      <button role="tab" data-script="khitan" aria-selected="false">契丹小字</button>
+      <button role="tab" data-script="oldturkic" aria-selected="false">古突厥语</button>
+      <button role="tab" data-script="mongolian" aria-selected="false">蒙古语</button>
+      <button role="tab" data-script="olduyghur" aria-selected="false">回鹘文</button>
+      <button role="tab" data-script="sogdian" aria-selected="false">粟特语</button>
+    </div>
+    <span class="divider"></span>
+    <button class="linkbtn" data-dialog="dlg-colophon">凡例</button>
+      <a class="btn" href="docs.html">契丹资料</a>
+    <button class="linkbtn" data-dialog="dlg-refs" id="btn-refs">引用文献</button>
+    <button class="linkbtn" id="theme-toggle" title="切换明暗">◐</button>
+  </nav>
+</header>
+
+<section class="search">
+  <div class="search-field">
+    <input id="q" type="search" spellcheck="false" autocomplete="off" autofocus
+           placeholder="输入汉语释义、字形、拟音或转写——例：山 / 𗀀 / nior / türük"
+           aria-label="检索">
+    <span class="search-status" id="search-status">待输入</span>
+    <button class="search-clear" id="clear" aria-label="清空">×</button>
+  </div>
+
+  <div class="search-opts">
+    <span class="opt-label">检索方式</span>
+    <button class="mode" data-mode="auto" aria-pressed="true">自动</button>
+    <button class="mode" data-mode="cn"   aria-pressed="false">释义</button>
+    <button class="mode" data-mode="tng"  aria-pressed="false" id="mode-script">字形</button>
+    <button class="mode" data-mode="phon" aria-pressed="false">拟音</button>
+    <button class="mode" data-mode="sent" aria-pressed="false"
+            title="输入整句：按 jieba 分词、标注词性，再逐词查释义">句读</button>
+    <span class="spacer"></span>
+    <label class="check" title="以近义词扩展检索范围，召回用同义字书写的释义">
+      <input type="checkbox" id="fuzzy" checked> 近义扩展
+    </label>
+    <label class="check" title="释义原文照录；勾选后按简体显示">
+      <input type="checkbox" id="simp"> 简体显示
+    </label>
+    <label class="check" title="选中条目时自动复制字形到剪贴板">
+      <input type="checkbox" id="autocopy"> 自动复制
+    </label>
+  </div>
+</section>
+
+<section class="sentence" id="sentence" aria-live="polite"></section>
+
+<main class="workspace">
+  <aside class="index-pane">
+    <div class="pane-head">
+      <span>索引<span class="en-sub">Index</span></span>
+      <span class="count" id="result-count">—</span>
+    </div>
+    <ol class="index-list" id="results" tabindex="0"></ol>
+    <div class="pane-foot" id="rank-meta">尚未检索</div>
+  </aside>
+
+  <article class="entry-pane" id="detail">
+    <div class="entry-empty">从左侧索引中选择一个条目</div>
+  </article>
+</main>
+
+<footer class="colophon-bar">
+  <span id="source-line">数据来源：古今文字集成 CCAMC</span>
+  <span class="spacer"></span>
+  <span id="data-state" class="data-state"></span>
+  <span id="corpus-line">—</span>
+</footer>
+
+<!-- ===================== 凡例 ===================== -->
+<dialog id="dlg-colophon">
+  <div class="dlg-head">
+    <h2>凡例<span class="en">Editorial Note</span></h2>
+    <button class="linkbtn" data-close>关闭 ✕</button>
+  </div>
+  <div class="dlg-body">
+    <h3>体例</h3>
+    <p>释义按<strong>义项</strong>分条编号排列。义项后方括号内为语法范畴标注（如「领格」「向位格」），上标数字为该释义的<strong>出处文献编号</strong>，点击可跳至条目末尾的出处表，编号与《引用文献》一致。</p>
+    <p>释义文字<strong>照录原始数据库</strong>，不作繁简转换，亦不改动用字。如需统一显示，可勾选检索栏的「简体显示」。</p>
+
+    <h3>关于契丹小字的字与词</h3>
+    <p>契丹小字的单字（原字）绝大多数是<strong>表音符号</strong>，本身不承载词义。因此单字条目通常没有独立释义，只列出拟音，以及该字所参与构成的词。检索汉语释义时，若命中的是单字，其显示的释义来自<strong>包含该字的词</strong>，条目上会标注「词义」以示区别——那不是这个字的意思。</p>
+
+    <h3>关于古突厥语</h3>
+    <p>古突厥语条目以<strong>词</strong>为单位（而非字），故设有词形、构词关联、后代词、用例与词源诸栏。文字为古突厥卢尼文（鄂尔浑—叶尼塞文，Unicode U+10C00–U+10C48），横向左行书写。</p>
+    <p><strong>释义为中英对照</strong>：中文在上、英文原文在下。中文是本站的译文，英文是原始数据库的记载——并列呈现，便于核对。</p>
+    <p><strong>词源为「生成」而非「翻译」。</strong>原始数据把词源保存为结构化模板（继承／派生／借入／同源，各带语言代码与词形），中文由该结构逐项生成：关联词用固定词表，语言名用代码对照表，<strong>词形一律照录</strong>。因此不会出现改写导致的语义漂移。凡无模板支撑的叙述性文字（如某学者的推测），一律保留英文原文，可点开条目中的「原文 source」查看。</p>
+
+    <h3>关于蒙古语与传统蒙文</h3>
+    <p>语料以<strong>西里尔蒙古文</strong>为词头（占 95%）。<strong>传统蒙文</strong>（ᠮᠣᠩᠭᠣᠯ ᠪᠢᠴᠢᠭ，U+1800–U+18AF）一栏<strong>只收原始词典已考订的写法</strong>——或词头本身即为蒙文，或 <code>forms</code> 中带 <code>Mongolian</code> 标注者，共 2126 条（32%）。该栏按传统蒙文的实际书写方向<strong>竖排</strong>。</p>
+    <p><strong>其余 68% 不作机器转写。</strong>西里尔文与传统蒙文之间并非确定性对应：传统正字法保守，保留了现代口语已合并的音位区别，一个西里尔词可能对应多个合法蒙文写法。现有的 <code>cyrillic2bichig</code> 神经模型既未发布权重，其训练目标本身又是另一转换器的机器输出——那样得到的是关于拼写的<strong>推测</strong>，与编者考订的写法混排会使整栏不可引用。需要逐词转写时，建议使用内蒙古大学的在线工具另行核查。</p>
+
+    <h3>拟音</h3>
+    <dl>
+      <dt>契丹小字</dt>
+      <dd>Kane 拟音（Daniel Kane）与乌拉熙春拟音（爱新觉罗·乌拉熙春）分栏并列，二者体系不同，不可混用。</dd>
+      <dt>西夏文</dt>
+      <dd>龚煌城、Marc Miyake、荒川慎太郎、龚勋（2024）四家并列。</dd>
+      <dt>古突厥语</dt>
+      <dd>拉丁转写与 IPA。转写可直接用于检索。</dd>
+    </dl>
+
+    <h3>检索</h3>
+    <p>检索采用多路召回后加权融合（RRF）：字面匹配、拼音匹配、语义向量（基于释义共现的 PPMI 词向量，可用《同义词词林》扩展）、拟音／转写匹配，以及<strong>用例全文</strong>匹配（检索碑铭译文中的词，如「于都斤」）。索引栏底部会显示本次命中来自哪几路，以及近义扩展所用的字。</p>
+
+    <h3>数据状态</h3>
+    <p id="colophon-state">契丹小字释义有两种版本：<strong>已切分版</strong>逐义项分列，附语法标注与出处编号；<strong>未切分版</strong>由早期抓取数据转换而来，一个词的多个义项仍连写在一起，且无出处编号——但拟音归属与字条释义已经改正。页脚会标明当前载入的是哪一种。重跑 <code>tools/scrape_khitan.py</code> 可升级为已切分版。</p>
+
+    <h3>数据来源</h3>
+    <p>契丹小字：<a href="http://www.ccamc.org/khitan.php" target="_blank" rel="noopener">古今文字集成 CCAMC（契丹小字）</a>，含 <span id="cx-refs">—</span> 条参考文献。<br>
+       西夏文：字形取 ISO/IEC 10646 工作组参考字形，释义与拟音取自公开西夏文字典数据。<br>
+       古突厥语：<a href="https://kaikki.org/dictionary/Old%20Turkic/" target="_blank" rel="noopener">Wiktionary / kaikki.org</a>，含 472 词条、510 义项、278 条用例。<br>
+       蒙古语：<a href="https://kaikki.org/dictionary/Mongolian/" target="_blank" rel="noopener">Wiktionary / kaikki.org</a>，6623 词条、8520 义项，其中 2126 条附考订传统蒙文写法。<br>
+       近义词：《同义词词林（扩展版）》，HIT-SCIR。</p>
+    <p style="color:var(--ink-3);font-size:.84rem">本站仅作检索与整理，著作权归原数据库与各著者所有。引用释义时请一并引用条目末尾所列的原始文献。</p>
+  </div>
+</dialog>
+
+<!-- ===================== 引用文献 ===================== -->
+<dialog id="dlg-refs">
+  <div class="dlg-head">
+    <h2>引用文献<span class="en">Bibliography</span></h2>
+    <button class="linkbtn" data-close>关闭 ✕</button>
+  </div>
+  <div class="dlg-body">
+    <p style="color:var(--ink-3);font-size:.84rem;margin-bottom:1rem">
+      契丹小字释义的出处文献表，编号与条目中的上标一致。转录自
+      <a href="http://www.ccamc.org/khitan_small_script_voc_exp_source.php" target="_blank" rel="noopener">古今文字集成</a>。
+    </p>
+    <ol class="refs-list" id="refs-list"></ol>
+  </div>
+</dialog>
+
+<script src="tc-sc.js?v=40"></script>
+<script src="seg/jieba.js?v=40"></script>
+<script src="seg/sentence.js?v=40"></script>
+<script src="speech/tangut-speech.js?v=40"></script>
+<script src="app.js?v=40"></script>
+</body>
+</html>

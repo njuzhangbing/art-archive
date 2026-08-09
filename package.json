@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "vite",
     "stack": "netlify dev",
-    "build": "vite build",
+    "build": "vite build && node tools/bundle-manifest.mjs",
     "preview": "vite preview",
     "test": "vitest run",
-    "build:app": "VITE_API_BASE=https://painthub.netlify.app vite build && node tools/sync-android.mjs",
+    "build:app": "npm run build && node tools/sync-android.mjs",
     "apk": "npm run build:app && cd android && ./gradlew assembleDebug"
   },
   "dependencies": {

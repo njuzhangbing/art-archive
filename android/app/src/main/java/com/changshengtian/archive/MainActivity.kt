@@ -23,9 +23,12 @@ import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.webkit.WebViewAssetLoader
+import java.io.File
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
@@ -65,8 +68,36 @@ class MainActivity : Activity() {
      * The bundled site, with the same fallback the server does: anything that
      * does not name a file is a route, and every route is the shell.
      */
-    private class SiteAssets(ctx: Context) : WebViewAssetLoader.PathHandler {
+    private class SiteAssets(ctx: Context, private val overlay: File?) : WebViewAssetLoader.PathHandler {
         private val assets = WebViewAssetLoader.AssetsPathHandler(ctx)
+
+        /** Whatever the update installed wins; everything else comes off the APK. */
+        private fun fromOverlay(rel: String): WebResourceResponse? {
+            val dir = overlay ?: return null
+            if (rel.isEmpty() || rel.contains("..")) return null
+            val f = File(dir, rel)
+            if (!f.isFile) return null
+            return try {
+                WebResourceResponse(mimeOf(rel), null, 200, "OK", emptyMap(), f.inputStream())
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        private fun mimeOf(rel: String) = when (rel.substringAfterLast('.', "")) {
+            "html" -> "text/html"
+            "js", "mjs" -> "text/javascript"
+            "css" -> "text/css"
+            "json" -> "application/json"
+            "svg" -> "image/svg+xml"
+            "webp" -> "image/webp"
+            "png" -> "image/png"
+            "jpg", "jpeg" -> "image/jpeg"
+            "woff2" -> "font/woff2"
+            "ico" -> "image/x-icon"
+            else -> "application/octet-stream"
+        }
+
         override fun handle(path: String): WebResourceResponse? {
             val clean = path.trimStart('/')
             // Data lives on the server, never in here. Handing the page shell to
@@ -79,7 +110,8 @@ class MainActivity : Activity() {
                 )
             }
             val isFile = clean.substringAfterLast('/').contains('.')
-            return assets.handle(if (isFile) "www/$clean" else "www/index.html")
+            val rel = if (isFile) clean else "index.html"
+            return fromOverlay(rel) ?: assets.handle("www/$rel")
         }
     }
 
@@ -92,8 +124,11 @@ class MainActivity : Activity() {
         web = findViewById(R.id.web)
         progress = findViewById(R.id.progress)
 
+        // Read once, for the whole session. An update that lands while someone
+        // is reading takes effect next time they open the app, not underneath
+        // them halfway down a page.
         loader = WebViewAssetLoader.Builder()
-            .addPathHandler("/", SiteAssets(this))
+            .addPathHandler("/", SiteAssets(this, WebUpdate.active(this)))
             .build()
 
         CookieManager.getInstance().setAcceptCookie(true)
@@ -180,6 +215,7 @@ class MainActivity : Activity() {
 
         ensureNotifications()
         warmMedia()
+        watchForUpdates()
         if (savedInstanceState != null) {
             web.restoreState(savedInstanceState)
         } else {
@@ -269,6 +305,29 @@ class MainActivity : Activity() {
      * off the metered network on purpose: nobody wants an archive of paintings
      * arriving over their data plan.
      */
+    /**
+     * Check for a newer front end once a day on wifi, and once shortly after
+     * launch so a reader who opens the app daily is never far behind.
+     */
+    private fun watchForUpdates() {
+        val onWifi = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+        val wm = WorkManager.getInstance(this)
+        wm.enqueueUniquePeriodicWork(
+            UpdateWorker.NAME, ExistingPeriodicWorkPolicy.KEEP,
+            PeriodicWorkRequest.Builder(UpdateWorker::class.java, 1, TimeUnit.DAYS)
+                .setConstraints(onWifi).build()
+        )
+        wm.enqueueUniqueWork(
+            UpdateWorker.NAME + "-now", ExistingWorkPolicy.KEEP,
+            OneTimeWorkRequest.Builder(UpdateWorker::class.java)
+                .setConstraints(onWifi)
+                .setInitialDelay(20, TimeUnit.SECONDS)
+                .build()
+        )
+    }
+
     private fun warmMedia() {
         val onWifi = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.UNMETERED)

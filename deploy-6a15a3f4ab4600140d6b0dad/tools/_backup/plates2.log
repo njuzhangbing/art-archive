@@ -1,0 +1,69 @@
+抓取 NASA GIBS 瓦片并合成黑白底片 …
+  overview   z7  27×18 瓦片  (6912×4608 px)  内亚
+      地形 486/486
+      影像 486/486
+      → plates/overview.webp 1212 KB   (jpg 1268 KB)  3000×2000
+  sogdian    z11  13×9 瓦片  (3328×2304 px)  粟特 — 撒马尔罕、泽拉夫尚河谷
+      地形 117/117
+      影像 117/117
+      调色对齐总图  μ 152←158  σ 45←21
+      → plates/sogdian.webp 1747 KB   (jpg 1618 KB)  2560×1772
+  oldturkic  z11  13×9 瓦片  (3328×2304 px)  古突厥 — 鄂尔浑河谷、和硕柴达木
+      地形 117/117
+      影像 117/117
+      调色对齐总图  μ 140←142  σ 41←24
+      → plates/oldturkic.webp 1430 KB   (jpg 1333 KB)  2560×1772
+  olduyghur  z11  13×9 瓦片  (3328×2304 px)  回鹘 — 吐鲁番、高昌
+      地形 117/117
+      影像 117/117
+      调色对齐总图  μ 153←156  σ 40←29
+      → plates/olduyghur.webp 1344 KB   (jpg 1260 KB)  2560×1772
+  khitan     z11  13×9 瓦片  (3328×2304 px)  契丹 — 上京临潢府、西拉木伦河
+      地形 117/117
+      影像 117/117
+      调色对齐总图  μ 140←142  σ 50←31
+      → plates/khitan.webp 1575 KB   (jpg 1470 KB)  2560×1772
+  tangut     z11  13×9 瓦片  (3328×2304 px)  西夏 — 贺兰山、兴庆府
+      地形 117/117
+      影像 117/117
+      调色对齐总图  μ 168←173  σ 43←27
+      → plates/tangut.webp 1408 KB   (jpg 1297 KB)  2560×1772
+  mongolian  z11  13×9 瓦片  (3328×2304 px)  蒙古 — 克鲁伦河、阿巴儿合
+      地形 117/117
+      影像 117/117
+      调色对齐总图  μ 111←113  σ 48←22
+      → plates/mongolian.webp 1618 KB   (jpg 1530 KB)  2560×1772
+  sogdian@mid z8  10×7 瓦片  (2560×1792 px)  粟特 — 撒马尔罕、泽拉夫尚河谷（中景）
+      地形 70/70
+      影像 70/70
+      调色对齐总图  μ 161←165  σ 43←29
+      → plates/sogdian-mid.webp 1000 KB   (jpg 982 KB)  2560×1792
+  oldturkic@mid z8  10×7 瓦片  (2560×1792 px)  古突厥 — 鄂尔浑河谷、和硕柴达木（中景）
+      地形 70/70
+      影像 70/70
+      调色对齐总图  μ 120←121  σ 56←44
+      → plates/oldturkic-mid.webp 1150 KB   (jpg 1095 KB)  2560×1792
+  olduyghur@mid z8  10×7 瓦片  (2560×1792 px)  回鹘 — 吐鲁番、高昌（中景）
+      地形 70/70
+      影像 70/70
+      调色对齐总图  μ 160←163  σ 43←32
+      → plates/olduyghur-mid.webp 1023 KB   (jpg 1017 KB)  2560×1792
+  khitan@mid z8  10×7 瓦片  (2560×1792 px)  契丹 — 上京临潢府、西拉木伦河（中景）
+      地形 70/70
+      影像 70/70
+      调色对齐总图  μ 128←130  σ 50←36
+      → plates/khitan-mid.webp 1179 KB   (jpg 1065 KB)  2560×1792
+  tangut@mid z8  10×7 瓦片  (2560×1792 px)  西夏 — 贺兰山、兴庆府（中景）
+      地形 70/70
+      影像 70/70
+      调色对齐总图  μ 160←163  σ 45←33
+      → plates/tangut-mid.webp 1028 KB   (jpg 1016 KB)  2560×1792
+  mongolian@mid z8  10×7 瓦片  (2560×1792 px)  蒙古 — 克鲁伦河、阿巴儿合（中景）
+      地形 70/70
+      影像 70/70
+      调色对齐总图  μ 114←115  σ 54←41
+      → plates/mongolian-mid.webp 965 KB   (jpg 930 KB)  2560×1792
+→ plates/index.json  13 幅（含各幅经纬边界）
+
+合计 16.29 MB → /Users/zhangbing/Downloads/deploy-6a15a3f4ab4600140d6b0dad/plates
+影像来源：NASA GIBS（ASTER GDEM 灰阶晕渲 + Landsat WELD 真彩），公有领域。
