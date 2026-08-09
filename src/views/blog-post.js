@@ -37,7 +37,7 @@ export default function blogPost(root, params) {
         post.series ? h("a", { href: "/blog/series/" + post.series.id, "data-link": "1" }, post.series.title) : (isAnn ? "公告" : "文章")),
       h("header", { class: "blogpost__head" + (isAnn ? " blogpost__head--ann" : ""), "data-level": isAnn ? post.level : null },
         h("div", { class: "blogpost__badges" },
-          isAnn ? h("span", { class: "annbadge", "data-level": post.level }, "公告 · " + lvl.zh) : null,
+          isAnn ? h("span", { class: "annbadge", "data-level": post.level }, "公告 " + lvl.zh) : null,
           post.pinned ? h("span", { class: "blogrow__pin mono tiny" }, "置顶") : null,
           post.hidden ? h("span", { class: "blogrow__pin blogrow__pin--hide mono tiny" }, "已隐藏") : null),
         h("h1", { class: "blogpost__title serif" }, post.title),
@@ -68,7 +68,7 @@ export default function blogPost(root, params) {
       const rows = r.readers.length
         ? r.readers.map((x) => h("div", { class: "readers__row mono" }, authorLink(x.handle, { avatar: false }), h("span", { class: "tiny muted" }, fmtAgo(x.at))))
         : [h("div", { class: "muted mono tiny" }, "还没有人已读")]
-      openModal("已读名单 · " + r.count + " 人", h("div", { class: "readers" }, ...rows))
+      openModal("已读名单 " + r.count + " 人", h("div", { class: "readers" }, ...rows))
     } catch (e) { toast(e.message || "加载失败", "bad") }
   }
 
@@ -89,7 +89,7 @@ export default function blogPost(root, params) {
   function actBtn(label, fn, on) { return h("button", { class: "btn btn--sm" + (on ? " btn--red" : ""), onClick: fn }, label) }
 
   function annControl() {
-    const sel = h("select", { class: "annpick" }, h("option", { value: "" }, "不是公告"), ...LEVELS.map((l) => h("option", { value: l.key }, "公告·" + l.zh)))
+    const sel = h("select", { class: "annpick" }, h("option", { value: "" }, "不是公告"), ...LEVELS.map((l) => h("option", { value: l.key }, "公告 " + l.zh)))
     sel.value = post.kind === "announcement" ? (post.level || "normal") : ""
     sel.addEventListener("change", () => {
       const payload = sel.value ? { kind: "announcement", level: sel.value } : { kind: "post" }
@@ -102,7 +102,7 @@ export default function blogPost(root, params) {
     const nav = post.series
     return h("nav", { class: "seriesnav" },
       nav.prevId ? h("a", { class: "seriesnav__b seriesnav__b--prev", href: "/blog/" + nav.prevId, "data-link": "1" }, h("span", { class: "mono tiny" }, "← 上一篇"), h("b", { class: "serif" }, nav.prevTitle)) : h("span", { class: "seriesnav__gap" }),
-      h("a", { class: "seriesnav__mid mono tiny", href: "/blog/series/" + nav.id, "data-link": "1" }, nav.title + " · " + (nav.index + 1) + "/" + nav.total),
+      h("a", { class: "seriesnav__mid mono tiny", href: "/blog/series/" + nav.id, "data-link": "1" }, nav.title + " " + (nav.index + 1) + "/" + nav.total),
       nav.nextId ? h("a", { class: "seriesnav__b seriesnav__b--next", href: "/blog/" + nav.nextId, "data-link": "1" }, h("span", { class: "mono tiny" }, "下一篇 →"), h("b", { class: "serif" }, nav.nextTitle)) : h("span", { class: "seriesnav__gap" })
     )
   }

@@ -36,7 +36,7 @@ export function heatmap(daily, opts = {}) {
     const cell = h("i", {
       class: cls,
       "data-l": isFuture ? "f" : level(c),
-      title: key + (isFuture ? " · 未来" : " · " + c + " 次提交") + (pl ? "（计划 " + pl.done + "/" + pl.total + "）" : ""),
+      title: key + (isFuture ? " 未来" : " " + c + " 次提交") + (pl ? "（计划 " + pl.done + "/" + pl.total + "）" : ""),
       style: "grid-row:" + row + ";grid-column:" + col
     })
     if (pl && pl.total && pl.done >= pl.total) cell.setAttribute("data-plan-done", "1")
@@ -55,7 +55,7 @@ export function heatmap(daily, opts = {}) {
     scroll,
     h("div", { class: "hm__legend mono tiny" },
       "少", ...[0, 1, 2, 3, 4].map((l) => h("i", { class: "hm__c", "data-l": l })), "多",
-      onPick ? h("span", { class: "hm__plan-key" }, h("i", { class: "hm__c hm__c--future hm__c--click" }), "未来日 · 点击规划") : null
+      onPick ? h("span", { class: "hm__plan-key" }, h("i", { class: "hm__c hm__c--future hm__c--click" }), "未来日 点击规划") : null
     )
   )
   if (onPick) requestAnimationFrame(() => { scroll.scrollLeft = scroll.scrollWidth })

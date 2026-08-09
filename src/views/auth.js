@@ -1,93 +1,196 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { session } from "../lib/store.js"
 import { toast } from "../components/toast.js"
 import { go } from "../router.js"
-import { reveal, gsap, tame } from "../lib/anim.js"
-import { GRADES } from "../lib/grades.js"
+import { tracker } from "../components/tracker.js"
+import { bearer } from "../lib/net.js"
+import { conduit } from "../components/conduit.js"
+
+/**
+ * The sign-in screen.
+ *
+ * Built out of movement rather than copy: the plate drifts to a stop, the panel
+ * arrives under a mask that opens left to right, the wordmark rises out of its
+ * own crop, and each field slides in behind its own wipe a beat after the last.
+ * Switching between sign-in and register wipes the old form out before the new
+ * one comes back, so the two never cut against each other.
+ *
+ * Below it an intake conduit runs into three terminals. When a sign-in lands,
+ * every strand fires at once, the panel wipes shut, and a sheet crosses the
+ * frame — then the route changes behind it.
+ */
+
+const tame = matchMedia("(prefers-reduced-motion: reduce)").matches
+
+const PLATE = "/persona/plate-00.webp"
+
+/** How long the exit runs before the route is allowed to change. */
+const EXIT_MS = tame ? 0 : 560
 
 export default function auth(root) {
   if (session.me) { go("/me"); return {} }
 
   let mode = "login"
-  const pane = h("div", { class: "auth__pane" })
+  let dead = false
+  const timers = []
+  const wait = (fn, ms) => { const t = setTimeout(fn, ms); timers.push(t); return t }
 
-  const brand = h("aside", { class: "auth__brand" },
-    h("div", { class: "auth__bg" }, h("i", {}), h("i", {}), h("i", {})),
-    h("div", { class: "auth__seal" }, "天"),
-    h("div", { class: "auth__slog" },
-      h("span", { class: "kicker" }, "长生天计划"),
-      h("h2", { class: "serif" }, "艺作", h("br"), "存档库"),
-      h("p", { class: "mono" }, "VERSIONED · GRADED · ETERNAL")
-    ),
-    h("div", { class: "auth__grades" }, ...GRADES.map((g) => h("i", { "data-grade": g.key, title: g.key })))
-  )
+  const pane = h("div", { class: "term__pane" })
+  const trk = tracker()
+  const cdt = conduit()
 
-  const view = h("div", { class: "auth" }, brand, h("div", { class: "auth__col" }, pane))
+  const stage = h("div", { class: "term__stage" },
+    h("img", { class: "term__plate", src: PLATE, alt: "", loading: "eager", fetchpriority: "high" }),
+    h("div", { class: "term__veil" }),
+    trk.el,
+    h("div", { class: "term__deck" }, cdt.el),
+    h("div", { class: "term__bar term__bar--t" }),
+    h("div", { class: "term__bar term__bar--b" }),
+    h("div", { class: "term__sheet" }))
+
+  const brackets = ["tl", "tr", "bl", "br"].map((k) => h("span", { class: "term__bracket term__bracket--" + k }))
+
+  // Each line is cropped by its own parent and slides up out of it, so the text
+  // is uncovered rather than faded in.
+  const line = (cls, d, ...kids) =>
+    h("span", { class: "term__crop", style: "--cd:" + d + "ms" }, h("span", { class: cls }, ...kids))
+
+  // Brackets sit outside the card, so the card carries the mask on its own —
+  // a clip-path on the panel would cut them off with it.
+  const card = h("div", { class: "term__card" },
+    h("div", { class: "term__head" },
+      h("div", { class: "term__mark" },
+        h("span", { class: "term__markGhost", "aria-hidden": "true" }, "长生天计划"),
+        line("term__markInk", 150, "长生天计划")),
+      h("div", { class: "term__rule" }),
+      line("term__sub", 330, bi("中央档案库", "CENTRAL ARCHIVE"))),
+    pane)
+
+  const panel = h("div", { class: "term__panel" }, ...brackets, card)
+
+  const view = h("div", { class: "term" }, stage, panel)
   root.append(view)
-  if (!tame) gsap.from(brand.querySelectorAll(".auth__bg i"), { scale: 0.4, autoAlpha: 0, duration: 1, ease: "expo.out", stagger: 0.1 })
+
+  // Flush layout, then flip the state in the same task. A frame callback would
+  // never fire in a background tab and the panel would sit invisible.
+  void view.offsetWidth
+  view.setAttribute("data-on", "1")
 
   const grab = (form, name) => (form.querySelector("[name=" + name + "]") || {}).value || ""
 
-  function field(label, attrs) {
-    return h("label", { class: "field" },
-      h("span", { class: "field__label" }, label),
-      h("input", { class: "input", ...attrs })
-    )
+  // Red is the one colour left on this site that means "this did not work".
+  // The frame beats a few times so a wrong password is felt, not just read,
+  // then holds until the next keystroke.
+  const alarm = h("div", { class: "term__alarm", role: "alert", "aria-live": "assertive" })
+
+  function refuse(zh, en) {
+    alarm.replaceChildren(bi(zh, en))
+    card.setAttribute("data-err", "1")
+    card.classList.remove("term__card--hit")
+    void card.offsetWidth
+    card.classList.add("term__card--hit")
   }
 
-  function draw() {
+  function settle() {
+    if (!card.hasAttribute("data-err")) return
+    card.removeAttribute("data-err")
+    card.classList.remove("term__card--hit")
+    alarm.replaceChildren()
+  }
+
+  function field(label, attrs, i) {
+    return h("label", { class: "field term__field", style: "--d:" + (420 + i * 90) + "ms" },
+      h("span", { class: "field__label" }, label),
+      h("input", { class: "input", ...attrs }))
+  }
+
+  function draw(replay) {
     clear(pane)
     const isLogin = mode === "login"
-    const submit = h("button", { class: "btn btn--red btn--lg", type: "submit", style: "width:100%" }, isLogin ? "登 录" : "注 册")
-    const toggle = h("button", { class: "linkish", type: "button" }, isLogin ? "还没有账号？前往注册 →" : "已有账号？返回登录 →")
+    const label = isLogin ? bi("登 录", "SIGN IN") : bi("注 册", "REGISTER")
+    const submit = h("button", {
+      class: "term__submit", type: "submit", style: "--d:" + (isLogin ? 690 : 780) + "ms"
+    }, label)
+    const toggle = h("button", {
+      class: "term__toggle", type: "button", style: "--d:" + (isLogin ? 780 : 870) + "ms"
+    }, isLogin ? "还没有账号？前往注册 →" : "已有账号？返回登录 →")
 
-    const form = h("form", { class: "stack" },
-      h("div", { class: "auth__head" },
-        h("span", { class: "kicker" }, isLogin ? "Sign in / 登录" : "Sign up / 注册"),
-        h("h2", { class: "h-section", style: "margin-top:12px" }, isLogin ? "进入档案库" : "加入长生天")
-      ),
-      field("用户名 / HANDLE", { name: "handle", autocomplete: "username", placeholder: "tengri", maxlength: "20" }),
-      field("密码 / PASSWORD", { name: "password", type: "password", autocomplete: isLogin ? "current-password" : "new-password", placeholder: "至少 8 位" }),
-      isLogin ? null : field("显示名 / DISPLAY", { name: "display", placeholder: "可留空，默认同用户名", maxlength: "40" }),
-      isLogin ? null : field("邀请码 / INVITE", { name: "invite", placeholder: "首位注册者可留空" }),
-      submit,
-      h("div", { class: "auth__alt" }, toggle,
-        isLogin ? null : h("span", { class: "mono tiny" }, "无邀请码将转为待审批")
-      )
-    )
+    const fields = [
+      field(bi("用户名", "HANDLE"), { name: "handle", autocomplete: "username", placeholder: "tengri", maxlength: "20" }, 0),
+      field(bi("密码", "PASSWORD"), { name: "password", type: "password", autocomplete: isLogin ? "current-password" : "new-password", placeholder: "至少 8 位" }, 1),
+      isLogin ? null : field(bi("显示名", "DISPLAY"), { name: "display", placeholder: "可留空，默认同用户名", maxlength: "40" }, 2)
+    ].filter(Boolean)
+
+    const form = h("form", { class: "term__form" }, ...fields, submit, alarm, toggle)
+    form.addEventListener("input", settle)
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault()
+      const handle = grab(form, "handle").trim()
+      const password = grab(form, "password")
+      // Caught here rather than at the server so the frame answers the moment
+      // the reader presses the button.
+      if (!handle) { refuse("请填写用户名", "HANDLE REQUIRED"); return }
+      if (!password) { refuse("请填写密码", "PASSWORD REQUIRED"); return }
+      if (!isLogin && password.length < 8) { refuse("密码至少 8 位", "PASSWORD TOO SHORT"); return }
+      settle()
       submit.disabled = true
-      const old = submit.textContent
-      submit.textContent = "···"
+      submit.replaceChildren(bi("验 证 中", "VERIFYING"))
       try {
-        if (isLogin) {
-          const r = await api.post("/api/login", { handle: grab(form, "handle"), password: grab(form, "password") })
-          session.set(r.user)
-          toast("欢迎回来，@" + r.user.handle, "ok")
+        const r = isLogin
+          ? await api.post("/api/login", { handle, password })
+          : await api.post("/api/register", { handle, password, displayName: grab(form, "display") })
+        submit.replaceChildren(bi("已 授 权", "AUTHORISED"))
+        submit.setAttribute("data-ok", "1")
+        // Only ever present in the Android build; the website gets a cookie.
+        bearer.set(r.token)
+        session.set(r.user)
+        depart(() => {
+          toast(isLogin ? "欢迎回来，@" + r.user.handle
+            : (r.firstSoul ? "你是长生天第一位管理员" : "注册成功"), "ok")
           go("/projects")
-        } else {
-          const r = await api.post("/api/register", {
-            handle: grab(form, "handle"), password: grab(form, "password"),
-            displayName: grab(form, "display"), invite: grab(form, "invite")
-          })
-          if (r.pending) { toast(r.message || "已提交，等待审批", "info"); mode = "login"; draw() }
-          else { session.set(r.user); toast(r.firstSoul ? "你是长生天第一位管理员" : "注册成功", "ok"); go("/projects") }
-        }
+        })
       } catch (err) {
-        toast(err.message || "操作失败", "bad")
+        refuse(err.message || (isLogin ? "登录失败" : "注册失败"),
+          err.message ? "" : (isLogin ? "SIGN-IN REFUSED" : "REGISTRATION REFUSED"))
         submit.disabled = false
-        submit.textContent = old
+        submit.replaceChildren(label)
+        const pw = form.querySelector("[name=password]")
+        if (pw) { pw.value = ""; pw.focus() }
       }
     })
-    toggle.addEventListener("click", () => { mode = isLogin ? "register" : "login"; draw() })
 
+    toggle.addEventListener("click", () => {
+      if (tame) { mode = isLogin ? "register" : "login"; draw(); return }
+      // Wipe the current form out to the right first; the new one comes back
+      // through the same mask from the left.
+      form.setAttribute("data-on", "0")
+      wait(() => { mode = isLogin ? "register" : "login"; draw(true) }, 260)
+    })
+
+    settle()
     pane.append(form)
-    reveal([...form.children].filter(Boolean), { y: 22, stagger: 0.05 })
+    void form.offsetWidth
+    form.setAttribute("data-on", "1")
+    if (replay) form.classList.add("term__form--again")
+  }
+
+  /** The payoff: the conduit floods, the panel shuts, a sheet crosses. */
+  function depart(then) {
+    cdt.surge()
+    view.setAttribute("data-out", "1")
+    wait(() => { if (!dead) then() }, EXIT_MS)
   }
 
   draw()
-  return {}
+
+  return {
+    destroy() {
+      dead = true
+      timers.forEach(clearTimeout)
+      trk.destroy()
+      cdt.destroy()
+    }
+  }
 }

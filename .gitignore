@@ -1,5 +1,6 @@
 node_modules
 dist
+.npm-cache
 .localblobs
 .netlify
 .DS_Store
@@ -13,3 +14,10 @@ push-blobs.mjs
 export-blobs.command
 deploy-direct.sh
 art-archive-export/
+
+# Camera originals and the full font files the tools/ pipelines read. They are
+# tens of megabytes each and the repo only needs what comes out the other side:
+# public/persona/plate-*.webp and public/fonts/gujian/. Keep the sources here
+# locally; see assets-src/README.md.
+assets-src/*
+!assets-src/README.md

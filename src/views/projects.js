@@ -1,6 +1,6 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
-import { GRADES, gradeRank } from "../lib/grades.js"
+import { SECRECY } from "../lib/classify.js"
 import { projectCard } from "../components/project-card.js"
 import { projectFormModal } from "../components/project-form.js"
 import { reveal } from "../lib/anim.js"
@@ -12,11 +12,11 @@ export default function projects(root) {
   let q = ""
   let sort = "recent"
 
-  const chips = GRADES.map((g) =>
-    h("button", { class: "chip", "data-grade": g.key, "data-on": "0", title: g.zh }, h("span", { class: "chip__dot" }), g.key)
+  const chips = SECRECY.map((g) =>
+    h("button", { class: "chip", "data-sec": g.key, "data-on": "0", title: g.note }, h("span", { class: "chip__dot" }), bi(g.zh, g.en))
   )
   chips.forEach((c) => c.addEventListener("click", () => {
-    const k = c.getAttribute("data-grade")
+    const k = c.getAttribute("data-sec")
     if (picked.has(k)) picked.delete(k); else picked.add(k)
     c.setAttribute("data-on", picked.has(k) ? "1" : "0")
     paint()
@@ -27,7 +27,7 @@ export default function projects(root) {
 
   const sortSel = h("select", {},
     h("option", { value: "recent" }, "最近更新"),
-    h("option", { value: "grade" }, "分级 高→低"),
+    h("option", { value: "sec" }, "密级 保密优先"),
     h("option", { value: "name" }, "名称 A–Z"),
     h("option", { value: "versions" }, "版本最多"),
     h("option", { value: "stars" }, "收藏最多")
@@ -56,10 +56,10 @@ export default function projects(root) {
 
   function paint() {
     let rows = all.slice()
-    if (picked.size) rows = rows.filter((p) => picked.has(p.grade))
+    if (picked.size) rows = rows.filter((p) => picked.has(p.sec || "PUBLIC"))
     if (q) rows = rows.filter((p) => (p.title + " " + (p.tags || []).join(" ") + " " + (p.author || "")).toLowerCase().includes(q))
     if (sort === "recent") rows.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1))
-    else if (sort === "grade") rows.sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || (a.updatedAt < b.updatedAt ? 1 : -1))
+    else if (sort === "sec") rows.sort((a, b) => (b.sec === "SECRET") - (a.sec === "SECRET") || (a.updatedAt < b.updatedAt ? 1 : -1))
     else if (sort === "name") rows.sort((a, b) => String(a.title).localeCompare(String(b.title), "zh"))
     else if (sort === "versions") rows.sort((a, b) => (b.versions || 0) - (a.versions || 0))
     else if (sort === "stars") rows.sort((a, b) => (b.starCount || 0) - (a.starCount || 0) || (a.updatedAt < b.updatedAt ? 1 : -1))
@@ -67,7 +67,7 @@ export default function projects(root) {
     clear(grid)
     count.textContent = rows.length + " / " + all.length + " 项"
     if (!rows.length) { grid.append(empty()); return }
-    rows.forEach((p, i) => { p.no = i + 1; grid.append(projectCard(p)) })
+    rows.forEach((p, i) => { p.no = i + 1; grid.append(projectCard(p, i)) })
     reveal([...grid.children], { y: 30, stagger: 0.04, duration: 0.6 })
   }
 

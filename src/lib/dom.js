@@ -34,3 +34,17 @@ export function frag(...kids) {
   append(f, kids)
   return f
 }
+
+/**
+ * A bilingual label, set as two lines instead of split by a slash.
+ *
+ * The Chinese reads at full size and the English sits under it, smaller and
+ * letterspaced — a museum caption carrying its translation, rather than two
+ * languages fighting over one line. Section kickers keep their slash: those are
+ * Latin-first by design and have nothing to stack.
+ */
+export function bi(zh, en) {
+  return h("span", { class: "bi" },
+    h("span", { class: "bi__zh" }, zh),
+    en ? h("span", { class: "bi__en" }, en) : null)
+}

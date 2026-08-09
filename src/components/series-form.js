@@ -1,8 +1,9 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { toast } from "./toast.js"
 import { openModal } from "./modal.js"
 import { buildAsset } from "../lib/upload.js"
+import { asset } from "../lib/net.js"
 
 export function seriesFormModal({ series, onSaved }) {
   const editing = !!series
@@ -19,15 +20,15 @@ export function seriesFormModal({ series, onSaved }) {
     try {
       const a = await buildAsset(f)
       coverKey = a.previewKey || a.originalKey
-      clear(coverPrev); coverPrev.append(h("img", { src: "/media/" + coverKey }))
+      clear(coverPrev); coverPrev.append(h("img", { src: asset("/media/" + coverKey) }))
     } catch (e) { toast(e.message || "封面上传失败", "bad") }
   })
 
   const form = h("form", { class: "stack" },
-    h("label", { class: "field" }, h("span", { class: "field__label" }, "标题 / TITLE"), titleInput),
-    h("label", { class: "field" }, h("span", { class: "field__label" }, "简介 / ABOUT"), descInput),
+    h("label", { class: "field" }, h("span", { class: "field__label" }, bi("标题", "TITLE")), titleInput),
+    h("label", { class: "field" }, h("span", { class: "field__label" }, bi("简介", "ABOUT")), descInput),
     h("div", { class: "field" },
-      h("span", { class: "field__label" }, "封面 / COVER（可选）"),
+      h("span", { class: "field__label" }, bi("封面（可选）", "COVER")),
       h("div", { class: "sfcoverrow" }, coverPrev, h("button", { class: "btn btn--sm", type: "button", onClick: () => coverInput.click() }, "选择图片"), coverInput)
     ),
     h("button", { class: "btn btn--red btn--lg", type: "submit", style: "width:100%" }, editing ? "保存系列" : "创建系列")

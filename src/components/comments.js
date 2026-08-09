@@ -37,7 +37,7 @@ export function commentsSection(postId) {
   async function load() {
     try {
       const r = await api.get("/api/posts/" + postId + "/comments")
-      countEl.textContent = r.comments.length ? "· " + r.comments.length : ""
+      countEl.textContent = r.comments.length ? "" + r.comments.length : ""
       clear(listEl)
       if (!r.comments.length) listEl.append(h("div", { class: "muted mono tiny", style: "padding:12px 0" }, "还没有评论，来抢沙发"))
       else r.comments.forEach((c) => listEl.append(commentRow(c)))

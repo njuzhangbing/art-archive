@@ -5,7 +5,6 @@
       "name": "art-archive",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "cwd": "/Users/bing/Downloads/art-archive",
       "port": 5176
     }
   ]

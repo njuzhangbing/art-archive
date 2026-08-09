@@ -1,0 +1,403 @@
+/* Shared catalogue primitives.
+ *
+ * The rule throughout: separation comes from white space, not from frames.
+ * Where a line is genuinely needed it is a single hairline. Nothing lifts,
+ * nothing casts a shadow, and the only element allowed to fill with colour is
+ * the seal. Type carries the hierarchy — a serif for anything a person wrote,
+ * letterspaced grey mono for anything the system knows. */
+
+/* ---- scaffolding ---- */
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding-inline: var(--gut); }
+.shell { min-height: 100vh; padding-top: var(--bar-h); display: flex; flex-direction: column; }
+.shell > main { flex: 1; }
+.rule { height: 1px; background: var(--rule); border: 0; }
+.rule--red { background: var(--red); }
+.rule--thick { height: 1px; background: var(--ink); }
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--meta-size);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink-mut);
+}
+.kicker::before { content: ""; width: 22px; height: 1px; background: var(--ink-faint); }
+
+.h-display {
+  font-family: var(--font-disp);
+  line-height: .9;
+  letter-spacing: -.01em;
+  text-transform: uppercase;
+}
+.h-section {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(26px, 3.4vw, 46px);
+  line-height: 1.12;
+  letter-spacing: .005em;
+}
+.serif { font-family: var(--font-serif); }
+.mono { font-family: var(--font-mono); }
+
+/* ---- top bar ---- */
+.topbar {
+  position: fixed; inset: 0 0 auto 0; height: var(--bar-h); z-index: 200;
+  /* Solid, not frosted: a catalogue's running head sits on the paper rather
+   * than floating over it, and blurring a fixed layer costs a composite on
+   * every scroll frame. */
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  display: flex; align-items: stretch;
+}
+.topbar__brand {
+  display: flex; align-items: center; gap: 13px;
+  padding-inline: var(--gut); border-right: 0;
+  position: relative;
+}
+.topbar__seal {
+  width: 24px; height: 24px; background: var(--seal);
+  display: grid; place-items: center; color: #fff;
+  font-family: var(--font-mono); font-weight: 700; font-size: 11px;
+  transition: transform .5s var(--ease-back);
+}
+.topbar__brand:hover .topbar__seal { transform: rotate(90deg); }
+.topbar__word { font-family: var(--font-title); font-weight: 400; font-size: 19px; white-space: nowrap; letter-spacing: .04em; }
+.topbar__word small {
+  display: block; font-family: var(--font-mono); font-weight: 400;
+  font-size: 8.5px; letter-spacing: .24em; color: var(--ink-faint); margin-top: 1px;
+}
+.topbar__nav { display: flex; margin-left: auto; align-items: stretch; }
+.navlink {
+  position: relative; display: flex; align-items: center; gap: 7px;
+  padding-inline: clamp(12px, 1.5vw, 22px); border-left: 0;
+  font-family: var(--font-mono); font-weight: 400; font-size: 11.5px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-mut); background: transparent;
+  transition: color .2s;
+}
+.navlink__i { font-size: 9px; color: var(--ink-faint); }
+/* The current section is marked by a rule under it, not a filled block. */
+.navlink::after {
+  content: ""; position: absolute; left: clamp(12px, 1.5vw, 22px); right: clamp(12px, 1.5vw, 22px);
+  bottom: 0; height: 1px; background: var(--ink); transform: scaleX(0);
+  transform-origin: left center; transition: transform .3s var(--ease); z-index: 1;
+}
+.navlink:hover { color: var(--ink); }
+.navlink:hover::after { transform: scaleX(1); }
+.navlink[data-active="1"] { background: transparent; color: var(--ink); }
+.navlink[data-active="1"]::after { transform: scaleX(1); background: var(--red); }
+.navlink[data-active="1"] .navlink__i { color: var(--red); }
+.topbar__me { display: flex; align-items: center; border-left: 1px solid var(--rule); padding-inline: 6px; }
+
+/* ---- ticker ---- */
+.ticker {
+  position: fixed; top: var(--bar-h); left: 0; right: 0; z-index: 190;
+  height: 24px; background: var(--paper-2); color: var(--ink-mut); overflow: hidden;
+  border-bottom: 1px solid var(--rule); display: flex; align-items: center;
+}
+.ticker__run { display: inline-flex; gap: 56px; white-space: nowrap; font-family: var(--font-mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; animation: slide 42s linear infinite; }
+.ticker__run span b { color: var(--red); font-weight: 400; }
+@keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.shell.has-ticker { padding-top: calc(var(--bar-h) + 24px); }
+
+/* ---- buttons ---- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  font-family: var(--font-mono); font-weight: 400; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase;
+  padding: 11px 20px; border: 1px solid var(--rule-strong); background: transparent; color: var(--ink);
+  transition: border-color .2s, color .2s, background .2s;
+}
+.btn:hover { border-color: var(--ink); background: transparent; color: var(--ink); }
+.btn:active { transform: none; }
+.btn--red { background: transparent; color: var(--red); border-color: var(--red); }
+.btn--red:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.btn--block { box-shadow: none; }
+.btn--block:hover { box-shadow: none; transform: none; }
+.btn--ghost { background: transparent; border-color: transparent; color: var(--ink-mut); }
+.btn--ghost:hover { color: var(--ink); border-color: var(--rule); }
+.btn--sm { padding: 7px 12px; font-size: 10.5px; }
+.btn--lg { padding: 15px 30px; font-size: 12.5px; }
+.btn[disabled] { opacity: .35; pointer-events: none; }
+
+/* ---- grade mark ---- */
+/* A grade is metadata, so it is set like metadata: a small dot and a label. */
+.badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-mono); font-weight: 400; font-size: var(--meta-size);
+  letter-spacing: .16em; text-transform: uppercase;
+  padding: 0; border: 0; background: transparent; color: var(--ink-mut);
+}
+.badge__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--grade, var(--ink-faint)); }
+.badge--fill { background: transparent; color: var(--grade, var(--ink)); border: 0; }
+.badge--fill .badge__dot { background: var(--grade, var(--ink)); }
+
+/* ---- plates (the catalogue's unit) ---- */
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: clamp(38px, 4vw, 68px) clamp(18px, 2vw, 34px);
+}
+.card {
+  position: relative; background: transparent; border: 0;
+  display: flex; flex-direction: column; overflow: visible;
+  transition: none;
+}
+/* No grade bar down the side — that colour lives in the metadata dot instead. */
+.card::before { content: none; }
+.card:hover { transform: none; box-shadow: none; }
+.card__cover {
+  aspect-ratio: 4 / 5; background: var(--paper-3); position: relative; overflow: hidden;
+  /* An empty mount is nearly the same value as the page, so it needs an edge
+   * to read as a reserved space rather than as nothing at all. */
+  outline: 1px solid var(--rule); outline-offset: -1px;
+}
+.card__cover img { width: 100%; height: 100%; object-fit: cover; transition: opacity .45s var(--ease); }
+.card:hover .card__cover img { transform: none; opacity: .88; }
+.card__cover--empty { display: grid; place-items: center; }
+.card__cover--empty .mono { font-size: 10px; letter-spacing: .2em; color: var(--ink-faint); }
+.card__no {
+  position: absolute; top: 10px; right: 12px; background: transparent; color: #fff;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; padding: 0; z-index: 4;
+  mix-blend-mode: difference;
+}
+.card__body { padding: 14px 0 0; display: flex; flex-direction: column; gap: 6px; }
+.card__title {
+  font-family: var(--font-serif); font-weight: 600; font-size: 17px; line-height: 1.35;
+  letter-spacing: .01em;
+}
+.card:hover .card__title { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.card__meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 9px;
+  font-family: var(--font-mono); font-size: var(--meta-size); letter-spacing: var(--meta-ls);
+  text-transform: uppercase; color: var(--ink-mut); margin-top: 0;
+}
+/* No separator glyph: the row is a flex line and its gap does the work. */
+.card__meta .dotsep::before { content: ""; }
+.tagrow { display: flex; flex-wrap: wrap; gap: 5px 10px; }
+.tag {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  padding: 0; border: 0; color: var(--ink-faint);
+}
+.tag--on { background: transparent; color: var(--ink); border: 0; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- filters ---- */
+.filters {
+  display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center;
+  padding: 16px 0; border-bottom: 1px solid var(--rule);
+}
+.chip {
+  font-family: var(--font-mono); font-weight: 400; font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  padding: 6px 0; border: 0; background: transparent; color: var(--ink-mut);
+  display: inline-flex; align-items: center; gap: 7px; transition: color .2s;
+}
+.chip__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--grade, var(--ink-faint)); }
+.chip:hover { transform: none; box-shadow: none; color: var(--ink); }
+.chip[data-on="1"] { background: transparent; color: var(--ink); }
+.chip[data-on="1"] .chip__dot { background: var(--grade, var(--ink)); }
+.chiprow { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.search {
+  display: flex; align-items: center; border: 0; border-bottom: 1px solid var(--rule-strong);
+  background: transparent; min-width: 200px; flex: 1;
+}
+.search:focus-within { border-bottom-color: var(--ink); }
+.search input { width: 100%; padding: 9px 0; font-family: var(--font-mono); font-size: 12px; background: transparent; }
+.search__ic { padding: 0 10px 0 0; border-right: 0; align-self: center; display: grid; place-items: center; font-size: 12px; color: var(--ink-faint); }
+.select { border: 0; border-bottom: 1px solid var(--rule-strong); background: transparent; }
+.select select { padding: 9px 0; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .12em; background: transparent; }
+
+/* ---- forms ---- */
+.field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 22px; }
+.field__label {
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 400;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--ink-mut);
+}
+.input, .textarea {
+  width: 100%; padding: 11px 0; border: 0; border-bottom: 1px solid var(--rule-strong); background: transparent;
+  font-family: var(--font-body); font-size: 15px; transition: border-color .2s;
+}
+/* The block shadow used to be the focus ring. Nothing here has a shadow any
+ * more, so focus needs its own visible mark. */
+.input:focus, .textarea:focus { border-bottom-color: var(--ink); outline: 1px solid var(--ink); outline-offset: 3px; }
+.textarea { resize: vertical; min-height: 110px; border: 1px solid var(--rule-strong); padding: 12px 14px; }
+.gradepick { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.gradepick button {
+  border: 0; border-top: 1px solid var(--rule); padding: 12px 2px 0; display: flex; flex-direction: column;
+  align-items: flex-start; gap: 8px; background: transparent;
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 400; letter-spacing: .1em;
+  color: var(--ink-mut); transition: border-color .2s, color .2s;
+}
+.gradepick button .swatch { width: 100%; height: 3px; background: var(--grade); opacity: .45; transition: opacity .2s; }
+.gradepick button[data-on="1"] { background: transparent; color: var(--ink); transform: none; box-shadow: none; border-top-color: var(--ink); }
+.gradepick button[data-on="1"] .swatch { opacity: 1; }
+
+/* ---- generic sections ---- */
+.section { padding: clamp(52px, 8vw, 128px) 0; }
+.section__head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+  margin-bottom: clamp(28px, 3.5vw, 52px); flex-wrap: wrap;
+  padding-bottom: 18px; border-bottom: 1px solid var(--rule);
+}
+.lede { font-family: var(--font-serif); font-size: clamp(17px, 1.7vw, 21px); line-height: 1.75; max-width: 62ch; color: var(--ink-soft); }
+
+/* ---- figures ---- */
+.numwall {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  border-top: 1px solid var(--ink); border-left: 0;
+}
+.num { border-right: 0; border-bottom: 1px solid var(--rule); padding: 26px 0; background: transparent; }
+.num__v { font-family: var(--font-serif); font-weight: 600; font-size: clamp(34px, 4.4vw, 58px); line-height: 1; letter-spacing: -.01em; }
+.num__k { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; margin-top: 10px; color: var(--ink-mut); }
+.num:nth-child(2n) { background: transparent; }
+
+/* ---- toast ---- */
+.toasts { position: fixed; right: 22px; bottom: 22px; z-index: 9000; display: flex; flex-direction: column; gap: 10px; max-width: 360px; }
+.toast {
+  background: var(--ink); color: var(--paper); border-left: 2px solid var(--red);
+  padding: 13px 16px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; box-shadow: none;
+}
+.toast--ok { border-left-color: var(--zayin); }
+.toast--bad { border-left-color: var(--red); }
+.toast--in { animation: toastIn .34s var(--ease) backwards; }
+.toast--out { animation: toastOut .28s var(--ease-hard) forwards; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(34px); } to { opacity: 1; transform: none; } }
+@keyframes toastOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateX(26px); } }
+
+/* ---- page wipe ---- */
+
+/* ---- colophon ---- */
+.footer { border-top: 1px solid var(--rule); background: transparent; color: var(--ink); margin-top: clamp(60px, 9vw, 140px); }
+.footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 40px; align-items: baseline; padding-block: 38px 46px; }
+.footer__big { font-family: var(--font-title); font-weight: 400; font-size: clamp(24px, 3.4vw, 40px); letter-spacing: .04em; }
+.footer .mono { font-size: 10.5px; letter-spacing: .2em; color: var(--ink-mut); text-transform: uppercase; }
+.footer .red { color: var(--red); }
+
+/* ---- empty state ---- */
+.empty { border: 0; border-top: 1px solid var(--rule); padding: 72px 0; text-align: left; }
+.empty .mono { letter-spacing: .2em; text-transform: uppercase; font-size: 11px; color: var(--ink-faint); }
+
+@media (max-width: 820px) {
+  .topbar__word small { display: none; }
+  .navlink span.lbl { display: none; }
+  .navlink { padding-inline: 11px; }
+  .navlink::after { left: 11px; right: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  .ticker__run { animation: none; }
+}
+
+/* ---- register typography ---- */
+/* What separates a catalogue from a page with small grey text: figures that
+ * line up in a column, a measure that stays readable, and headings that break
+ * where a typesetter would break them. */
+:root { --measure: 68ch; }
+
+/* Every number the archive prints sits in a register — file numbers, counts,
+ * dates, versions — so all of them get fixed-width figures and none of them
+ * shift as values change. */
+.mono, .meta, .card__meta, .entry__meta, .entry__fig, .ledger__row,
+.reg__v, .toc__fig, .num__v, .plate__cap, .entries__cap,
+.blogrow__meta, .ccard__top {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* Prose keeps a measure; a full-width line of serif is not read, it is scanned. */
+.lede, .blogrow__ex, .ccard__ex, .cd__body p, .blogpost__body p {
+  max-width: var(--measure);
+}
+
+/* Headings break on sense rather than on the container edge. */
+.h-section, .cover__title, .entry__zh, .card__title, .ccard__name,
+.blogrow__title, .blogpost__title {
+  text-wrap: balance;
+}
+
+/* Latin small caps for the bilingual labels, where the face supports it. */
+.kicker, .cover__label, .field__label, .ledger__k {
+  font-variant-caps: all-small-caps;
+  font-feature-settings: "c2sc" 1, "smcp" 1;
+}
+
+/* A register rules its columns, it does not box them. Zebra striping and
+ * heavy borders both read as spreadsheet; a single hairline reads as print. */
+.ledger__row:last-child, .prog:last-child, .blogrow:last-child { border-bottom: 0; }
+
+/* Optical alignment: letterspaced uppercase always looks indented because the
+ * tracking is added after the last glyph too. */
+.kicker, .cover__label, .entries__cap { text-indent: 0.22em; }
+
+/* ---- three doors (phone) ---- */
+/* Six numbered sections and four icon buttons is ten targets in a 64px strip.
+ * On a phone they become three, each the width of a thumb, each opening a sheet
+ * of full-width rows. */
+.mnav, .mnav__sheet { display: none; }
+
+@media (max-width: 720px) {
+  .topbar__nav { display: none; }
+  .topbar__brand { padding-inline: 14px; gap: 10px; }
+  .mnav { display: flex; margin-left: auto; align-items: stretch; min-width: 0; }
+  .mnav__tab {
+    flex: 1 1 0; min-width: 0; padding: 0 4px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    background: transparent; border: 0; border-left: 1px solid var(--rule);
+    color: var(--ink-mut); cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .2s var(--ease), color .2s var(--ease);
+  }
+  .mnav__tab b { font-family: var(--font-title); font-weight: 400; font-size: 16px; letter-spacing: .09em; }
+  .mnav__tab i { font-family: var(--font-mono); font-style: normal; font-size: 7px; letter-spacing: .14em; color: var(--ink-faint); }
+  .mnav__tab[data-active="1"] { color: var(--ink); }
+  .mnav__tab[data-active="1"] i { color: var(--red); }
+  .mnav__tab[data-open="1"] { background: var(--ink); color: var(--paper); }
+  .mnav__tab[data-open="1"] i { color: rgba(255, 255, 255, .58); }
+
+  .mnav__sheet {
+    display: block; position: fixed; top: var(--bar-h); left: 0; right: 0; z-index: 199;
+    background: var(--paper); border-bottom: 1px solid var(--rule);
+    box-shadow: 0 24px 44px rgba(10, 12, 20, .16);
+    transform: translateY(-10px); opacity: 0; pointer-events: none;
+    transition: transform .34s var(--ease), opacity .22s var(--ease);
+  }
+  .mnav__sheet[data-open="1"] { transform: none; opacity: 1; pointer-events: auto; }
+  .mrow {
+    display: flex; align-items: baseline; gap: 12px; width: 100%; min-height: 62px;
+    padding: 18px var(--gut); text-align: left; cursor: pointer; color: var(--ink);
+    background: transparent; border: 0; border-top: 1px solid var(--rule);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mrow:first-child { border-top: 0; }
+  .mrow__zh { font-family: var(--font-title); font-weight: 400; font-size: 22px; letter-spacing: .08em; }
+  .mrow__en {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  .mrow__go { margin-left: auto; font-family: var(--font-mono); font-size: 15px; color: var(--ink-faint); }
+  .mrow:active { background: var(--paper-3); }
+}
+
+/* ---- bilingual labels ---- */
+/* Chinese at reading size, the English under it as a caption line. Colour and
+ * alignment are inherited so the same label works on a white field, inside a
+ * Klein-blue button and on the dark board without a variant each. */
+.bi { display: block; line-height: 1.25; }
+.bi__zh {
+  display: block;
+  font-family: var(--font-body); font-size: 12.5px; font-weight: 400;
+  letter-spacing: .08em; text-transform: none;
+  font-variant-caps: normal; font-feature-settings: normal;
+}
+.bi__en {
+  display: block; margin-top: 3px;
+  font-family: var(--font-mono); font-size: 9.5px; font-weight: 400;
+  letter-spacing: .2em; text-transform: uppercase; line-height: 1;
+  opacity: .6;
+}
+/* Buttons carry their own scale — the label should not shrink inside one. */
+.btn .bi__zh, .term__submit .bi__zh, .gate__btn .bi__zh, .entry__go .bi__zh { font-size: 13px; }
+.chip .bi__zh { font-size: 12px; }
+.chip .bi__en { letter-spacing: .14em; }

@@ -164,7 +164,7 @@ export default function talk(root, params) {
           h("h1", { class: "threadpost__title serif" }, t.title),
           h("div", { class: "threadpost__meta mono tiny" }, authorLink(t.author), h("span", { class: "dotsep" }, fmtAgo(t.createdAt))),
           h("div", { class: "threadpost__body", html: escText(t.body) })),
-        h("div", { class: "blogsub mono tiny" }, "回复 · " + r.replies.length),
+        h("div", { class: "blogsub mono tiny" }, "回复 " + r.replies.length),
         h("div", { class: "replylist" }, ...(r.replies.length ? r.replies.map((rp) => replyRow(ch, theId, rp)) : [h("div", { class: "muted mono tiny", style: "padding:8px 0" }, "还没有回复")])),
         replyBox(ch, theId))
     }
@@ -219,7 +219,7 @@ export default function talk(root, params) {
     const title = h("input", { class: "input", placeholder: "帖子标题", maxlength: "140" })
     const body = h("textarea", { class: "textarea", rows: "6", placeholder: "正文…" })
     const post = h("button", { class: "btn btn--red btn--lg", style: "width:100%" }, "发布")
-    const m = openModal("发帖 · " + ch.name, h("div", { class: "stack" },
+    const m = openModal("发帖 " + ch.name, h("div", { class: "stack" },
       h("label", { class: "field" }, h("span", { class: "field__label" }, "标题"), title),
       h("label", { class: "field" }, h("span", { class: "field__label" }, "正文"), body),
       post))

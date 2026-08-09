@@ -1,12 +1,11 @@
 import "./styles/reset.css"
 import "./styles/tokens.css"
-import "./styles/constructivism.css"
+import "./styles/catalogue.css"
 import "./styles/views.css"
-import "./styles/cinema.css"
 import "./styles/fx.css"
 import "./styles/fonts.css"
-import { h } from "./lib/dom.js"
-import { defineRoutes, mountOutlet, startRouter } from "./router.js"
+import { h, bi } from "./lib/dom.js"
+import { defineRoutes, mountOutlet, startRouter, gateOn } from "./router.js"
 import { buildNav } from "./components/nav.js"
 import { mountToasts } from "./components/toast.js"
 import { session } from "./lib/store.js"
@@ -29,6 +28,7 @@ defineRoutes([
   { p: "/", tag: "主页", view: () => import("./views/home.js") },
   { p: "/projects", tag: "项目", guard: true, view: () => import("./views/projects.js") },
   { p: "/projects/:id", tag: "档案", guard: true, view: () => import("./views/project-detail.js") },
+  { p: "/programmes", tag: "企划", guard: true, view: () => import("./views/programmes.js") },
   { p: "/activity", tag: "活动", guard: true, view: () => import("./views/stats.js") },
   { p: "/characters", tag: "角色", guard: true, view: () => import("./views/characters.js") },
   { p: "/characters/:id", tag: "档案", guard: true, view: () => import("./views/character-detail.js") },
@@ -46,7 +46,11 @@ defineRoutes([
   { p: "/login", tag: "登录", view: () => import("./views/auth.js") }
 ])
 
-probe().finally(startRouter)
+// The first screen used to wait on /api/me before anything was drawn, even
+// though the landing page does not care who is looking. Start painting now and
+// let the router hold back only the routes that actually need a session.
+gateOn(probe())
+startRouter()
 app.setAttribute("data-boot", "1")
 
 async function probe() {
@@ -58,7 +62,7 @@ function footer() {
   return h("footer", { class: "footer" },
     h("div", { class: "wrap" },
       h("div", { class: "footer__big serif" }, "长生天", h("span", { class: "red" }, "计划")),
-      h("div", { class: "mono" }, "艺作存档库 / ARCHIVE OF WORKS")
+      h("div", { class: "mono" }, bi("艺作存档库", "ARCHIVE OF WORKS"))
     )
   )
 }

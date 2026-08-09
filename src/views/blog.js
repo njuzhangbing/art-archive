@@ -1,4 +1,4 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { postFormModal } from "../components/post-form.js"
 import { seriesFormModal } from "../components/series-form.js"
@@ -28,7 +28,7 @@ export default function blog(root) {
     return h("a", { class: "scard", href: "/blog/series/" + s.id, "data-link": "1" },
       h("div", { class: "scard__cv" }, s.coverUrl ? h("img", { src: s.coverUrl, loading: "lazy", alt: "" }) : h("span", { class: "mono tiny muted" }, "SERIES")),
       h("div", { class: "scard__b" },
-        h("div", { class: "scard__tag mono tiny" }, "系列 · " + s.count + " 篇"),
+        h("div", { class: "scard__tag mono tiny" }, "系列 " + s.count + " 篇"),
         h("h3", { class: "scard__title serif" }, s.title),
         s.desc ? h("p", { class: "scard__desc" }, s.desc) : null,
         h("div", { class: "scard__meta mono tiny" }, "@" + s.owner))
@@ -61,13 +61,13 @@ export default function blog(root) {
 
       clear(seriesEl)
       if (series.length) {
-        seriesEl.append(h("div", { class: "blogsub mono tiny" }, "系列 / SERIES"))
+        seriesEl.append(h("div", { class: "blogsub mono tiny" }, bi("系列", "SERIES")))
         seriesEl.append(h("div", { class: "sgrid" }, ...series.map(seriesCard)))
       }
 
       clear(standaloneEl)
       if (standalone.length) {
-        standaloneEl.append(h("div", { class: "blogsub mono tiny" }, "独立文章 / POSTS"))
+        standaloneEl.append(h("div", { class: "blogsub mono tiny" }, bi("独立文章", "POSTS")))
         standalone.forEach((p) => standaloneEl.append(postRow(p)))
       }
       if (!anns.length && !series.length && !standalone.length) {

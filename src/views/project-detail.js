@@ -50,7 +50,7 @@ export default function projectDetail(root, params) {
       h("span", { class: "mono tiny muted" }, "涉及角色"),
       ...ids.map((id) => {
         const c = charMap[id]
-        return h("a", { class: "cpchip", "data-grade": c.grade, href: "/characters/" + c.id, "data-link": "1" }, c.code ? h("span", { class: "mono tiny" }, c.code) : null, c.name)
+        return h("a", { class: "cpchip", "data-sec": c.sec || "PUBLIC", href: "/characters/" + c.id, "data-link": "1" }, c.code ? h("span", { class: "mono tiny" }, c.code) : null, c.name)
       })
     )
   }
@@ -75,11 +75,11 @@ export default function projectDetail(root, params) {
       canEdit ? h("button", { class: "btn btn--sm btn--danger", onClick: del }, "删除") : null,
       !project.isOwn ? reportButton({ kind: "project", id: project.id, title: project.title }) : null
     )
-    return h("section", { class: "pd__head", "data-grade": project.grade },
-      h("div", { class: "pd__crumb mono" }, h("a", { href: "/projects", "data-link": "1" }, "项目库"), " / ", project.grade),
+    return h("section", { class: "pd__head", "data-sec": project.sec || "PUBLIC" },
+      h("div", { class: "pd__crumb mono" }, h("a", { href: "/projects", "data-link": "1" }, "项目库"), " / ", project.sec === "SECRET" ? "保密" : "公开"),
       h("div", { class: "pd__top" },
         h("div", { class: "pd__id" },
-          h("div", { class: "badge badge--fill", "data-grade": project.grade }, h("span", { class: "badge__dot" }), project.grade),
+          h("div", { class: "badge badge--fill", "data-sec": project.sec || "PUBLIC" }, h("span", { class: "badge__dot" }), project.sec === "SECRET" ? "保密 CLOSED" : "公开 OPEN"),
           h("h1", { class: "pd__title serif" }, project.title),
           project.tags && project.tags.length ? h("div", { class: "tagrow", style: "margin-top:14px" }, ...project.tags.map((t) => h("span", { class: "tag" }, t))) : null,
           h("div", { class: "pd__meta mono" },
@@ -101,7 +101,7 @@ export default function projectDetail(root, params) {
     const head = v.id === headId
     return h("section", { class: "pd__stage" },
       h("div", { class: "pd__stagebar" },
-        h("span", { class: "badge", "data-grade": project.grade }, h("span", { class: "badge__dot" }), "v" + numberOf(v.id) + (head ? " · 最新" : " · 历史")),
+        h("span", { class: "badge", "data-sec": project.sec || "PUBLIC" }, h("span", { class: "badge__dot" }), "v" + numberOf(v.id) + (head ? " 最新" : " 历史")),
         h("span", { class: "mono tiny muted pd__stagemsg" }, v.message),
         h("div", { class: "pd__stageacts" },
           !head ? h("button", { class: "btn btn--sm", onClick: () => { viewingId = headId; render() } }, "回到最新") : null,
@@ -126,7 +126,7 @@ export default function projectDetail(root, params) {
     const card = h("button", { class: "tnode__card" },
       cover ? h("div", { class: "tnode__th" }, cover.kind === "video" ? h("div", { class: "sthumb__v mono" }, "▶") : h("img", { src: cover.previewUrl || cover.posterUrl || cover.originalUrl, loading: "lazy", alt: "" })) : null,
       h("div", { class: "tnode__body" },
-        h("div", { class: "tnode__top" }, h("b", { class: "mono" }, "v" + n), v.id === headId ? h("span", { class: "badge badge--fill", "data-grade": project.grade, style: "padding:2px 7px" }, "HEAD") : null),
+        h("div", { class: "tnode__top" }, h("b", { class: "mono" }, "v" + n), v.id === headId ? h("span", { class: "badge badge--fill", "data-sec": project.sec || "PUBLIC", style: "padding:2px 7px" }, "HEAD") : null),
         h("div", { class: "tnode__msg" }, v.message),
         h("div", { class: "tnode__meta mono tiny muted" }, "@" + v.author, h("span", { class: "dotsep" }, fmtAgo(v.createdAt)), h("span", { class: "dotsep" }, (v.assets || []).length + " 文件"))
       )

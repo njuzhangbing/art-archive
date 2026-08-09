@@ -1,4 +1,4 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { session, isAdmin } from "../lib/store.js"
 import { toast } from "../components/toast.js"
@@ -10,6 +10,7 @@ import { planDialog } from "../components/plan-dialog.js"
 import { projectCard } from "../components/project-card.js"
 import { buildAsset } from "../lib/upload.js"
 import { exportAll } from "../lib/exporter.js"
+import { asset, bearer } from "../lib/net.js"
 
 export default function profile(root) {
   if (!session.me) { root.append(wall()); reveal([...root.firstChild.children], { y: 24, stagger: 0.06 }); return {} }
@@ -43,7 +44,7 @@ export default function profile(root) {
       const r = await api.get("/api/projects?mine=1")
       clear(projWrap)
       if (!r.projects.length) projWrap.append(h("div", { class: "empty" }, h("div", { class: "mono" }, "你还没有项目"), h("a", { class: "btn btn--red", href: "/projects", "data-link": "1", style: "margin-top:14px" }, "去新建")))
-      else r.projects.slice(0, 6).forEach((p, i) => { p.no = i + 1; projWrap.append(projectCard(p)) })
+      else r.projects.slice(0, 6).forEach((p, i) => { p.no = i + 1; projWrap.append(projectCard(p, i)) })
     } catch (e) { clear(projWrap); projWrap.append(h("div", { class: "muted mono tiny" }, e.message)) }
     renderHeat(heatWrap)
   }
@@ -61,12 +62,12 @@ export default function profile(root) {
   function header(me) {
     const seal = (me.displayName || me.handle || "天").trim()[0]
     const sealEl = h("div", { class: "profile__seal" }, seal)
-    if (me.avatarKey) { sealEl.style.backgroundImage = "url(/media/" + me.avatarKey + ")"; sealEl.style.backgroundSize = "cover"; sealEl.style.backgroundPosition = "center"; sealEl.style.color = "transparent" }
+    if (me.avatarKey) { sealEl.style.backgroundImage = "url(" + asset("/media/" + me.avatarKey) + ")"; sealEl.style.backgroundSize = "cover"; sealEl.style.backgroundPosition = "center"; sealEl.style.color = "transparent" }
     return h("section", { class: "profile__head" },
       sealEl,
       h("div", { class: "profile__id" },
         h("div", { class: "profile__roles" },
-          h("span", { class: "badge", "data-grade": me.role === "owner" ? "ALEPH" : me.role === "admin" ? "WAW" : "TETH" }, h("span", { class: "badge__dot" }), me.role === "owner" ? "站长" : me.role === "admin" ? "管理员" : "成员"),
+          h("span", { class: "badge", "data-tone": me.role === "owner" ? "high" : me.role === "admin" ? "mid" : "low" }, h("span", { class: "badge__dot" }), me.role === "owner" ? "站长" : me.role === "admin" ? "管理员" : "成员"),
           h("span", { class: "mono tiny" }, "入库 " + fmtAgo(me.createdAt))
         ),
         h("h1", { class: "profile__name serif" }, me.displayName || me.handle),
@@ -81,6 +82,7 @@ export default function profile(root) {
 
   async function doLogout() {
     try { await api.post("/api/logout") } catch {}
+    bearer.clear()
     session.set(null)
     toast("已登出", "info")
     go("/")
@@ -91,17 +93,17 @@ export default function profile(root) {
     let avatarKey = me.avatarKey || null
     const fallbackChar = (me.handle || "?").slice(0, 1).toUpperCase()
     const avPrev = h("span", { class: "authoravatar authoravatar--lg avset" }, fallbackChar)
-    if (avatarKey) { avPrev.style.backgroundImage = "url(/media/" + avatarKey + ")"; avPrev.classList.add("has"); avPrev.textContent = "" }
+    if (avatarKey) { avPrev.style.backgroundImage = "url(" + asset("/media/" + avatarKey) + ")"; avPrev.classList.add("has"); avPrev.textContent = "" }
     const avFile = h("input", { type: "file", accept: "image/*", style: "display:none" })
     avFile.addEventListener("change", async () => {
       if (!avFile.files.length) return
       const f = avFile.files[0]; avFile.value = ""
       toast("上传头像中…", "info")
-      try { const a = await buildAsset(f); avatarKey = a.previewKey || a.originalKey; avPrev.style.backgroundImage = "url(/media/" + avatarKey + ")"; avPrev.classList.add("has"); avPrev.textContent = "" }
+      try { const a = await buildAsset(f); avatarKey = a.previewKey || a.originalKey; avPrev.style.backgroundImage = "url(" + asset("/media/" + avatarKey) + ")"; avPrev.classList.add("has"); avPrev.textContent = "" }
       catch (e) { toast(e.message || "头像上传失败", "bad") }
     })
     const avField = h("div", { class: "field" },
-      h("span", { class: "field__label" }, "头像 / AVATAR"),
+      h("span", { class: "field__label" }, bi("头像", "AVATAR")),
       h("div", { class: "avsetrow" }, avPrev,
         h("button", { class: "btn btn--sm", type: "button", onClick: () => avFile.click() }, "上传 / 更换"),
         h("button", { class: "btn btn--sm btn--ghost", type: "button", onClick: () => { avatarKey = null; avPrev.style.backgroundImage = ""; avPrev.classList.remove("has"); avPrev.textContent = fallbackChar } }, "移除"),
@@ -110,7 +112,7 @@ export default function profile(root) {
       h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Account / 账户设置")),
       avField,
       h("label", { class: "field" }, h("span", { class: "field__label" }, "显示名"), h("input", { class: "input", name: "display", value: me.displayName || "", maxlength: "40" })),
-      h("label", { class: "field" }, h("span", { class: "field__label" }, "简介 / BIO"), h("textarea", { class: "textarea", name: "bio", maxlength: "280", placeholder: "一句话介绍自己" }, me.bio || "")),
+      h("label", { class: "field" }, h("span", { class: "field__label" }, bi("简介", "BIO")), h("textarea", { class: "textarea", name: "bio", maxlength: "280", placeholder: "一句话介绍自己" }, me.bio || "")),
       h("div", { class: "split2" },
         h("label", { class: "field" }, h("span", { class: "field__label" }, "原密码"), h("input", { class: "input", name: "old", type: "password", autocomplete: "current-password", placeholder: "仅改密码时填" })),
         h("label", { class: "field" }, h("span", { class: "field__label" }, "新密码"), h("input", { class: "input", name: "neu", type: "password", autocomplete: "new-password", placeholder: "≥ 8 位" }))
@@ -135,11 +137,11 @@ export default function profile(root) {
 
   function adminBlock() {
     const box = h("section", { class: "admin" },
-      h("div", { class: "section__head" }, h("div", {}, h("span", { class: "kicker" }, "Console / 管理控制台"), h("h2", { class: "h-section", style: "margin-top:12px" }, "成员与邀请"))),
+      h("div", { class: "section__head" }, h("div", {}, h("span", { class: "kicker" }, "Console / 管理控制台"), h("h2", { class: "h-section", style: "margin-top:12px" }, "成员管理"))),
       h("div", { class: "admin__cols" })
     )
     const cols = box.querySelector(".admin__cols")
-    cols.append(usersPanel(), invitesPanel())
+    cols.append(usersPanel())
     box.append(reportsPanel(), backupPanel())
     return box
   }
@@ -214,7 +216,7 @@ export default function profile(root) {
     const act = async (fn) => { try { await fn(); reload() } catch (e) { toast(e.message || "失败", "bad") } }
     return h("div", { class: "urow urow--rep" },
       h("div", { class: "urow__who" },
-        h("span", { class: "badge", "data-grade": r.resolved ? "ZAYIN" : "ALEPH" }, h("span", { class: "badge__dot" }), r.resolved ? "已处理" : "待处理"),
+        h("span", { class: "badge", "data-tone": r.resolved ? "ok" : "high" }, h("span", { class: "badge__dot" }), r.resolved ? "已处理" : "待处理"),
         h("a", { class: "mono", href: link, "data-link": "1" }, kindLabel + "《" + (r.targetTitle || r.targetId) + "》")
       ),
       r.reason ? h("div", { class: "urow__reason mono tiny muted" }, "原因：" + r.reason) : null,
@@ -242,56 +244,25 @@ export default function profile(root) {
   }
 
   function userRow(u, reload) {
-    const stat = u.status === "active" ? "TETH" : u.status === "pending" ? "HE" : "ALEPH"
+    const stat = u.status === "active" ? "ok" : "high"
     const act = async (fn) => { try { await fn(); reload() } catch (e) { toast(e.message || "失败", "bad") } }
     const me = session.me
     const RANK = { member: 0, admin: 1, owner: 2 }
     const canManage = (RANK[me.role] || 0) > (RANK[u.role] || 0)
-    const roleGrade = u.role === "owner" ? "ALEPH" : u.role === "admin" ? "WAW" : "ZAYIN"
+    const roleTone = u.role === "owner" ? "high" : u.role === "admin" ? "mid" : "low"
     const roleText = u.role === "owner" ? "站长" : u.role === "admin" ? "ADMIN" : "MEMBER"
     return h("div", { class: "urow" },
       h("div", { class: "urow__who" },
-        h("span", { class: "badge", "data-grade": roleGrade }, h("span", { class: "badge__dot" }), roleText),
+        h("span", { class: "badge", "data-tone": roleTone }, h("span", { class: "badge__dot" }), roleText),
         h("b", {}, "@" + u.handle), h("span", { class: "mono tiny muted" }, u.displayName || "")
       ),
-      h("div", { class: "urow__st" }, h("span", { class: "badge", "data-grade": stat }, h("span", { class: "badge__dot" }), u.status)),
+      h("div", { class: "urow__st" }, h("span", { class: "badge", "data-tone": stat }, h("span", { class: "badge__dot" }), u.status)),
       h("div", { class: "urow__btns" },
         (canManage && u.status !== "active") ? h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/admin/users/" + u.id, { status: "active" })) }, "批准") : null,
         (canManage && u.status === "active") ? h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/admin/users/" + u.id, { status: "blocked" })) }, "停用") : null,
         canManage ? h("button", { class: "btn btn--sm", onClick: () => act(() => api.patch("/api/admin/users/" + u.id, { role: u.role === "admin" ? "member" : "admin" })) }, u.role === "admin" ? "撤销管理员" : "升为管理员") : null,
         canManage ? h("button", { class: "btn btn--sm btn--danger", onClick: () => { if (confirm("删除 @" + u.handle + " ?")) act(() => api.del("/api/admin/users/" + u.id)) } }, "删") : null
       )
-    )
-  }
-
-  function invitesPanel() {
-    const list = h("div", { class: "rows" })
-    const mk = h("button", { class: "btn btn--sm btn--red", onClick: gen }, "+ 生成邀请码")
-    const panel = h("div", { class: "panel" },
-      h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Invites / 邀请码"), mk),
-      list
-    )
-    async function load() {
-      try {
-        const { invites } = await api.get("/api/invites")
-        clear(list)
-        if (!invites.length) { list.append(h("div", { class: "muted mono tiny" }, "暂无邀请码，点上方生成")); return }
-        invites.forEach((iv) => list.append(inviteRow(iv, load)))
-      } catch (err) { clear(list); list.append(h("div", { class: "muted mono tiny" }, err.message)) }
-    }
-    async function gen() {
-      try { const { invite } = await api.post("/api/invites", { uses: 1 }); toast("已生成 " + invite.code, "ok"); load() }
-      catch (e) { toast(e.message || "失败", "bad") }
-    }
-    load()
-    return panel
-  }
-
-  function inviteRow(iv, reload) {
-    return h("div", { class: "urow urow--inv" },
-      h("code", { class: "invcode", onClick: () => { navigator.clipboard && navigator.clipboard.writeText(iv.code); toast("已复制 " + iv.code, "ok") } }, iv.code),
-      h("span", { class: "mono tiny muted" }, "剩 " + (iv.usesLeft ?? "∞") + " 次 · " + fmtAgo(iv.createdAt)),
-      h("button", { class: "btn btn--sm btn--danger", onClick: async () => { try { await api.post("/api/invites", { action: "delete", code: iv.code }); reload() } catch (e) { toast(e.message, "bad") } } }, "删")
     )
   }
 

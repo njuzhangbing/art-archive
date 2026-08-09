@@ -1,4 +1,4 @@
-import { h } from "../lib/dom.js"
+import { h, bi } from "../lib/dom.js"
 import { gsap, tame } from "../lib/anim.js"
 
 const PHOTO_HALF = 168
@@ -53,17 +53,17 @@ function buildCluster(p) {
   const memo = h("div", { class: "board__note", style: `--nrot:${lean.toFixed(2)}deg` },
     h("div", { class: "board__notehd serif" }, p.title),
     h("div", { class: "board__notemeta" },
-      h("span", { class: "badge badge--fill", "data-grade": p.grade }, h("span", { class: "badge__dot" }), p.grade),
+      h("span", { class: "badge badge--fill", "data-sec": p.sec || "PUBLIC" }, h("span", { class: "badge__dot" }), p.sec === "SECRET" ? "保密" : "公开"),
       h("span", { class: "board__by mono tiny" }, "@" + (p.author || "匿名"))),
     p.desc && p.desc.trim() ? h("div", { class: "board__desc" }, p.desc.trim()) : null,
     h("a", { class: "board__open mono", href: "/projects/" + p.id, "data-link": "1" }, "查看档案 →")
   )
-  return h("div", { class: "board__cluster", "data-grade": p.grade, style: `--rot:${tilt.toFixed(2)}deg` }, photo, memo)
+  return h("div", { class: "board__cluster", "data-sec": p.sec || "PUBLIC", style: `--rot:${tilt.toFixed(2)}deg` }, photo, memo)
 }
 
 function buildHub(who) {
   const face = who.img ? h("img", { src: who.img, alt: who.name || "" }) : h("div", { class: "board__nocover mono tiny" }, "无立绘")
-  return h("div", { class: "board__hub", "data-grade": who.grade },
+  return h("div", { class: "board__hub", "data-sec": who.sec || "PUBLIC" },
     h("div", { class: "board__hubphoto" }, h("span", { class: "board__pin" }), face),
     h("div", { class: "board__hublabel" },
       who.code ? h("span", { class: "board__hubcode mono" }, who.code) : null,
@@ -76,14 +76,14 @@ export function investigationBoard({ character, projects }) {
   const clusters = projects.map(buildCluster)
   let pick = () => {}
   const items = projects.map((p, i) => {
-    const it = h("button", { class: "board__railitem", "data-grade": p.grade },
+    const it = h("button", { class: "board__railitem", "data-sec": p.sec || "PUBLIC" },
       h("span", { class: "board__rnum mono" }, String(i + 1).padStart(2, "0")),
       h("span", { class: "board__rdot" }),
       h("span", { class: "board__rtt" }, p.title))
     it.addEventListener("click", () => pick(i))
     return it
   })
-  const rail = h("div", { class: "board__rail" }, h("div", { class: "board__railtt mono tiny" }, "档案索引 / INDEX"), ...items)
+  const rail = h("div", { class: "board__rail" }, h("div", { class: "board__railtt mono tiny" }, bi("档案索引", "INDEX")), ...items)
 
   if (cramped) {
     const mark = (i) => {
@@ -133,7 +133,7 @@ export function investigationBoard({ character, projects }) {
   hub.style.top = hy + "px"
 
   const canvas = h("div", { class: "board__canvas" }, yarn, hub, ...clusters)
-  const hint = h("div", { class: "board__hint mono tiny" }, "拖动平移 · 点档案聚焦")
+  const hint = h("div", { class: "board__hint mono tiny" }, "拖动平移 点档案聚焦")
   const stage = h("div", { class: "board__stage" }, canvas, hint)
   const board = h("section", { class: "board" }, rail, stage)
 

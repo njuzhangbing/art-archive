@@ -1,0 +1,531 @@
+/* The homepage as a file cover sheet.
+ *
+ * A dark masthead carrying the seal sits on top of an otherwise white page, the
+ * way a department's letterhead plate sits above the paper. Everything under it
+ * is set like a registered document: letterspaced labels, dot leaders, hairline
+ * rules, and figures in a column that lines up. */
+
+.cover { position: relative; padding-bottom: clamp(60px, 8vw, 120px); }
+
+/* ---- background listings ---- */
+/* Set far enough back to be a watermark. Anything heavier and the page stops
+ * being a document and starts being a screensaver. */
+.ftlayer {
+  position: absolute; inset: 0; overflow: hidden;
+  pointer-events: none; user-select: none; z-index: 0;
+}
+.cover > .wrap, .cover > .mast { position: relative; z-index: 1; }
+
+.ft {
+  position: absolute;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  white-space: pre;
+  color: var(--ink);
+  /* Legible if you look for it, ignorable if you do not. Below about .08 the
+   * listings read as a smudge on the paper rather than as text. */
+  opacity: .13;
+}
+/* Spread down the length of the sheet and kept clear of both edges, so each
+ * listing reads as a deliberate watermark rather than as something that ran
+ * off the side of the page. They sit under the text on purpose. */
+.ft--a { top: 3%;  left: 3%; }
+.ft--b { top: 27%; right: 4%; }
+.ft--c { top: 55%; left: 7%; opacity: .105; }
+.ft--d { top: 78%; right: 9%; opacity: .105; }
+
+@media (max-width: 900px) {
+  /* Narrow screens have no margin to spare, so keep only the two that fall
+   * clear of the reading column. */
+  .ft--a, .ft--d { display: none; }
+  .ft--b { right: 2%; top: 32%; opacity: .09; }
+  .ft--c { left: 2%; top: 66%; opacity: .09; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ft { transition: none; }
+}
+
+/* ---- masthead ---- */
+/* The crest is printed on the page rather than mounted on a black field. Its
+ * artwork is mostly deep blue and charcoal, which the black background was
+ * swallowing whole; on paper the same ink reads as a letterhead engraving. */
+.mast {
+  background: transparent;
+  color: var(--ink);
+  padding: clamp(38px, 5.5vw, 82px) 0 0;
+}
+.mast__inner { width: 100%; max-width: var(--maxw); margin: 0 auto; padding-inline: var(--gut); }
+
+/* The type and the plate occupy the same box so one can dissolve into the
+ * other without the page reflowing underneath them. */
+.mast__plate {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: var(--plate-aspect, 2.2253);
+  width: 100%;
+}
+.mast__type,
+.mast__img { position: absolute; inset: 0; }
+
+.mast__type {
+  font-family: var(--font-mono);
+  /* Sized off the container so the grid always spans the masthead exactly:
+   * 220 columns at 0.6em of advance each. */
+  font-size: calc(100cqw / (var(--cols) * var(--cell)));
+  line-height: 1;
+  white-space: pre;
+  /* Dark enough to read as a proof being pulled, light enough that it never
+   * competes with the plate it resolves into. */
+  color: #9B978C;
+  margin: 0;
+  user-select: none;
+}
+.mast__type span {
+  display: block;
+  opacity: 0;
+  /* steps(1) so each row arrives whole, like a line coming off a printer. */
+  animation: lineOn .01s steps(1) forwards;
+  animation-delay: calc(var(--i) * var(--step));
+}
+@keyframes lineOn { to { opacity: 1; } }
+
+.mast__img {
+  width: 100%; height: 100%; object-fit: contain; object-position: center;
+  opacity: 0; transition: opacity .9s var(--ease);
+}
+.mast.is-plate .mast__type { opacity: 0; transition: opacity .75s var(--ease); }
+.mast.is-plate .mast__img { opacity: 1; }
+
+/* Skip control while the type is still running. */
+.mast__skip {
+  position: absolute; right: 0; bottom: -24px;
+  background: transparent; border: 0; color: var(--ink-faint);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  cursor: pointer; transition: color .2s;
+}
+.mast__skip:hover { color: var(--ink); }
+.mast.is-plate .mast__skip { opacity: 0; pointer-events: none; }
+
+/* ---- title block ---- */
+.cover__head { padding-top: clamp(40px, 6vw, 84px); }
+.cover__title {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: clamp(34px, 6.6vw, 96px);
+  line-height: 1.08;
+  letter-spacing: .04em;
+  margin: 0;
+}
+.cover__latin {
+  margin-top: clamp(16px, 1.8vw, 26px);
+  font-family: var(--font-futura);
+  font-weight: 500;
+  font-size: clamp(12px, 1.25vw, 16px);
+  letter-spacing: .52em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  /* Tracking is added after the final glyph too, so the line only looks
+   * centred once that trailing space is taken back. */
+  text-indent: .52em;
+}
+
+/* ---- contents ---- */
+.cover__sec { margin-top: clamp(46px, 6vw, 88px); }
+.cover__label {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--ink-mut); margin-bottom: 20px;
+}
+.toc { border-top: 1px solid var(--rule); }
+.toc__row {
+  display: flex; align-items: baseline; gap: 16px;
+  padding: 20px 0; border-bottom: 1px solid var(--rule);
+  color: var(--ink); text-align: left; width: 100%;
+  background: transparent; border-left: 0; border-right: 0; border-top: 0;
+  cursor: pointer; transition: padding-left .3s var(--ease);
+}
+.toc__row:hover { padding-left: 10px; }
+.toc__n {
+  flex: none; width: 3.2em;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; color: var(--ink-faint);
+}
+.toc__zh { font-family: var(--font-serif); font-weight: 600; font-size: clamp(17px, 1.9vw, 22px); letter-spacing: .02em; flex: none; }
+.toc__row:hover .toc__zh { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.toc__en {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--ink-faint); flex: none;
+}
+/* Dot leaders, as a contents page should have. */
+.toc__lead { flex: 1; min-width: 24px; border-bottom: 1px dotted var(--rule-strong); transform: translateY(-4px); }
+.toc__fig { flex: none; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; color: var(--ink-mut); }
+
+/* ---- two columns of record ---- */
+.cover__cols {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(32px, 4vw, 72px); margin-top: clamp(46px, 6vw, 88px);
+}
+.ledger { border-top: 1px solid var(--ink); }
+.ledger__row {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 12px 0; border-bottom: 1px solid var(--rule);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em;
+}
+.ledger__k { color: var(--ink-mut); text-transform: uppercase; font-size: 10px; letter-spacing: .18em; }
+.ledger__v { margin-left: auto; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ledger__none { padding: 16px 0; color: var(--ink-faint); font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; }
+.ledger__row.is-done .ledger__k { text-decoration: line-through; color: var(--ink-faint); }
+
+@media (max-width: 720px) {
+  .mast { padding-top: 18px; }
+  .toc__en { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mast__type span { animation: none; opacity: 1; }
+  .mast__img, .mast.is-plate .mast__type { transition: none; }
+}
+
+/* ---- archival marks ---- */
+/* Struck-out marginalia, inspection rings and pencilled notes. Purely
+ * decorative, so the layer never takes the pointer and never reflows the
+ * heading it hangs off. */
+.mk { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.mk > * { position: absolute; white-space: nowrap; }
+
+/* Every mark is placed from custom properties and clamped, so the same marks
+ * that hang in the margin on a wide screen tuck back inside the column on a
+ * narrow one instead of running off the edge. */
+.mk__strike {
+  display: inline-block;
+  left: clamp(0px, var(--mx, 0%), calc(100% - 6ch));
+  transform: rotate(var(--lean, 0deg));
+  transform-origin: left center;
+}
+.mk__strike[data-v="above"] { bottom: calc(100% + var(--gap, 6px)); }
+.mk__strike[data-v="below"] { top: calc(100% + var(--gap, 6px)); }
+.mk__strikeTxt {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.mk__strike--tangut .mk__strikeTxt {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: none;
+  color: var(--ink-mut);
+}
+/* The bar covers the run completely — it is a redaction, not a strikethrough. */
+.mk__bar {
+  position: absolute; left: -2px; right: -2px; top: -2px; bottom: -2px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.mk__strike[data-on="1"] .mk__bar {
+  animation: mkWipe var(--wipe, 320ms) var(--ease-hard) var(--hold, 0ms) forwards;
+}
+@keyframes mkWipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Rings and ticks, drawn on rather than faded in. */
+.mk__ring { transform: rotate(var(--turn, 0deg)); overflow: visible; }
+.mk__ring[data-h="left"] { left: max(0px, var(--mx, 0%)); }
+.mk__ring[data-h="right"] { right: max(0px, var(--mx, 0%)); }
+.mk__ring[data-v="top"] { top: var(--my, -18px); }
+.mk__ring[data-v="bottom"] { bottom: var(--my, -18px); }
+.mk__ring path {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .5;
+  stroke-dasharray: var(--len, 300);
+  stroke-dashoffset: var(--len, 300);
+}
+.mk__ring[data-on="1"] path {
+  animation: mkDraw .62s var(--ease) var(--hold, 0ms) forwards;
+}
+@keyframes mkDraw { to { stroke-dashoffset: 0; } }
+
+/* Pencilled note. Bradley Hand where it exists, with a stack of casual
+ * script fallbacks for the platforms that do not ship it. */
+.mk__hand {
+  font-family: "Bradley Hand", "Bradley Hand ITC", "Segoe Script",
+               "Brush Script MT", "Comic Sans MS", cursive;
+  font-size: 13px;
+  color: var(--red);
+  opacity: 0;
+  transform: rotate(var(--turn, 0deg));
+  max-width: 100%;
+}
+.mk__hand[data-h="left"] { left: clamp(0px, var(--mx, 0%), calc(100% - 8ch)); }
+.mk__hand[data-h="right"] { right: clamp(0px, var(--mx, 0%), calc(100% - 8ch)); }
+.mk__hand[data-v="above"] { bottom: calc(100% + var(--gap, 10px)); }
+.mk__hand[data-v="below"] { top: calc(100% + var(--gap, 10px)); }
+.mk__hand[data-on="1"] { animation: mkInk .5s var(--ease) var(--hold, 0ms) forwards; }
+@keyframes mkInk { from { opacity: 0; transform: rotate(var(--turn, 0deg)) translateY(4px); }
+                   to   { opacity: .78; transform: rotate(var(--turn, 0deg)); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mk__bar { transform: scaleX(1); }
+  .mk__ring path { stroke-dashoffset: 0; }
+  .mk__hand { opacity: .78; }
+}
+@media (max-width: 720px) {
+  /* Kept, not hidden. There is no margin to hang them in at this width, so the
+   * marks pull inside the heading's own box and shrink to suit. */
+  .mk__strikeTxt { font-size: 8.5px; letter-spacing: .12em; }
+  .mk__strike--tangut .mk__strikeTxt { font-size: 11px; }
+  .mk__strike { --mx: 0%; --gap: 3px; }
+  .mk__ring { --mx: 0%; transform: rotate(var(--turn, 0deg)) scale(.72); }
+  .mk__ring[data-v="top"] { --my: -14px; }
+  .mk__ring[data-v="bottom"] { --my: -16px; }
+  .mk__hand { font-size: 11px; --mx: 0%; }
+}
+
+/* ---- the four entries as a long scroll ---- */
+/* The plate is held behind the whole run by a sticky element with its own
+ * height pulled back out of the flow, so the blocks scroll across a picture
+ * that stays put instead of pushing it along ahead of them. */
+/* The backdrop is exactly one entry tall and pulls that height back out of the
+ * flow, so it spans the run without ever reaching past the last block. Fixing
+ * it at 100vh while the entries were shorter left the tail of the picture
+ * hanging below them, with the ledger printed over the artwork. */
+.entries { position: relative; z-index: 1; --entryH: 96vh; }
+.entries__bg {
+  position: sticky; top: 0;
+  height: var(--entryH);
+  margin-bottom: calc(-1 * var(--entryH));
+  z-index: 0;
+  overflow: hidden;
+}
+.entries__bg .melt {
+  width: 100%; height: 100%;
+  aspect-ratio: auto;
+  outline: 0;
+  background: var(--paper);
+}
+.entries__bg .melt__canvas { width: 100%; height: 100%; }
+
+/* Paper laid over the picture. Without it the artwork's own contrast decides
+ * whether the entry text can be read, which is not a bet worth taking. */
+.entries__scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  /* Only the top and bottom edges need veiling, to hand off to the white page
+   * above and below. The middle stays clear: the card carries its own opaque
+   * ground, so the picture does not have to be flattened to keep the text
+   * readable. */
+  background: linear-gradient(
+    180deg,
+    var(--paper) 0%,
+    rgba(255, 255, 255, .34) 18%,
+    rgba(255, 255, 255, .16) 50%,
+    rgba(255, 255, 255, .34) 82%,
+    var(--paper) 100%
+  );
+}
+.entries__cap {
+  position: absolute; left: 0; right: 0; bottom: 22px;
+  display: flex; justify-content: center; gap: 14px;
+  font-size: var(--meta-size); letter-spacing: var(--meta-ls); text-transform: uppercase;
+  color: var(--ink-mut); pointer-events: none;
+}
+.entries__capN { color: var(--ink-faint); }
+.entries__capZh { color: var(--ink); }
+.entries__capEn { color: var(--ink-faint); }
+
+.entry {
+  position: relative; z-index: 1;
+  min-height: var(--entryH);
+  display: flex; align-items: center;
+  padding-inline: var(--gut);
+}
+.entry[data-side="left"] { justify-content: flex-start; }
+.entry[data-side="right"] { justify-content: flex-end; }
+
+/* The card is opaque so the entry always reads, whatever is behind it. */
+.entry__card {
+  position: relative;
+  width: min(430px, 100%);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: clamp(26px, 3vw, 44px);
+  opacity: .58;
+  transform: translateY(14px);
+  transition: opacity .55s var(--ease), transform .55s var(--ease);
+}
+.entry[data-on="1"] .entry__card { opacity: 1; transform: none; }
+
+.entry__n { font-size: var(--meta-size); letter-spacing: .24em; color: var(--ink-faint); }
+/* The marks hang off this box, so it has to be the positioned one. */
+.entry__head { position: relative; margin: 14px 0 10px; }
+.entry__zh {
+  font-family: var(--font-title); font-weight: 400;
+  font-size: clamp(30px, 3.6vw, 50px); line-height: 1.1; letter-spacing: .04em; margin: 0;
+}
+.entry__en {
+  font-size: var(--meta-size); letter-spacing: .24em; text-transform: uppercase; color: var(--ink-mut);
+}
+.entry__meta {
+  margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--rule);
+  font-size: var(--meta-size); letter-spacing: var(--meta-ls); text-transform: uppercase; color: var(--ink-mut);
+}
+.entry__fig { color: var(--ink); }
+.entry__go {
+  margin-top: 22px; display: inline-flex; align-items: center; gap: 10px;
+  background: transparent; border: 0; border-bottom: 1px solid var(--ink);
+  padding: 6px 0; cursor: pointer;
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink);
+  transition: gap .25s var(--ease);
+}
+.entry__go:hover { gap: 18px; }
+.entry__go:hover .entry__arrow { color: var(--red); }
+
+@media (max-width: 860px) {
+  .entries { --entryH: 78vh; }
+  .entry { justify-content: center !important; }
+  .entry__card { width: 100%; }
+}
+
+/* ---- centred cover head ---- */
+.mast__inner { text-align: center; }
+/* The seal is near enough to square that at full width it would tower over the
+ * title it is supposed to introduce. */
+.mast__plate { max-width: min(420px, 74vw); margin-inline: auto; }
+
+.cover__head { text-align: center; }
+
+/* ---- access refusal ---- */
+/* Struck-out text. The bar grows out of the line's own box, so it covers
+ * exactly what was written and nothing else. */
+.redact { position: relative; }
+.redact::after {
+  content: "";
+  position: absolute; left: -3px; right: -3px; top: -1px; bottom: -1px;
+  background: var(--ink);
+  transform: scaleX(0); transform-origin: left center;
+  animation: rdWipe .3s var(--ease-hard) var(--rd, 0ms) forwards;
+  pointer-events: none; z-index: 5;
+}
+@keyframes rdWipe { to { transform: scaleX(1); } }
+
+body.gate-on { overflow: hidden; }
+
+.gate { position: fixed; inset: 0; z-index: 9500; display: grid; place-items: center; }
+.gate__veil {
+  position: absolute; inset: 0;
+  background: rgba(250, 249, 246, .72);
+  opacity: 0; transition: opacity .34s var(--ease);
+}
+.gate[data-on="1"] .gate__veil { opacity: 1; }
+
+.gate__panel {
+  position: relative;
+  width: min(560px, calc(100vw - 40px));
+  background: linear-gradient(158deg, #F7F8FB 0%, #EDEFF4 46%, #E4E7EE 100%);
+  padding: clamp(30px, 4vw, 48px) clamp(26px, 3.6vw, 46px);
+  /* The whole thing arrives as one object, slightly overshooting. */
+  opacity: 0;
+  transform: translateY(26px) scale(.985);
+  transition: opacity .42s var(--ease), transform .52s var(--ease);
+  box-shadow: 0 30px 80px rgba(20, 24, 34, .16);
+}
+.gate[data-on="1"] .gate__panel { opacity: 1; transform: none; }
+
+/* Corner brackets: they fly in from outside and snap onto the corners. */
+.gate__bracket {
+  position: absolute; width: 22px; height: 22px; background: var(--ink);
+  opacity: 0; transition: opacity .2s linear, transform .46s var(--ease);
+}
+.gate__bracket--tl { top: -8px; left: -8px; transform: translate(-38px, -38px); }
+.gate__bracket--tr { top: -8px; right: -8px; transform: translate(38px, -38px); }
+.gate__bracket--bl { bottom: -8px; left: -8px; transform: translate(-38px, 38px); }
+.gate__bracket--br { bottom: -8px; right: -8px; transform: translate(38px, 38px); }
+.gate[data-on="1"] .gate__bracket { opacity: 1; transform: none; }
+.gate[data-on="1"] .gate__bracket--tl { transition-delay: 40ms; }
+.gate[data-on="1"] .gate__bracket--tr { transition-delay: 90ms; }
+.gate[data-on="1"] .gate__bracket--bl { transition-delay: 140ms; }
+.gate[data-on="1"] .gate__bracket--br { transition-delay: 190ms; }
+
+/* Wordmark with a misregistered ghost trailing it, like a bad second pass. */
+.gate__mark { position: relative; display: inline-block; }
+.gate__markInk, .gate__markGhost {
+  font-family: var(--font-title); font-weight: 400;
+  font-size: clamp(34px, 4.6vw, 54px); letter-spacing: .06em; line-height: 1;
+}
+.gate__markInk { position: relative; color: #14161C; display: block; }
+.gate__markGhost {
+  position: absolute; left: 0; top: 0;
+  color: rgba(20, 22, 28, .3); filter: blur(1.4px);
+  transform: translate(14px, 12px);
+  transition: transform .62s var(--ease);
+}
+.gate[data-on="1"] .gate__markGhost { transform: translate(5px, 5px); }
+
+.gate__rule {
+  height: 1px; background: #14161C; margin: 14px 0 10px;
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform .6s var(--ease) .18s;
+}
+.gate[data-on="1"] .gate__rule { transform: scaleX(1); }
+.gate__sub {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .26em;
+  text-transform: uppercase; color: #5A6070;
+}
+
+.gate__body { margin-top: clamp(22px, 3vw, 34px); }
+.gate__row {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 9px 0; border-bottom: 1px solid rgba(20, 22, 28, .12);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  opacity: 0; transform: translateX(-12px);
+  transition: opacity .4s var(--ease), transform .48s var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+.gate[data-on="1"] .gate__row { opacity: 1; transform: none; }
+.gate__k { color: #5A6070; }
+.gate__dots { flex: 1; border-bottom: 1px dotted rgba(20, 22, 28, .3); transform: translateY(-3px); }
+.gate__v { color: #14161C; }
+
+/* The refusal itself: a red frame that will not stop blinking. */
+.gate__alarm {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: clamp(20px, 2.6vw, 30px);
+  padding: 13px 16px;
+  border: 1px solid var(--klein);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--klein);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .4s var(--ease) .78s, transform .4s var(--ease) .78s;
+}
+.gate[data-on="1"] .gate__alarm { opacity: 1; transform: none; animation: gateAlarm 1.15s steps(1) .95s infinite; }
+.gate__alarmDot { width: 7px; height: 7px; background: var(--klein); flex: none; }
+@keyframes gateAlarm {
+  0%, 62% { border-color: var(--klein); background: rgba(0, 47, 167, .06); }
+  63%, 100% { border-color: rgba(0, 47, 167, .28); background: transparent; }
+}
+
+.gate__acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.gate__btn {
+  flex: 1; min-width: 150px;
+  background: transparent; border: 1px solid rgba(20, 22, 28, .32);
+  padding: 12px 16px; cursor: pointer;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em;
+  text-transform: uppercase; color: #14161C;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity .4s var(--ease) .9s, transform .4s var(--ease) .9s,
+              background .2s, color .2s, border-color .2s;
+}
+.gate[data-on="1"] .gate__btn { opacity: 1; transform: none; }
+.gate__btn:hover { border-color: #14161C; }
+.gate__btn--go:hover { background: #14161C; color: #F7F8FB; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gate__panel, .gate__bracket, .gate__row, .gate__alarm, .gate__btn { opacity: 1; transform: none; }
+  .gate__rule { transform: scaleX(1); }
+  .gate[data-on="1"] .gate__alarm { animation: none; }
+  .redact::after { animation: none; transform: scaleX(1); }
+}

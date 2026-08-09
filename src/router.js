@@ -1,5 +1,4 @@
 import { clear } from "./lib/dom.js"
-import { pageWipe } from "./lib/anim.js"
 import { hideLoader } from "./components/loader.js"
 import { syncNav } from "./components/nav.js"
 import { session } from "./lib/store.js"
@@ -8,6 +7,30 @@ let table = []
 let outlet = null
 let active = null
 let booted = false
+let ready = Promise.resolve()
+
+/**
+ * Pages change the way a CRT changes signal. The effect is loaded on the first
+ * navigation rather than up front: it is never needed for the first paint, and
+ * the entry bundle should not carry it there.
+ */
+async function transition(swap) {
+  try {
+    const { crtSwap } = await import("./components/crt.js")
+    await crtSwap(swap)
+  } catch (e) {
+    console.error("transition failed, swapping outright", e)
+    swap()
+    window.scrollTo(0, 0)
+  }
+}
+
+/**
+ * Guarded routes need to know who is signed in, but the public ones do not.
+ * Gating only the routes that care lets the landing page paint without waiting
+ * on a session round-trip first.
+ */
+export function gateOn(promise) { ready = promise }
 
 export function defineRoutes(list) {
   table = list.map((r) => ({ ...compile(r.p), load: r.view, tag: r.tag, guard: !!r.guard }))
@@ -38,9 +61,12 @@ function match() {
 
 async function paint() {
   const hit = match()
-  if (hit && hit.r.guard && !session.me) {
-    history.replaceState({}, "", "/login")
-    return paint()
+  if (hit && hit.r.guard) {
+    if (!session.ready) await ready
+    if (!session.me) {
+      history.replaceState({}, "", "/login")
+      return paint()
+    }
   }
   let mod = null
   if (hit) {
@@ -54,7 +80,7 @@ async function paint() {
     syncNav()
   }
   if (!booted) { booted = true; swap(); hideLoader() }
-  else await pageWipe(swap, hit ? hit.r.tag : "404")
+  else await transition(swap)
 }
 
 function notFound() {

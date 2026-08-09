@@ -5,7 +5,7 @@ export function showLoader() {
   if (el) return
   el = document.createElement("div")
   el.id = "loader"
-  el.innerHTML = '<div class="loader__in"><div class="loader__seal">天</div><div class="loader__bar"></div><div class="loader__txt">LOADING · 载入中</div></div>'
+  el.innerHTML = '<div class="loader__in"><div class="loader__seal">天</div><div class="loader__bar"></div><div class="loader__txt">LOADING 载入中</div></div>'
   document.body.appendChild(el)
   shownAt = performance.now()
 }

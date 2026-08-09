@@ -15,15 +15,15 @@ export function planDialog({ date, onSaved }) {
   const body = h("div", { class: "plandlg" },
     list,
     h("div", { class: "plandlg__add" },
-      h("div", { class: "kicker" }, "自动目标 · 可自动判定"),
+      h("div", { class: "kicker" }, "自动目标 可自动判定"),
       h("div", { class: "planrow" }, h("div", { class: "select", style: "flex:1;min-width:0" }, projSel), h("button", { class: "btn btn--sm", type: "button", onClick: addVersion }, "+ 该作品新版本")),
       h("div", { class: "planrow" }, imgCount, h("span", { class: "mono tiny" }, "张图"), h("button", { class: "btn btn--sm", type: "button", onClick: addImages, style: "margin-left:auto" }, "+ 上传图片")),
-      h("div", { class: "kicker", style: "margin-top:16px" }, "手动事项 · 手动勾选"),
+      h("div", { class: "kicker", style: "margin-top:16px" }, "手动事项 手动勾选"),
       h("div", { class: "planrow" }, manualText, h("button", { class: "btn btn--sm", type: "button", onClick: addManual }, "+ 添加"))
     ),
     h("button", { class: "btn btn--red btn--lg", type: "button", style: "width:100%;margin-top:8px", onClick: save }, "保存计划")
   )
-  const modal = openModal("Plan · " + date, body)
+  const modal = openModal("Plan " + date, body)
 
   function render() {
     clear(list)

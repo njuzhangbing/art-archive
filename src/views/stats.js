@@ -1,8 +1,7 @@
 import { h, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
-import { gradeOf } from "../lib/grades.js"
 import { heatmap } from "../components/heatmap.js"
-import { gradeBars, typeBar, rankList } from "../components/charts.js"
+import { secBars, typeBar, rankList } from "../components/charts.js"
 import { countUp, reveal, clearScroll } from "../lib/anim.js"
 
 export default function stats(root) {
@@ -43,18 +42,18 @@ export default function stats(root) {
   function heatBlock(daily) {
     const total = Object.values(daily).reduce((a, b) => a + b, 0)
     return h("section", { class: "panel" },
-      h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Contribution / 贡献热力图"), h("span", { class: "mono tiny muted" }, "近 53 周 · 共 " + total + " 次提交")),
+      h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Contribution / 贡献热力图"), h("span", { class: "mono tiny muted" }, "近 53 周 共 " + total + " 次提交")),
       heatmap(daily)
     )
   }
 
   function grids(s) {
     return h("div", { class: "statgrid" },
-      h("div", { class: "panel" }, h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Grades / 分级分布")), gradeBars(s.grades)),
+      h("div", { class: "panel" }, h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Classification / 密级分布")), secBars(s.grades)),
       h("div", { class: "panel" }, h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Types / 文件类型")), typeBar(s.types)),
       h("div", { class: "panel" }, h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Top / 最多版本")),
         rankList(s.topProjects, (p) => h("a", { class: "rankrow__main", href: "/projects/" + p.id, "data-link": "1" },
-          h("span", { class: "badge", "data-grade": p.grade, style: "padding:2px 7px" }, p.grade),
+          h("span", { class: "badge", "data-sec": p.sec || "PUBLIC" }, h("span", { class: "badge__dot" }), p.sec === "SECRET" ? "保密" : "公开"),
           h("b", {}, p.title), h("span", { class: "mono tiny muted" }, "v" + p.versions)))),
       h("div", { class: "panel" }, h("div", { class: "panel__head" }, h("span", { class: "kicker" }, "Authors / 活跃贡献者")),
         rankList(s.topContributors, (c) => h("div", { class: "rankrow__main" }, h("b", { class: "mono" }, "@" + c.handle), h("span", { class: "mono tiny muted" }, c.count + " 次提交"))))

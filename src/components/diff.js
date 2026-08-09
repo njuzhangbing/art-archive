@@ -37,8 +37,8 @@ export function diffModal({ project, versions }) {
   let A = (versions[1] || versions[0]).id
   let mode = "slider"
 
-  const optA = h("select", {}, ...versions.map((v) => h("option", { value: v.id }, "v" + num(v.id) + " · " + v.message)))
-  const optB = h("select", {}, ...versions.map((v) => h("option", { value: v.id }, "v" + num(v.id) + " · " + v.message)))
+  const optA = h("select", {}, ...versions.map((v) => h("option", { value: v.id }, "v" + num(v.id) + " " + v.message)))
+  const optB = h("select", {}, ...versions.map((v) => h("option", { value: v.id }, "v" + num(v.id) + " " + v.message)))
   optA.value = A
   optB.value = B
   optA.addEventListener("change", () => { A = optA.value; draw() })
@@ -74,8 +74,8 @@ export function diffModal({ project, versions }) {
 
     if (mode === "side") {
       stage.append(h("div", { class: "diff__side" },
-        h("figure", {}, h("img", { src: ia }), h("figcaption", { class: "mono tiny" }, "A · v" + num(A))),
-        h("figure", {}, h("img", { src: ib }), h("figcaption", { class: "mono tiny" }, "B · v" + num(B)))
+        h("figure", {}, h("img", { src: ia }), h("figcaption", { class: "mono tiny" }, "A v" + num(A))),
+        h("figure", {}, h("img", { src: ib }), h("figcaption", { class: "mono tiny" }, "B v" + num(B)))
       ))
       return
     }
@@ -124,7 +124,7 @@ export function diffModal({ project, versions }) {
     hud.append(
       tag,
       h("button", { class: "btn btn--sm btn--ghost", type: "button", onClick: () => zoom.reset() }, "复位"),
-      h("span", { class: "mono tiny muted dz__hint" }, mode === "slider" ? "拖动分割线对比 · 滚轮缩放 · 双击复位" : "拖动平移 · 滚轮缩放 · 双击复位")
+      h("span", { class: "mono tiny muted dz__hint" }, mode === "slider" ? "拖动分割线对比 滚轮缩放 双击复位" : "拖动平移 滚轮缩放 双击复位")
     )
   }
 

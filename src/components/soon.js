@@ -6,7 +6,7 @@ export function soon(root, { tag, title, sub }) {
     h("span", { class: "kicker", style: "display:inline-flex;justify-content:center" }, tag),
     h("h2", { style: "margin-top:18px" }, title),
     h("p", {}, sub),
-    h("div", { class: "badge", "data-grade": "HE", style: "margin:22px auto 0" }, h("span", { class: "badge__dot" }), "IN PROGRESS")
+    h("div", { class: "badge", "data-tone": "mid", style: "margin:22px auto 0" }, h("span", { class: "badge__dot" }), "IN PROGRESS")
   )
   root.append(view)
   reveal([...view.children], { stagger: 0.08, y: 30 })

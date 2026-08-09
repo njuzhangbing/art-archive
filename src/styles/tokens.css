@@ -1,43 +1,109 @@
+/* Catalogue raisonné palette.
+ *
+ * The page is a white mount and the work is the only saturated thing on it.
+ * Everything structural — rules, metadata, chrome — sits on a warm grey ramp
+ * so nothing competes with an image. Red is no longer a surface: it marks the
+ * item you are on and nothing else, and the true brand red survives only in the
+ * seal. Grade colours are held at roughly a third of their old chroma so a wall
+ * of thumbnails reads as one object rather than five competing ones. */
 :root {
-  --ink: #0E0E0E;
-  --ink-soft: #2a2a26;
-  --paper: #F2EFE6;
-  --paper-2: #E7E2D2;
-  --paper-3: #DAD4C0;
+  /* ---- surfaces ---- */
+  --paper: #FFFFFF;
+  --paper-2: #FBFAF8;
+  --paper-3: #F1EFEA;
   --white: #FFFFFF;
 
-  --red: #E2231A;
-  --red-deep: #A8140D;
+  /* ---- ink ramp ---- */
+  --ink: #17160F;
+  --ink-soft: #55534B;
+  /* Metadata is the content in a catalogue, so the greys it is set in have to
+   * clear the contrast floor at 11px rather than merely look restrained.
+   * The previous pair measured 3.79 and 2.14 against paper; both failed. */
+  --ink-mut: #706D64;   /* 5.17 — small text */
+  --ink-faint: #807D74; /* 4.11 — de-emphasised, still readable */
 
-  --aleph: #D7263D;
-  --waw: #6A2C9C;
-  --he: #F0A202;
-  --teth: #1B6CA8;
-  --zayin: #2A9D4A;
+  /* ---- rules ---- */
+  --rule: #E4E1DA;
+  --rule-strong: #C7C3B9;
+  --line: #17160F;
+  --hair: #E4E1DA;
 
-  --line: #0E0E0E;
-  --hair: rgba(14, 14, 14, 0.18);
+  /* ---- accent ---- */
+  /* International Klein Blue. It sits at 10.7:1 on paper — a shade more legible
+   * than the oxblood it replaces — but only 1.7:1 on the dark terminal panels,
+   * so those get a lifted variant rather than the true pigment. */
+  --klein: #002FA7;
+  --klein-lift: #5A85FF;
+  /* Red survives in one job only: something has gone wrong and the reader has
+   * to act. It is never a surface, a heading or a link. 5.3:1 on the console
+   * card, 5.9:1 on paper. */
+  --alarm: #C8102E;
+  --alarm-lift: #FF6072;
+  --red: var(--klein);
+  --red-deep: #00227A;
+  --seal: var(--klein);
 
-  --maxw: 1320px;
-  --gut: clamp(16px, 3.2vw, 44px);
-  --bar-h: 70px;
+  /* ---- classification ---- */
+  /* Only two states, and only one of them is allowed any colour: a closed file
+   * is the single thing on a page worth interrupting for. */
+  --sec-open: #706D64;
+  --sec-closed: var(--klein);
+
+  /* Neutral tones for the badges that merely needed a colour — roles, report
+   * status — rather than borrowing the classification palette and implying a
+   * secrecy that was never there. */
+  --tone-high: var(--klein);
+  --tone-mid: #4C3A66;
+  --tone-low: #55534B;
+  --tone-ok: #3E6B4C;
+
+  /* ---- measure ---- */
+  --maxw: 1280px;
+  --gut: clamp(20px, 4vw, 64px);
+  --bar-h: 64px;
+  --bd: 1px solid var(--rule);
+
+  /* ---- catalogue metadata: small, letterspaced, never black ---- */
+  --meta-size: 11px;
+  --meta-ls: 0.08em;
 
   --ease: cubic-bezier(.16, 1, .3, 1);
   --ease-hard: cubic-bezier(.76, 0, .12, 1);
   --ease-back: cubic-bezier(.34, 1.56, .64, 1);
 
-  --font-disp: "Archivo Black", "Noto Sans SC", system-ui, sans-serif;
-  --font-serif: "Noto Serif SC", serif;
-  --font-title: "HanCheng Lishu", "Noto Serif SC", serif;
-  --font-body: "Noto Sans SC", system-ui, -apple-system, "Helvetica Neue", sans-serif;
-  --font-mono: "Space Mono", ui-monospace, "SFMono-Regular", monospace;
+  /* 汉仪古简东梁体 leads every stack: its @font-face covers Latin only, so it
+   * takes the English and the Chinese falls straight through to the face behind
+   * it. The old Latin faces stay as fallbacks for the moment it fails to load. */
+  --font-disp: "HYGuJianDongLiangTi", "Archivo Black", "Noto Sans SC", system-ui, sans-serif;
+  --font-serif: "HYGuJianDongLiangTi", "Noto Serif SC", serif;
+  --font-title: "HYGuJianDongLiangTi", "HanCheng Lishu", "Noto Serif SC", serif;
+  --font-body: "HYGuJianDongLiangTi", "Noto Sans SC", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  --font-mono: "HYGuJianDongLiangTi", "Space Mono", ui-monospace, "SFMono-Regular", monospace;
+  /* Futura is not bundled — it ships with macOS and is licensed, so it cannot
+   * be self-hosted. The stack falls through to the nearest geometric sans
+   * available on other platforms. */
+  --font-futura: "Futura", "Futura PT", "Century Gothic", "Avenir Next", "Trebuchet MS", sans-serif;
 
-  --shadow-block: 8px 8px 0 var(--ink);
-  --shadow-block-red: 8px 8px 0 var(--red);
+  /* Kept so the old block-shadow call sites resolve to nothing rather than
+   * needing to be hunted down one by one. Nothing in a catalogue casts a
+   * shadow; depth comes from white space. */
+  --shadow-block: none;
+  --shadow-block-red: none;
 }
 
-[data-grade="ALEPH"] { --grade: var(--aleph); }
-[data-grade="WAW"] { --grade: var(--waw); }
-[data-grade="HE"] { --grade: var(--he); }
-[data-grade="TETH"] { --grade: var(--teth); }
-[data-grade="ZAYIN"] { --grade: var(--zayin); }
+
+[data-sec="PUBLIC"] { --grade: var(--sec-open); }
+[data-sec="SECRET"] { --grade: var(--sec-closed); }
+[data-tone="high"] { --grade: var(--tone-high); }
+[data-tone="mid"]  { --grade: var(--tone-mid); }
+[data-tone="low"]  { --grade: var(--tone-low); }
+[data-tone="ok"]   { --grade: var(--tone-ok); }
+
+/* Metadata line: the catalogue's voice. Small caps-ish, letterspaced, grey. */
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--meta-size);
+  letter-spacing: var(--meta-ls);
+  text-transform: uppercase;
+  color: var(--ink-mut);
+}

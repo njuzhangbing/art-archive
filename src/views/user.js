@@ -1,4 +1,4 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { avatarBlock } from "../components/author.js"
 import { reveal, clearScroll } from "../lib/anim.js"
@@ -21,9 +21,9 @@ export default function userPage(root, params) {
     clear(view)
     view.append(
       header(data.user),
-      section("项目 / PROJECTS", data.stats.projects, projGrid()),
-      section("角色 / CHARACTERS", data.stats.characters, charGrid()),
-      section("博客 / POSTS", data.stats.posts, postList())
+      section(bi("项目", "PROJECTS"), data.stats.projects, projGrid()),
+      section(bi("角色", "CHARACTERS"), data.stats.characters, charGrid()),
+      section(bi("博客", "POSTS"), data.stats.posts, postList())
     )
     reveal([...view.children], { y: 22, stagger: 0.06 })
   }
@@ -64,21 +64,21 @@ export default function userPage(root, params) {
   function stat(n, label) { return h("span", { class: "ustat" }, h("b", {}, String(n)), " " + label) }
 
   function section(title, count, body) {
-    return h("section", { class: "usec" }, h("div", { class: "blogsub mono tiny" }, title + " · " + count), body)
+    return h("section", { class: "usec" }, h("div", { class: "blogsub mono tiny" }, title, h("span", { class: "usec__n" }, String(count))), body)
   }
 
   function projGrid() {
     if (!data.projects.length) return empty("还没有项目")
     return h("div", { class: "chargrid" }, ...data.projects.map((p) =>
-      h("a", { class: "pmini", "data-grade": p.grade, href: "/projects/" + p.id, "data-link": "1" },
+      h("a", { class: "pmini", "data-sec": p.sec || "PUBLIC", href: "/projects/" + p.id, "data-link": "1" },
         h("div", { class: "pmini__cv" }, p.coverUrl ? h("img", { src: p.coverUrl, loading: "lazy", alt: "" }) : h("span", { class: "mono tiny muted" }, "NO COVER")),
-        h("div", { class: "pmini__t" }, h("span", { class: "badge", "data-grade": p.grade, style: "padding:2px 6px" }, p.grade), h("b", {}, p.title)))))
+        h("div", { class: "pmini__t" }, h("span", { class: "badge", "data-sec": p.sec || "PUBLIC", style: "padding:2px 6px" }, p.grade), h("b", {}, p.title)))))
   }
 
   function charGrid() {
     if (!data.characters.length) return empty("还没有角色")
     return h("div", { class: "chargrid" }, ...data.characters.map((c) =>
-      h("a", { class: "pmini", "data-grade": c.grade, href: "/characters/" + c.id, "data-link": "1" },
+      h("a", { class: "pmini", "data-sec": c.sec || "PUBLIC", href: "/characters/" + c.id, "data-link": "1" },
         h("div", { class: "pmini__cv" }, c.coverUrl ? h("img", { src: c.coverUrl, loading: "lazy", alt: "" }) : h("span", { class: "mono tiny muted" }, "无立绘")),
         h("div", { class: "pmini__t" }, c.code ? h("span", { class: "mono tiny" }, c.code) : null, h("b", {}, c.name)))))
   }

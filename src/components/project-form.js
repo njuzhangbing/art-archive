@@ -1,33 +1,33 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { toast } from "./toast.js"
 import { openModal } from "./modal.js"
-import { GRADES } from "../lib/grades.js"
+import { SECRECY } from "../lib/classify.js"
 
 export function projectFormModal({ project, onSaved }) {
   const editing = !!project
-  let grade = (project && project.grade) || "ZAYIN"
+  let sec = (project && project.sec) || "PUBLIC"
   const chosen = new Set((project && project.characters) || [])
   const charBox = h("div", { class: "charpick" }, h("span", { class: "muted mono tiny" }, "加载角色…"))
 
-  const gradeBtns = GRADES.map((g) =>
-    h("button", { type: "button", "data-grade": g.key, "data-on": g.key === grade ? "1" : "0" },
+  const secBtns = SECRECY.map((g) =>
+    h("button", { type: "button", "data-sec": g.key, "data-on": g.key === sec ? "1" : "0" },
       h("span", { class: "swatch" }), g.key)
   )
-  gradeBtns.forEach((b) => b.addEventListener("click", () => {
-    grade = b.getAttribute("data-grade")
-    gradeBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0"))
+  secBtns.forEach((b) => b.addEventListener("click", () => {
+    sec = b.getAttribute("data-sec")
+    secBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0"))
   }))
 
   const form = h("form", { class: "stack pform" },
-    h("label", { class: "field" }, h("span", { class: "field__label" }, "标题 / TITLE"),
+    h("label", { class: "field" }, h("span", { class: "field__label" }, bi("标题", "TITLE")),
       h("input", { class: "input", name: "title", value: (project && project.title) || "", maxlength: "80", placeholder: "作品名", autofocus: true })),
-    h("label", { class: "field" }, h("span", { class: "field__label" }, "描述 / DESC"),
+    h("label", { class: "field" }, h("span", { class: "field__label" }, bi("描述", "DESC")),
       h("textarea", { class: "textarea", name: "desc", maxlength: "500", placeholder: "这件作品是…" })),
-    h("div", { class: "field" }, h("span", { class: "field__label" }, "分级 / GRADE"), h("div", { class: "gradepick" }, ...gradeBtns)),
-    h("label", { class: "field" }, h("span", { class: "field__label" }, "标签 / TAGS（逗号分隔）"),
+    h("div", { class: "field" }, h("span", { class: "field__label" }, bi("密级", "CLASSIFICATION")), h("div", { class: "secpick" }, ...secBtns)),
+    h("label", { class: "field" }, h("span", { class: "field__label" }, bi("标签（逗号分隔）", "TAGS")),
       h("input", { class: "input", name: "tags", value: (project && (project.tags || []).join(", ")) || "", placeholder: "油画, 城市, 概念" })),
-    h("div", { class: "field" }, h("span", { class: "field__label" }, "涉及角色 / CHARACTERS"), charBox),
+    h("div", { class: "field" }, h("span", { class: "field__label" }, bi("涉及角色", "CHARACTERS")), charBox),
     h("button", { class: "btn btn--red btn--lg", type: "submit", style: "width:100%" }, editing ? "保存修改" : "建立项目")
   )
   form.querySelector("[name=desc]").value = (project && project.desc) || ""
@@ -38,7 +38,7 @@ export function projectFormModal({ project, onSaved }) {
     clear(charBox)
     if (!r.characters.length) { charBox.append(h("a", { class: "muted mono tiny", href: "/characters", "data-link": "1", onClick: () => modal.close() }, "暂无角色，去角色页创建 →")); return }
     r.characters.forEach((c) => {
-      const chip = h("button", { type: "button", class: "cpchip", "data-grade": c.grade, "data-on": chosen.has(c.id) ? "1" : "0" }, c.code ? h("span", { class: "mono tiny" }, c.code) : null, c.name)
+      const chip = h("button", { type: "button", class: "cpchip", "data-sec": c.sec || "PUBLIC", "data-on": chosen.has(c.id) ? "1" : "0" }, c.code ? h("span", { class: "mono tiny" }, c.code) : null, c.name)
       chip.addEventListener("click", () => { if (chosen.has(c.id)) chosen.delete(c.id); else chosen.add(c.id); chip.setAttribute("data-on", chosen.has(c.id) ? "1" : "0") })
       charBox.append(chip)
     })
@@ -47,7 +47,7 @@ export function projectFormModal({ project, onSaved }) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault()
     const grab = (n) => (form.querySelector("[name=" + n + "]") || {}).value || ""
-    const payload = { title: grab("title"), desc: grab("desc"), grade, tags: grab("tags"), characters: [...chosen] }
+    const payload = { title: grab("title"), desc: grab("desc"), sec, tags: grab("tags"), characters: [...chosen] }
     if (!payload.title.trim()) { toast("请填写标题", "bad"); return }
     const btn = form.querySelector("button[type=submit]")
     btn.disabled = true

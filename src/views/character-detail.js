@@ -1,6 +1,5 @@
 import { h, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
-import { damageOf } from "../lib/damage.js"
 import { personaOf } from "../lib/persona.js"
 import { mimicryLabel } from "../lib/mimicry.js"
 import { characterFormModal } from "../components/character-form.js"
@@ -39,7 +38,6 @@ export default function characterDetail(root, params) {
   }
 
   function header() {
-    const d = damageOf(c.damage)
     const por = c.portraits && c.portraits.length ? c.portraits[cur] : null
     const strip = (c.portraits && c.portraits.length > 1)
       ? h("div", { class: "cd__strip" }, ...c.portraits.map((p, i) => {
@@ -48,17 +46,16 @@ export default function characterDetail(root, params) {
           return t
         }))
       : null
-    return h("section", { class: "cd__head", "data-grade": c.grade },
+    return h("section", { class: "cd__head", "data-sec": c.sec || "PUBLIC" },
       h("div", { class: "cd__por" },
         por ? h("img", { class: "cd__porimg", src: por.url, alt: c.name }) : h("div", { class: "cd__noimg mono" }, "无立绘"),
         strip
       ),
       h("div", { class: "cd__id" },
-        h("div", { class: "cd__crumb mono" }, h("a", { href: "/characters", "data-link": "1" }, "角色名录"), " / ", c.code || c.grade),
+        h("div", { class: "cd__crumb mono" }, h("a", { href: "/characters", "data-link": "1" }, "角色名录"), " / ", c.code || (c.sec === "SECRET" ? "保密" : "公开")),
         h("div", { class: "cd__badges" },
-          h("span", { class: "badge badge--fill", "data-grade": c.grade }, h("span", { class: "badge__dot" }), c.grade),
+          h("span", { class: "badge badge--fill", "data-sec": c.sec || "PUBLIC" }, h("span", { class: "badge__dot" }), c.sec === "SECRET" ? "保密 CLOSED" : "公开 OPEN"),
           c.code ? h("span", { class: "badge ccode-badge mono" }, c.code) : null,
-          h("span", { class: "dmgbadge", "data-dmg": c.damage }, h("img", { src: d.icon, alt: d.label }), h("b", {}, d.label)),
           h("span", { class: "badge ptag-badge mono" }, personaOf(c.persona).label),
           h("span", { class: "badge mim-badge mono" }, "拟态 " + mimicryLabel(c.mimicry)),
           c.experimental ? h("span", { class: "expbadge mono" }, "实验性实体") : null
@@ -114,7 +111,7 @@ export default function characterDetail(root, params) {
     return h("section", { class: "cd__proj" },
       h("div", { class: "section__head" }, h("div", {}, h("span", { class: "kicker" }, "Appears in / 涉及项目"), h("h2", { class: "pd__h2 serif" }, "出场作品")), projects.length ? h("span", { class: "mono tiny muted" }, projects.length + " 份案卷") : null),
       projects.length
-        ? investigationBoard({ character: { name: c.name, code: c.code, grade: c.grade, img: (c.portraits && c.portraits[0] ? c.portraits[0].url : c.coverUrl) }, projects })
+        ? investigationBoard({ character: { name: c.name, code: c.code, sec: c.sec, img: (c.portraits && c.portraits[0] ? c.portraits[0].url : c.coverUrl) }, projects })
         : h("div", { class: "empty" }, h("div", { class: "mono" }, "暂未关联项目"), h("p", { class: "mono tiny muted", style: "margin-top:8px" }, "在项目的「新建 / 编辑」里勾选此角色即可双向关联"))
     )
   }

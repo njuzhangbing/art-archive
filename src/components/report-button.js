@@ -1,4 +1,4 @@
-import { h } from "../lib/dom.js"
+import { h, bi } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { toast } from "./toast.js"
 import { openModal } from "./modal.js"
@@ -10,7 +10,7 @@ export function reportButton({ kind, id, title }) {
     const send = h("button", { class: "btn btn--red", type: "button", style: "width:100%" }, "提交举报")
     const body = h("div", { class: "stack" },
       h("p", { class: "mono tiny muted" }, "举报对象：" + (title || kind)),
-      h("label", { class: "field" }, h("span", { class: "field__label" }, "原因 / REASON"), reason),
+      h("label", { class: "field" }, h("span", { class: "field__label" }, bi("原因", "REASON")), reason),
       send
     )
     const m = openModal("Report / 举报", body)

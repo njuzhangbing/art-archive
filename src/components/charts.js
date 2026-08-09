@@ -1,13 +1,13 @@
 import { h } from "../lib/dom.js"
-import { GRADES } from "../lib/grades.js"
+import { SECRECY } from "../lib/classify.js"
 
-export function gradeBars(grades) {
-  const max = Math.max(1, ...GRADES.map((g) => grades[g.key] || 0))
+export function secBars(grades) {
+  const max = Math.max(1, ...SECRECY.map((g) => grades[g.key] || 0))
   return h("div", { class: "gbars" },
-    ...GRADES.map((g) => {
+    ...SECRECY.map((g) => {
       const n = grades[g.key] || 0
-      return h("div", { class: "gbar", "data-grade": g.key },
-        h("div", { class: "gbar__name mono" }, g.key),
+      return h("div", { class: "gbar", "data-sec": g.key },
+        h("div", { class: "gbar__name mono" }, g.zh),
         h("div", { class: "gbar__track" }, h("div", { class: "gbar__fill", style: "width:" + Math.round((n / max) * 100) + "%" })),
         h("div", { class: "gbar__n mono" }, n)
       )

@@ -1,5 +1,6 @@
 import { zip } from "fflate"
 import { api } from "./api.js"
+import { asset, remote } from "./net.js"
 
 export async function exportAll(onProgress) {
   const enc = new TextEncoder()
@@ -25,7 +26,7 @@ export async function exportAll(onProgress) {
 
   for (const key of fileKeys) {
     try {
-      const res = await fetch("/media/" + key, { credentials: "same-origin" })
+      const res = await fetch(asset("/media/" + key), { credentials: remote ? "include" : "same-origin" })
       if (res.ok) files["files/" + key] = [new Uint8Array(await res.arrayBuffer()), { level: 0 }]
     } catch (e) { /* skip unreadable file */ }
     tick()

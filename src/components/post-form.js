@@ -1,4 +1,4 @@
-import { h } from "../lib/dom.js"
+import { h, bi } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { toast } from "./toast.js"
 import { openModal } from "./modal.js"
@@ -7,6 +7,7 @@ import { buildAsset } from "../lib/upload.js"
 import { session } from "../lib/store.js"
 import { LEVELS } from "../lib/announce.js"
 import { hydrateMarginalia } from "../lib/marginalia.js"
+import { asset } from "../lib/net.js"
 
 function insertAt(ta, text) {
   const s = ta.selectionStart, e = ta.selectionEnd
@@ -35,7 +36,7 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
     const f = imgInput.files[0]
     imgInput.value = ""
     toast("上传图片中…", "info")
-    try { const a = await buildAsset(f); insertAt(ta, "\n![图片](/media/" + (a.previewKey || a.originalKey) + ")\n") }
+    try { const a = await buildAsset(f); insertAt(ta, "\n![图片](" + asset("/media/" + (a.previewKey || a.originalKey)) + ")\n") }
     catch (err) { toast(err.message || "图片上传失败", "bad") }
   })
 
@@ -90,7 +91,7 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
   const toolbar = h("div", { class: "ptoolbar" },
     h("button", { class: "btn btn--sm", type: "button", onClick: () => imgInput.click() }, "＋ 插入图片"),
     h("button", { class: "btn btn--sm", type: "button", onClick: () => pickRef("项目", "/api/projects", "projects", (x) => "[《" + x.title + "》](/projects/" + x.id + ")", (x) => x.title) }, "＠ 引用项目"),
-    h("button", { class: "btn btn--sm", type: "button", onClick: () => pickRef("角色", "/api/characters", "characters", (x) => "[" + x.name + "](/characters/" + x.id + ")", (x) => x.name + (x.code ? " · " + x.code : "")) }, "＠ 引用角色"),
+    h("button", { class: "btn btn--sm", type: "button", onClick: () => pickRef("角色", "/api/characters", "characters", (x) => "[" + x.name + "](/characters/" + x.id + ")", (x) => x.name + (x.code ? " " + x.code : "")) }, "＠ 引用角色"),
     h("button", { class: "btn btn--sm", type: "button", onClick: () => pickRef("文章", "/api/posts", "posts", (x) => "[《" + x.title + "》](/blog/" + x.id + ")", (x) => x.title) }, "＠ 引用文章"),
     h("button", { class: "btn btn--sm", type: "button", onClick: annDialog }, "＋ 注释"),
     h("button", { class: "btn btn--sm", type: "button", onClick: quoteDialog }, "＋ 引用"),
@@ -108,17 +109,17 @@ export function postFormModal({ post, presetSeriesId, onSaved }) {
   }).catch(() => {})
 
   const annSel = isAdmin
-    ? h("select", { class: "input" }, h("option", { value: "" }, "不是公告"), ...LEVELS.map((l) => h("option", { value: l.key }, "公告 · " + l.zh)))
+    ? h("select", { class: "input" }, h("option", { value: "" }, "不是公告"), ...LEVELS.map((l) => h("option", { value: l.key }, "公告 " + l.zh)))
     : null
   if (annSel && editing && post.kind === "announcement") annSel.value = post.level || "normal"
 
   const metaRow = h("div", { class: "pformmeta" },
-    h("label", { class: "field" }, h("span", { class: "field__label" }, "归入系列 / SERIES"), seriesSel),
-    isAdmin ? h("label", { class: "field" }, h("span", { class: "field__label" }, "公告 / ANNOUNCE"), annSel) : null
+    h("label", { class: "field" }, h("span", { class: "field__label" }, bi("归入系列", "SERIES")), seriesSel),
+    isAdmin ? h("label", { class: "field" }, h("span", { class: "field__label" }, bi("公告", "ANNOUNCE")), annSel) : null
   )
 
   const form = h("form", { class: "stack pform" },
-    h("label", { class: "field" }, h("span", { class: "field__label" }, "标题 / TITLE"), titleInput),
+    h("label", { class: "field" }, h("span", { class: "field__label" }, bi("标题", "TITLE")), titleInput),
     metaRow,
     toolbar,
     h("div", { class: "wikiedit" },

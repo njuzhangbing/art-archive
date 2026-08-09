@@ -1,7 +1,6 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
-import { GRADES, gradeRank } from "../lib/grades.js"
-import { DAMAGE } from "../lib/damage.js"
+import { SECRECY } from "../lib/classify.js"
 import { characterCard } from "../components/character-card.js"
 import { characterFormModal } from "../components/character-form.js"
 import { personaBanners } from "../components/persona-banners.js"
@@ -11,17 +10,14 @@ import { toast } from "../components/toast.js"
 export default function characters(root) {
   let all = []
   const pickG = new Set()
-  const pickD = new Set()
   let q = ""
   let persona = null
 
   const banners = personaBanners((key) => { persona = persona === key ? null : key; banners.sync(persona); paint() }, () => persona)
 
-  const gchips = GRADES.map((g) => h("button", { class: "chip", "data-grade": g.key, "data-on": "0" }, h("span", { class: "chip__dot" }), g.key))
-  gchips.forEach((c) => c.addEventListener("click", () => { toggle(pickG, c.getAttribute("data-grade"), c); paint() }))
+  const gchips = SECRECY.map((g) => h("button", { class: "chip", "data-sec": g.key, "data-on": "0", title: g.note }, h("span", { class: "chip__dot" }), bi(g.zh, g.en)))
+  gchips.forEach((c) => c.addEventListener("click", () => { toggle(pickG, c.getAttribute("data-sec"), c); paint() }))
 
-  const dchips = DAMAGE.map((d) => h("button", { class: "chip chip--dmg", "data-dmg": d.key, "data-on": "0" }, h("img", { src: d.icon, alt: "" }), d.label))
-  dchips.forEach((c) => c.addEventListener("click", () => { toggle(pickD, c.getAttribute("data-dmg"), c); paint() }))
 
   function toggle(set, key, el) { if (set.has(key)) set.delete(key); else set.add(key); el.setAttribute("data-on", set.has(key) ? "1" : "0") }
 
@@ -37,8 +33,7 @@ export default function characters(root) {
   )
   const bar = h("div", { class: "filters filters--char" },
     h("div", { class: "search" }, h("span", { class: "search__ic" }, "⌕"), searchBox),
-    h("div", { class: "chiprow" }, ...gchips),
-    h("div", { class: "chiprow" }, ...dchips)
+    h("div", { class: "chiprow" }, ...gchips)
   )
 
   const view = h("div", { class: "wrap characters" }, head, banners, bar, count, grid)
@@ -49,14 +44,13 @@ export default function characters(root) {
   function paint() {
     let rows = all.slice()
     if (persona) rows = rows.filter((c) => (c.persona || "FULL") === persona)
-    if (pickG.size) rows = rows.filter((c) => pickG.has(c.grade))
-    if (pickD.size) rows = rows.filter((c) => pickD.has(c.damage))
+    if (pickG.size) rows = rows.filter((c) => pickG.has(c.sec || "PUBLIC"))
     if (q) rows = rows.filter((c) => (c.name + " " + (c.code || "")).toLowerCase().includes(q))
-    rows.sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || (a.updatedAt < b.updatedAt ? 1 : -1))
+    rows.sort((a, b) => (b.sec === "SECRET") - (a.sec === "SECRET") || (a.updatedAt < b.updatedAt ? 1 : -1))
     clear(grid)
     count.textContent = rows.length + " / " + all.length + " 名"
     if (!rows.length) { grid.append(empty()); return }
-    rows.forEach((c) => grid.append(characterCard(c)))
+    rows.forEach((c, i) => grid.append(characterCard(c, i)))
     reveal([...grid.children], { y: 28, stagger: 0.04, duration: 0.55 })
   }
 

@@ -1,4 +1,4 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { openModal } from "./modal.js"
 import { toast } from "./toast.js"
 import { api } from "../lib/api.js"
@@ -12,7 +12,7 @@ export function uploadModal({ project, onDone }) {
   const drop = h("div", { class: "drop" },
     h("div", { class: "drop__in" },
       h("b", { class: "serif" }, "拖拽文件到此"),
-      h("span", { class: "mono tiny" }, "或点击选择 · 图片 / 视频 / PSD"),
+      h("span", { class: "mono tiny" }, "或点击选择 图片 / 视频 / PSD"),
       input
     )
   )
@@ -33,7 +33,7 @@ export function uploadModal({ project, onDone }) {
   const body = h("div", { class: "stack" },
     drop, listEl,
     h("div", { class: "field", style: "margin-top:6px" },
-      h("span", { class: "field__label" }, "更新说明 / MESSAGE"),
+      h("span", { class: "field__label" }, bi("更新说明", "MESSAGE")),
       h("div", { class: "msgpresets" }, ...presets),
       msg
     ),
@@ -61,7 +61,7 @@ export function uploadModal({ project, onDone }) {
         h("div", { class: "uprow__th" }, thumb),
         h("div", { class: "uprow__info" },
           h("div", { class: "uprow__name" }, item.file.name),
-          h("div", { class: "mono tiny muted" }, item.kind.toUpperCase() + " · " + fmtBytes(item.file.size))
+          h("div", { class: "mono tiny muted" }, item.kind.toUpperCase() + " " + fmtBytes(item.file.size))
         ),
         h("div", { class: "uprow__stat" }, status, pct),
         h("button", { class: "uprow__x", type: "button", title: "移除", onClick: () => { picked.splice(i, 1); renderList() } }, "✕"),
@@ -91,7 +91,7 @@ export function uploadModal({ project, onDone }) {
     const paintOverall = (loaded) => {
       const f = Math.min(loaded / totalBytes, 1)
       overallFill.style.width = (f * 100).toFixed(1) + "%"
-      overallTxt.textContent = Math.round(f * 100) + "% · " + fmtBytes(loaded) + " / " + fmtBytes(totalBytes)
+      overallTxt.textContent = Math.round(f * 100) + "% " + fmtBytes(loaded) + " / " + fmtBytes(totalBytes)
     }
     paintOverall(0)
 

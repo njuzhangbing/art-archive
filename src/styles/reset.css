@@ -38,6 +38,6 @@ ul, ol { list-style: none; }
 
 ::selection { background: var(--red); color: #fff; }
 
-:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+:focus-visible { outline: 1px solid var(--red); outline-offset: 2px; }
 
 input:-webkit-autofill { -webkit-text-fill-color: var(--ink); -webkit-box-shadow: 0 0 0 1000px var(--white) inset; }

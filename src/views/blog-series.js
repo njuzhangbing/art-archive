@@ -32,7 +32,7 @@ export default function blogSeries(root, params) {
       h("div", { class: "ser__cv" }, s.coverUrl ? h("img", { src: s.coverUrl, alt: s.title }) : h("span", { class: "mono tiny muted" }, "SERIES")),
       h("div", { class: "ser__id" },
         h("div", { class: "blogpost__crumb mono" }, h("a", { href: "/blog", "data-link": "1" }, "博客"), " / 系列"),
-        h("div", { class: "ser__tag mono tiny" }, "系列 · " + posts.length + " 篇"),
+        h("div", { class: "ser__tag mono tiny" }, "系列 " + posts.length + " 篇"),
         h("h1", { class: "ser__title serif" }, s.title),
         s.desc ? h("p", { class: "ser__desc" }, s.desc) : null,
         h("div", { class: "ser__meta mono tiny" }, authorLink(s.owner)),

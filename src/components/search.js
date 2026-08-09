@@ -9,7 +9,7 @@ export function openSearch() {
 
   const field = h("input", {
     class: "kbar__field", type: "text", autocomplete: "off",
-    spellcheck: "false", placeholder: "搜索项目 · 角色 · 文章 · 成员 · 讨论…"
+    spellcheck: "false", placeholder: "搜索项目 角色 文章 成员 讨论…"
   })
   const results = h("div", { class: "kbar__results" })
   const box = h("div", { class: "kbar__box" },
@@ -32,7 +32,7 @@ export function openSearch() {
   let beat = null
   let turn = 0
 
-  idle("输入关键词，开始翻找档案 · Esc 退出")
+  idle("输入关键词，开始翻找档案 Esc 退出")
 
   function idle(msg) {
     clear(results)
@@ -42,7 +42,7 @@ export function openSearch() {
 
   async function fire() {
     const q = field.value.trim()
-    if (!q) { idle("输入关键词，开始翻找档案 · Esc 退出"); return }
+    if (!q) { idle("输入关键词，开始翻找档案 Esc 退出"); return }
     const mine = ++turn
     clear(results)
     results.append(h("div", { class: "kbar__idle mono tiny" }, "翻找中…"))
@@ -75,19 +75,19 @@ export function openSearch() {
     clear(results); live = []; cursor = -1
     const n = r.projects.length + r.characters.length + r.posts.length + r.threads.length + r.users.length
     if (!n) { results.append(h("div", { class: "kbar__idle mono tiny" }, "没有匹配「" + r.q + "」的结果")); return }
-    section("项目", "PJ", r.projects, (p) => ({ to: "/projects/" + p.id, cover: p.coverUrl, grade: p.grade, title: p.title, sub: p.snippet }))
-    section("角色", "CH", r.characters, (c) => ({ to: "/characters/" + c.id, cover: c.coverUrl, grade: c.grade, title: c.name + (c.code ? "  " + c.code : ""), sub: c.snippet }))
-    section("文章", "BL", r.posts, (p) => ({ to: "/blog/" + p.id, title: p.title, sub: "@" + p.author + (p.snippet ? " · " + p.snippet : "") }))
+    section("项目", "PJ", r.projects, (p) => ({ to: "/projects/" + p.id, cover: p.coverUrl, sec: p.sec, title: p.title, sub: p.snippet }))
+    section("角色", "CH", r.characters, (c) => ({ to: "/characters/" + c.id, cover: c.coverUrl, sec: c.sec, title: c.name + (c.code ? "  " + c.code : ""), sub: c.snippet }))
+    section("文章", "BL", r.posts, (p) => ({ to: "/blog/" + p.id, title: p.title, sub: "@" + p.author + (p.snippet ? " " + p.snippet : "") }))
     section("讨论", "TK", r.threads, (t) => ({ to: "/talk/" + t.cid + "/" + t.id, title: t.title, sub: t.snippet }))
     section("成员", "ME", r.users, (u) => ({ to: "/u/" + u.handle, cover: u.avatarUrl, title: u.displayName, sub: "@" + u.handle }))
   }
 
   function section(label, code, arr, map) {
     if (!arr.length) return
-    results.append(h("div", { class: "kbar__grp mono tiny" }, h("span", {}, label), h("i", {}, code + " · " + arr.length)))
+    results.append(h("div", { class: "kbar__grp mono tiny" }, h("span", {}, label), h("i", {}, code + " " + arr.length)))
     arr.forEach((x) => {
       const m = map(x)
-      const thumb = h("span", { class: "kbar__thumb", "data-grade": m.grade || null },
+      const thumb = h("span", { class: "kbar__thumb", "data-sec": m.sec || null },
         m.cover ? h("img", { src: m.cover, loading: "lazy", alt: "" }) : h("span", { class: "mono tiny" }, code))
       const row = h("button", {
         class: "kbar__row", type: "button",

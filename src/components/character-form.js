@@ -1,9 +1,8 @@
-import { h, clear } from "../lib/dom.js"
+import { h, bi, clear } from "../lib/dom.js"
 import { api } from "../lib/api.js"
 import { toast } from "./toast.js"
 import { openModal } from "./modal.js"
-import { GRADES } from "../lib/grades.js"
-import { DAMAGE } from "../lib/damage.js"
+import { SECRECY } from "../lib/classify.js"
 import { PERSONA } from "../lib/persona.js"
 import { MIMICRY } from "../lib/mimicry.js"
 import { buildAsset, kindOf } from "../lib/upload.js"
@@ -11,8 +10,7 @@ import { psdToPng } from "../lib/psd.js"
 
 export function characterFormModal({ character, onSaved }) {
   const editing = !!character
-  let grade = (character && character.grade) || "ZAYIN"
-  let damage = (character && character.damage) || "RED"
+  let sec = (character && character.sec) || "PUBLIC"
   let persona = (character && character.persona) || "FULL"
   let mimicry = (character && character.mimicry) || ""
   let experimental = !!(character && character.experimental)
@@ -25,11 +23,9 @@ export function characterFormModal({ character, onSaved }) {
   const mimBtns = mimOpts.map((m) => h("button", { type: "button", class: "perpick__b", "data-key": m.key, "data-on": m.key === mimicry ? "1" : "0" }, h("b", {}, m.label)))
   mimBtns.forEach((b) => b.addEventListener("click", () => { mimicry = b.dataset.key; mimBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0")) }))
 
-  const gradeBtns = GRADES.map((g) => h("button", { type: "button", "data-grade": g.key, "data-on": g.key === grade ? "1" : "0" }, h("span", { class: "swatch" }), g.key))
-  gradeBtns.forEach((b) => b.addEventListener("click", () => { grade = b.dataset.grade; gradeBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0")) }))
+  const secBtns = SECRECY.map((g) => h("button", { type: "button", "data-sec": g.key, "data-on": g.key === sec ? "1" : "0" }, h("span", { class: "swatch" }), bi(g.zh, g.en)))
+  secBtns.forEach((b) => b.addEventListener("click", () => { sec = b.dataset.sec; secBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0")) }))
 
-  const dmgBtns = DAMAGE.map((d) => h("button", { type: "button", class: "dmgpick__b", "data-dmg": d.key, "data-on": d.key === damage ? "1" : "0" }, h("img", { src: d.icon, alt: d.label }), h("span", { class: "mono tiny" }, d.label)))
-  dmgBtns.forEach((b) => b.addEventListener("click", () => { damage = b.dataset.dmg; dmgBtns.forEach((x) => x.setAttribute("data-on", x === b ? "1" : "0")) }))
 
   const fileInput = h("input", { type: "file", multiple: true, accept: "image/*,.psd,image/vnd.adobe.photoshop", style: "display:none" })
   const porGrid = h("div", { class: "porgrid" })
@@ -76,13 +72,13 @@ export function characterFormModal({ character, onSaved }) {
   renderPortraits()
 
   const codeInput = h("input", { class: "input mono", name: "code", value: (character && character.code) || "", maxlength: "24", placeholder: experimental ? "E-01-45" : "O-01-45" })
-  const codeHint = h("span", { class: "mono tiny exphint", style: experimental ? "" : "display:none" }, "实验性实体 · 编号首位锁定 E")
+  const codeHint = h("span", { class: "mono tiny exphint", style: experimental ? "" : "display:none" }, "实验性实体 编号首位锁定 E")
   codeInput.addEventListener("input", () => {
     if (experimental && codeInput.value && codeInput.value[0].toUpperCase() !== "E") codeInput.value = "E" + codeInput.value.slice(1)
   })
 
   const expBox = h("input", { type: "checkbox", checked: experimental })
-  const expToggle = h("label", { class: "expcheck" + (experimental ? " expcheck--on" : "") }, expBox, h("span", { class: "expcheck__box" }), h("span", { class: "expcheck__lbl" }, "实验性实体 / EXPERIMENTAL"))
+  const expToggle = h("label", { class: "expcheck" + (experimental ? " expcheck--on" : "") }, expBox, h("span", { class: "expcheck__box" }), h("span", { class: "expcheck__lbl" }, bi("实验性实体", "EXPERIMENTAL")))
   expBox.addEventListener("change", () => {
     experimental = expBox.checked
     expToggle.classList.toggle("expcheck--on", experimental)
@@ -92,14 +88,13 @@ export function characterFormModal({ character, onSaved }) {
   })
 
   const form = h("form", { class: "stack pform" },
-    h("label", { class: "field" }, h("span", { class: "field__label" }, "角色名 / NAME"), h("input", { class: "input", name: "name", value: (character && character.name) || "", maxlength: "80", placeholder: "角色名", autofocus: true })),
-    h("label", { class: "field" }, h("span", { class: "field__label" }, "编号 / CODE（X-xx-xx）"), codeInput, codeHint),
-    h("div", { class: "field" }, h("span", { class: "field__label" }, "拟人化 / PERSONA"), h("div", { class: "perpick" }, ...personaBtns)),
-    h("div", { class: "field" }, h("span", { class: "field__label" }, "拟态性别 / MIMICRY（不选则显示 ？？？）"), h("div", { class: "perpick" }, ...mimBtns)),
+    h("label", { class: "field" }, h("span", { class: "field__label" }, bi("角色名", "NAME")), h("input", { class: "input", name: "name", value: (character && character.name) || "", maxlength: "80", placeholder: "角色名", autofocus: true })),
+    h("label", { class: "field" }, h("span", { class: "field__label" }, bi("编号（X-xx-xx）", "CODE")), codeInput, codeHint),
+    h("div", { class: "field" }, h("span", { class: "field__label" }, bi("拟人化", "PERSONA")), h("div", { class: "perpick" }, ...personaBtns)),
+    h("div", { class: "field" }, h("span", { class: "field__label" }, bi("拟态性别（不选则显示 ？？？）", "MIMICRY")), h("div", { class: "perpick" }, ...mimBtns)),
     h("div", { class: "field" }, expToggle),
-    h("div", { class: "field" }, h("span", { class: "field__label" }, "分级 / GRADE"), h("div", { class: "gradepick" }, ...gradeBtns)),
-    h("div", { class: "field" }, h("span", { class: "field__label" }, "伤害类型 / DAMAGE"), h("div", { class: "dmgpick" }, ...dmgBtns)),
-    h("div", { class: "field" }, h("span", { class: "field__label" }, "立绘 / PORTRAITS（第一张为封面）"), porGrid, fileInput),
+    h("div", { class: "field" }, h("span", { class: "field__label" }, bi("密级", "CLASSIFICATION")), h("div", { class: "secpick" }, ...secBtns)),
+    h("div", { class: "field" }, h("span", { class: "field__label" }, bi("立绘（第一张为封面）", "PORTRAITS")), porGrid, fileInput),
     h("button", { class: "btn btn--red btn--lg", type: "submit", style: "width:100%" }, editing ? "保存角色" : "建立角色")
   )
 
@@ -126,7 +121,7 @@ export function characterFormModal({ character, onSaved }) {
         }
       }
       const portraits = slots.map((s) => ({ key: s.key, w: s.w, h: s.h, filename: s.filename })).filter((s) => s.key)
-      const payload = { name, code, grade, damage, persona, mimicry, experimental, portraits, coverKey: portraits[0] ? portraits[0].key : null }
+      const payload = { name, code, sec, persona, mimicry, experimental, portraits, coverKey: portraits[0] ? portraits[0].key : null }
       const r = editing ? await api.patch("/api/characters/" + character.id, payload) : await api.post("/api/characters", payload)
       toast(editing ? "已保存" : "角色已建立", "ok")
       modal.close()

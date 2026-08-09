@@ -1,145 +1,269 @@
-import { h, clear } from "../lib/dom.js"
-import { tame, clearScroll } from "../lib/anim.js"
+// The cover sheet's own styling, loaded with this chunk rather than sitting in
+// the stylesheet every other page has to download.
+import "../styles/home.css"
+import { h, bi, clear } from "../lib/dom.js"
 import { session } from "../lib/store.js"
 import { api } from "../lib/api.js"
 import { go } from "../router.js"
-import { greetingFor } from "../lib/greeting.js"
+import { fileTrees } from "../components/filetree.js"
+import { meltStage } from "../components/melt.js"
+import { archivalMarks } from "../components/marks.js"
+import { requireAccess } from "../components/authgate.js"
+import { HEAD_ASCII, HEAD_COLS, HEAD_ROWS, HEAD_CELL, HEAD_ASPECT } from "../data/head-ascii.js"
 
-const MENU = [
-  { n: "01", en: "START · 作品档案", zh: "开始", to: "/projects" },
-  { n: "02", en: "STATS · 创作总账", zh: "统计", to: "/activity" },
-  { n: "03", en: "CHARACTERS · 名录立绘", zh: "角色", to: "/characters" },
-  { n: "04", en: "COMMUNITY · 频道博客", zh: "社区", to: "/talk" }
+// The artwork as supplied — no knockout, no recolouring.
+const PLATE = "/persona/logo.png"
+
+const CONTENTS = [
+  { n: "○一", zh: "作品档案", en: "Works", to: "/projects", count: (s) => s.projects, plate: "/persona/plate-01.webp" },
+  { n: "○二", zh: "企划登记", en: "Programmes", to: "/programmes", count: (s) => s.programmes, plate: "/persona/plate-02.webp" },
+  { n: "○三", zh: "角色名录", en: "Personnel", to: "/characters", count: (s) => s.characters, plate: "/persona/plate-03.webp" },
+  { n: "○四", zh: "频道与博客", en: "Bulletin", to: "/talk", count: () => null, plate: "/persona/plate-04.webp" }
 ]
 
-function todayStr() {
-  const d = new Date()
+const tame = matchMedia("(prefers-reduced-motion: reduce)").matches
+
+// Per row of type. The whole plate lands in a little over a second.
+const STEP_MS = 17
+const HOLD_MS = 420
+
+function stamp(d = new Date()) {
   return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0")
 }
 
-function focusChars(str, accent, offset) {
-  return str.split("").map((c, i) => h("span", { class: "ch" + (accent ? " cine__accent" : ""), style: "--ci:" + (offset + i) }, c))
+function buildMasthead() {
+  const type = h("pre", { class: "mast__type", "aria-hidden": "true" })
+  type.style.setProperty("--cols", HEAD_COLS)
+  type.style.setProperty("--rows", HEAD_ROWS)
+  type.style.setProperty("--cell", HEAD_CELL)
+  type.style.setProperty("--step", STEP_MS + "ms")
+  HEAD_ASCII.forEach((line, i) => {
+    type.append(h("span", { style: "--i:" + i }, line + "\n"))
+  })
+
+  const img = h("img", {
+    class: "mast__img", src: PLATE, alt: "长生天计划徽记",
+    loading: "eager", fetchpriority: "high"
+  })
+
+  const skip = h("button", { class: "mast__skip", type: "button" }, bi("跳过", "SKIP"))
+  const plate = h("div", { class: "mast__plate" }, type, img, skip)
+  plate.style.setProperty("--plate-aspect", HEAD_ASPECT.toFixed(4))
+
+  const mast = h("header", { class: "mast" },
+    h("div", { class: "mast__inner" }, plate))
+
+  return { mast, plate, img, skip }
 }
 
 export default function home(root) {
   const me = session.me
   const name = me ? (me.displayName || me.handle) : "访客"
-  document.body.classList.add("home-dark")
+  const today = stamp()
 
-  const bg = h("div", { class: "cine__layer cine__bg", "data-depth": "0.02" })
-  const haze = h("div", { class: "cine__layer cine__haze", "data-depth": "0.06" })
-  const world = h("div", { class: "cine__world" }, bg, haze)
-  const grain = h("div", { class: "cine__grain" })
-  const vignette = h("div", { class: "cine__vignette" })
-  const hud = h("div", { class: "cine__hud mono tiny" })
-  const board = h("div", { class: "cine__console mono" })
-  const cine = h("div", { class: "cine" }, world, grain, vignette,
-    h("div", { class: "cine__bar cine__bar--t" }), h("div", { class: "cine__bar cine__bar--b" }), board, hud)
+  const { mast, img, skip } = buildMasthead()
 
-  const g = greetingFor(name)
-  const splash = h("div", { class: "cine__splash" },
-    h("div", { class: "cine__kicker mono" }, "PROJECT TANGRI CENTRAL DATABASE"),
-    h("h1", { class: "cine__title serif" }, ...focusChars("长生天", false, 0), ...focusChars("计划", true, 3)),
-    h("div", { class: "cine__sub mono" }, "艺作存档库 / ARCHIVE OF WORKS"),
-    h("div", { class: "cine__greet" }, me ? (g.greet + "，" + name) : "尚未登入 · 点击载入"),
-    h("div", { class: "cine__hint mono" }, "点击任意键开始")
-  )
+  const title = h("h1", { class: "cover__title" }, "长生天计划中央档案库")
+  const latin = h("div", { class: "cover__latin" }, "Project Tangri Central Archive")
 
-  const menu = h("nav", { class: "cine__menu" })
-  function buildMenu(extra) {
-    clear(menu)
-    const items = extra ? [extra, ...MENU] : MENU.slice()
-    items.forEach((m, i) => {
-      const row = h("button", { class: "gtab" + (m.cont ? " gtab--cont" : ""), type: "button", style: "--i:" + i },
-        h("span", { class: "gtab__bar" }),
-        h("span", { class: "gtab__n mono" }, m.n),
-        h("span", { class: "gtab__labels" },
-          h("span", { class: "gtab__zh serif" }, m.zh),
-          h("span", { class: "gtab__en mono tiny" }, m.en)),
-        h("span", { class: "gtab__arrow mono" }, "→"))
-      row.addEventListener("click", () => navTo(m.to))
-      row.addEventListener("mouseenter", () => cine.classList.add("focus"))
-      row.addEventListener("mouseleave", () => cine.classList.remove("focus"))
-      menu.append(row)
-    })
+  // ---- the four entries, as a long scroll ----
+  // One image per entry, held behind the whole run and melting from one to the
+  // next as each block takes the screen. A single sticky backdrop rather than
+  // one canvas per block: a browser only grants a handful of live WebGL
+  // contexts, and four of them for one page would be four too many.
+  let activeSection = -1
+  const stage = meltStage(CONTENTS.map((c) => c.plate), CONTENTS.map((c) => c.zh + " " + c.en))
+  const stageCap = h("div", { class: "entries__cap mono" })
+
+  const tocFigs = new Map()
+  const entryEls = []
+  const marks = []
+
+  const blocks = CONTENTS.map((c, i) => {
+    const fig = h("span", { class: "entry__fig" }, "—")
+    tocFigs.set(c.zh, { el: fig, of: c.count })
+
+    const head = h("div", { class: "entry__head" },
+      h("h2", { class: "entry__zh" }, c.zh))
+    marks.push(archivalMarks(head, "entry-" + c.en, { density: 3 }))
+
+    const card = h("div", { class: "entry__card" },
+      h("div", { class: "entry__n mono" }, c.n),
+      head,
+      h("div", { class: "entry__en mono" }, c.en),
+      h("div", { class: "entry__meta mono" }, h("span", {}, "卷内件数 "), fig),
+      h("button", { class: "entry__go mono", type: "button", onClick: requireAccess(c.to) },
+        bi("进入", "ENTER"), h("span", { class: "entry__arrow" }, "→")))
+
+    const block = h("section", {
+      class: "entry", "data-side": i % 2 === 0 ? "left" : "right", "data-i": String(i)
+    }, card)
+    entryEls.push(block)
+    return block
+  })
+
+  const entries = h("div", { class: "entries" },
+    h("div", { class: "entries__bg" },
+      stage.el,
+      h("div", { class: "entries__scrim" }),
+      stageCap),
+    ...blocks)
+
+  function setSection(i) {
+    if (i === activeSection) return
+    activeSection = i
+    stage.to(i)
+    entryEls.forEach((el, n) => el.setAttribute("data-on", n === i ? "1" : "0"))
+    const c = CONTENTS[i]
+    clear(stageCap)
+    stageCap.append(
+      h("span", { class: "entries__capN" }, c.n),
+      h("span", { class: "entries__capZh" }, c.zh),
+      h("span", { class: "entries__capEn" }, c.en))
   }
-  buildMenu(null)
 
-  const panel = h("div", { class: "cine__panel" },
-    h("div", { class: "cine__titlemini serif" }, "长生天", h("span", { class: "cine__accent" }, "计划")),
-    menu)
+  const duty = h("div", { class: "ledger" })
+  const register = h("div", { class: "ledger" })
 
-  cine.append(splash, panel)
-  root.append(cine)
+  const trees = fileTrees({})
 
-  const today = todayStr()
-  function renderBoard(plan) {
-    clear(board)
+  const view = h("div", { class: "cover" },
+    trees.el,
+    mast,
+    h("div", { class: "wrap" },
+      h("div", { class: "cover__head" }, title, latin)),
+    entries,
+    h("div", { class: "wrap" },
+      h("div", { class: "cover__cols" },
+        h("section", {},
+          h("div", { class: "cover__label" }, bi("本日勤务", "Duty Log " + today)),
+          duty),
+        h("section", {},
+          h("div", { class: "cover__label" }, bi("登记摘要", "Summary")),
+          register))))
+
+  root.append(view)
+
+  // ---- masthead sequence ----
+  // The plate is pulled every time the cover is opened. It was previously shown
+  // once per session, which meant that after the first visit the sequence never
+  // appeared again and looked simply broken.
+  let timer = null
+
+  function toPlate() {
+    if (timer) { clearTimeout(timer); timer = null }
+    mast.classList.add("is-plate")
+  }
+
+  if (tame) {
+    mast.classList.add("is-plate")
+    // Nothing to reveal, so drop the type rather than fading it out.
+    mast.querySelector(".mast__type").remove()
+  } else {
+    timer = setTimeout(toPlate, HEAD_ROWS * STEP_MS + HOLD_MS)
+  }
+  skip.addEventListener("click", toPlate)
+  img.addEventListener("error", () => { mast.classList.add("is-plate") })
+
+  // ---- the plate follows the reading position ----
+  // The active entry is the last one whose top edge has crossed the middle of
+  // the viewport.
+  //
+  // Two earlier rules were wrong. An IntersectionObserver over a narrow band
+  // let several entries cross at once, so the winner came down to the order the
+  // callback happened to deliver them in. Picking whichever entry sat nearest
+  // the centre then broke at the end of the page: the document stops scrolling
+  // with the last entry still half a screen short of the middle, so it could
+  // never win and the final section was unreachable. Asking which entries have
+  // *started* is monotonic and has no such dead zone.
+  let queued = false
+  function pickSection() {
+    queued = false
+    const mid = window.innerHeight / 2
+    let best = 0
+    entryEls.forEach((row, i) => {
+      if (row.getBoundingClientRect().top <= mid) best = i
+    })
+    setSection(best)
+  }
+  const onScroll = () => {
+    if (queued) return
+    queued = true
+    requestAnimationFrame(pickSection)
+  }
+  addEventListener("scroll", onScroll, { passive: true })
+  addEventListener("resize", onScroll, { passive: true })
+  // Mount may happen at any scroll offset — a restored position, or a return to
+  // the cover part-way down — so the opening state is measured, not assumed.
+  pickSection()
+
+  // ---- figures ----
+  function fillDuty(plan) {
+    clear(duty)
     const items = (plan && plan.items) || []
-    const done = items.filter((x) => x.done).length
-    board.append(
-      h("div", { class: "cc__top" }, h("span", { class: "cc__dot" }), h("span", { class: "cc__h" }, "今日计划"), h("span", { class: "cc__date" }, today)),
-      h("div", { class: "cc__rule" }))
     if (!items.length) {
-      board.append(h("div", { class: "cc__empty" }, me ? "// 暂无指令 · STANDBY" : "// 登入后载入指令"))
+      duty.append(h("div", { class: "ledger__none" }, me ? "无待办事项 STANDBY" : "登入后载入"))
       return
     }
-    const list = h("div", { class: "cc__list" })
-    items.slice(0, 6).forEach((it) => {
+    items.slice(0, 7).forEach((it) => {
       const label = it.kind === "version" ? (it.projectTitle || "提交更新")
         : it.kind === "images" ? ("产出画作 " + (it.progress || 0) + " / " + it.count)
         : (it.text || "")
-      list.append(h("div", { class: "cc__item" + (it.done ? " is-done" : "") },
-        h("span", { class: "cc__box" }, it.done ? "✓" : "·"), h("span", { class: "cc__txt" }, label)))
+      duty.append(h("div", { class: "ledger__row" + (it.done ? " is-done" : "") },
+        h("span", { class: "ledger__k" }, label),
+        h("span", { class: "ledger__v" }, it.done ? "已办" : "待办")))
     })
-    board.append(list, h("div", { class: "cc__foot" }, h("span", {}, done + " / " + items.length + " EXECUTED"), h("span", { class: "cc__cursor" }, "▮")))
   }
-  renderBoard(null)
 
-  let started = false
-  let mx = 0, my = 0, tmx = 0, tmy = 0, raf = null
-  function loop() {
-    mx += (tmx - mx) * 0.05
-    my += (tmy - my) * 0.05
-    world.style.transform = "rotateX(" + (-my * 2.2).toFixed(2) + "deg) rotateY(" + (mx * 2.2).toFixed(2) + "deg)"
-    ;[bg, haze].forEach((el) => {
-      const d = parseFloat(el.dataset.depth) || 0
-      el.style.transform = "translate3d(" + (mx * d * 200).toFixed(1) + "px," + (my * d * 200).toFixed(1) + "px,0)"
-    })
-    raf = requestAnimationFrame(loop)
+  function fillRegister(t) {
+    clear(register)
+    const rows = [
+      ["作品 WORKS", t.projects], ["提交 COMMITS", t.versions],
+      ["角色 PERSONNEL", t.characters], ["成员 MEMBERS", t.members],
+      ["文件 FILES", t.files]
+    ]
+    rows.forEach(([k, v]) => register.append(h("div", { class: "ledger__row" },
+      h("span", { class: "ledger__k" }, k),
+      h("span", { class: "ledger__v" }, v == null ? "—" : String(v)))))
   }
-  function onMove(e) { tmx = (e.clientX / window.innerWidth - 0.5) * 2; tmy = (e.clientY / window.innerHeight - 0.5) * 2 }
 
-  function start() { if (started) return; started = true; cine.classList.add("on") }
-  function navTo(to) { if (!to) return; if (tame) { go(to); return } cine.classList.add("leaving"); setTimeout(() => go(to), 320) }
-
-  splash.addEventListener("click", start)
-  const onKey = (e) => {
-    if (started) return
-    if (e.metaKey || e.ctrlKey || e.altKey) return
-    if (["Shift", "Control", "Alt", "Meta", "Tab", "Escape", "F5", "F11", "F12"].includes(e.key)) return
-    e.preventDefault(); start()
-  }
-  window.addEventListener("keydown", onKey)
-
-  if (!tame) { window.addEventListener("mousemove", onMove); raf = requestAnimationFrame(loop) } else { start() }
+  fillDuty(null)
+  fillRegister({})
 
   if (me) {
-    api.get("/api/projects").then((r) => {
-      const ps = r.projects || []
-      if (ps.length) buildMenu({ cont: true, n: "▶", en: "CONTINUE · 上次的档案", zh: (ps[0].title || "继续").slice(0, 10), to: "/projects/" + ps[0].id })
-    }).catch(() => {})
-    api.get("/api/stats").then((s) => { const t = s.totals || {}; hud.textContent = "作品 " + (t.projects || 0) + "　·　提交 " + (t.versions || 0) + "　·　成员 " + (t.members || 0) }).catch(() => { hud.textContent = "MMXXVI · 长生天" })
-    api.get("/api/plans?date=" + today).then((r) => renderBoard(r.plan)).catch(() => {})
-  } else { hud.textContent = "MMXXVI · 长生天" }
+    Promise.all([
+      api.get("/api/stats").catch(() => null),
+      api.get("/api/characters").catch(() => null),
+      api.get("/api/projects").catch(() => null),
+      api.get("/api/posts").catch(() => null)
+    ]).then(([s, c, p, b]) => {
+      const t = (s && s.totals) || {}
+      const characters = (c && c.characters) || []
+      const projects = (p && p.projects) || []
+      const posts = (b && b.posts) || []
+      const totals = { ...t, characters: characters.length }
+      fillRegister(totals)
+      tocFigs.forEach(({ el, of }) => {
+        const n = of(totals)
+        el.textContent = n == null ? "—" : String(n)
+      })
+      // Let the watermark listings show what the archive actually holds.
+      trees.update({ projects, characters, posts })
+    })
+    api.get("/api/plans?date=" + today).then((r) => fillDuty(r.plan)).catch(() => {})
+  }
 
   return {
     destroy() {
-      document.body.classList.remove("home-dark")
-      window.removeEventListener("mousemove", onMove)
-      window.removeEventListener("keydown", onKey)
-      if (raf) cancelAnimationFrame(raf)
-      clearScroll()
+      if (timer) clearTimeout(timer)
+      removeEventListener("scroll", onScroll)
+      removeEventListener("resize", onScroll)
+      // Releases the GL context and its textures; leaving them behind would
+      // burn through the browser's small budget of live contexts.
+      stage.destroy()
+      marks.forEach((m) => m.destroy())
+      trees.destroy()
     }
   }
 }
+

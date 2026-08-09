@@ -53,7 +53,7 @@ export function assetStage(version, opts = {}) {
 
     if (cur.kind === "psd" && cur.layers && cur.layers.length) {
       side.append(h("div", { class: "layers" },
-        h("div", { class: "layers__head kicker" }, "Layers · 图层 " + cur.layers.length),
+        h("div", { class: "layers__head kicker" }, "Layers 图层 " + cur.layers.length),
         h("div", { class: "layers__list" }, ...cur.layers.map(layerRow))
       ))
     }
