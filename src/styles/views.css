@@ -1127,7 +1127,13 @@ mark.qhl { position: relative; background: transparent; color: var(--ink); font-
   position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); white-space: nowrap;
   font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: rgba(200, 214, 255, .24);
 }
-.pgm[data-empty="1"] .pgm__rail, .pgm[data-empty="1"] .pgm__go { display: none; }
+/* Direct children only. The board's rail and its way-out button have nothing to
+ * show when there are no programmes — but the publish form borrows .pgm__go for
+ * its submit, and a descendant selector hid that too. The result was a trap: the
+ * only control that could create the first programme was hidden by there being
+ * no programmes. */
+.pgm[data-empty="1"] > .pgm__rail,
+.pgm[data-empty="1"] > .pgm__go { display: none; }
 
 /* ---- publish / edit ---- */
 .pgm__sheet {
