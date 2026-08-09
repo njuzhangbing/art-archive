@@ -10,7 +10,7 @@ import { planDialog } from "../components/plan-dialog.js"
 import { projectCard } from "../components/project-card.js"
 import { buildAsset } from "../lib/upload.js"
 import { exportAll } from "../lib/exporter.js"
-import { asset, bearer } from "../lib/net.js"
+import { asset, bearer, remote } from "../lib/net.js"
 
 export default function profile(root) {
   if (!session.me) { root.append(wall()); reveal([...root.firstChild.children], { y: 24, stagger: 0.06 }); return {} }
@@ -152,7 +152,10 @@ export default function profile(root) {
     async function pullDown() {
       status.textContent = "导出中…"
       try {
-        const res = await fetch("/api/admin/backup", { credentials: "same-origin" })
+        const res = await fetch(asset("/api/admin/backup"), {
+          credentials: remote ? "include" : "same-origin",
+          headers: bearer.get() ? { authorization: "Bearer " + bearer.get() } : {}
+        })
         if (!res.ok) throw new Error("导出失败 " + res.status)
         const blob = await res.blob()
         const url = URL.createObjectURL(blob)

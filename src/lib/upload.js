@@ -1,4 +1,5 @@
 import { parsePsd } from "./psd.js"
+import { BASE, remote, bearer } from "./net.js"
 
 const CHUNK = 1_000_000
 const DIRECT_MAX = 1_000_000
@@ -23,11 +24,21 @@ async function whyFail(r, where) {
 }
 
 async function shove(url, opts, where) {
+  // These three endpoints were the only ones talking to the server without
+  // going through lib/api.js, so they never learned either of the things the
+  // Android build needs: the absolute origin, and the bearer session. In the
+  // app a relative /api/upload resolved against the APK's own asset domain,
+  // came back as the page shell, and .json() choked on the leading "<".
+  const full = url.startsWith("/") ? BASE + url : url
+  const tok = bearer.get()
+  const req = { ...opts, credentials: remote ? "include" : "same-origin" }
+  if (tok) req.headers = { ...(req.headers || {}), authorization: "Bearer " + tok }
+
   let last
   for (let attempt = 1; attempt <= TRIES; attempt++) {
     let r
     try {
-      r = await fetch(url, opts)
+      r = await fetch(full, req)
     } catch (e) {
       last = e instanceof Error ? e : new Error(String(e))
       if (attempt < TRIES) { await nap(500 * attempt); continue }

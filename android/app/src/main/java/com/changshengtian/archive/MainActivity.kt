@@ -69,6 +69,15 @@ class MainActivity : Activity() {
         private val assets = WebViewAssetLoader.AssetsPathHandler(ctx)
         override fun handle(path: String): WebResourceResponse? {
             val clean = path.trimStart('/')
+            // Data lives on the server, never in here. Handing the page shell to
+            // a call that should have gone to the network is how a caller ends
+            // up parsing "<!doctype html>" as JSON, so answer plainly instead.
+            if (clean.startsWith("api/") || clean.startsWith("media/")) {
+                return WebResourceResponse(
+                    "text/plain", "utf-8", 404, "Not Found", emptyMap(),
+                    "this path belongs to the server, not the bundle".byteInputStream()
+                )
+            }
             val isFile = clean.substringAfterLast('/').contains('.')
             return assets.handle(if (isFile) "www/$clean" else "www/index.html")
         }
