@@ -39,17 +39,31 @@ export async function readSession(req) {
   try { return (await jwtVerify(tok, keyBytes)).payload } catch { return null }
 }
 
-export async function currentUser(req) {
-  const claim = await readSession(req)
-  if (!claim) return null
-  const u = await store("users").getJSON("user/" + claim.uid)
-  if (!u || u.status !== "active") return null
+/**
+ * Apply the standing promotion named by OWNER_HANDLE.
+ *
+ * It has to run everywhere a user object is handed to the client, not only on
+ * /api/me. Sign-in used to skip it, so the very first answer a browser got
+ * carried the stored role while every later one carried the promoted role —
+ * which is why the archive's owner could sign in and find the admin controls
+ * missing until the page was reloaded.
+ */
+export async function settle(u) {
+  if (!u) return null
   const envOwner = (process.env.OWNER_HANDLE || "").trim().toLowerCase()
   if (envOwner && u.handleLower === envOwner && u.role !== "owner") {
     u.role = "owner"
     await store("users").setJSON("user/" + u.id, u)
   }
   return u
+}
+
+export async function currentUser(req) {
+  const claim = await readSession(req)
+  if (!claim) return null
+  const u = await store("users").getJSON("user/" + claim.uid)
+  if (!u || u.status !== "active") return null
+  return settle(u)
 }
 
 export function shareable(u) {

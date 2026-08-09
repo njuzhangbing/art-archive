@@ -9,7 +9,7 @@ import { defineRoutes, mountOutlet, startRouter, gateOn } from "./router.js"
 import { buildNav } from "./components/nav.js"
 import { mountToasts } from "./components/toast.js"
 import { session } from "./lib/store.js"
-import { api } from "./lib/api.js"
+import { api, ApiError } from "./lib/api.js"
 import { loadDirectory } from "./lib/directory.js"
 import { initCursor } from "./lib/cursor.js"
 import { showLoader } from "./components/loader.js"
@@ -53,9 +53,28 @@ gateOn(probe())
 startRouter()
 app.setAttribute("data-boot", "1")
 
+/**
+ * Establish who is reading, before the guarded routes are allowed to paint.
+ *
+ * The distinction that matters: the archive replying "nobody" is an answer, and
+ * the archive being unreachable is not. Treating the second as the first is why
+ * a moment of bad signal used to empty the whole site — every guarded route saw
+ * a null session and bounced to the sign-in page, and it stayed that way until
+ * the page was reloaded at a luckier moment.
+ */
 async function probe() {
-  try { const me = await api.get("/api/me"); session.set(me && me.user); if (me && me.user) loadDirectory() }
-  catch { session.set(null) }
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const me = await api.get("/api/me")
+      session.set(me && me.user)
+      if (me && me.user) loadDirectory()
+      return
+    } catch (err) {
+      if (err instanceof ApiError) { session.set(null); return }
+      if (attempt >= 2) { session.set(null, { offline: true }); return }
+      await new Promise((done) => setTimeout(done, 400 * 2 ** attempt))
+    }
+  }
 }
 
 function footer() {

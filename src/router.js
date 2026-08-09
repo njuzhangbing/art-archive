@@ -64,6 +64,10 @@ async function paint() {
   if (hit && hit.r.guard) {
     if (!session.ready) await ready
     if (!session.me) {
+      // Being unable to reach the archive is not the same as not being welcome
+      // in it. Sending someone to a sign-in form they cannot use, and calling
+      // an outage an empty archive, is the wrong answer to give.
+      if (session.offline) { swapIn(unreachable()); return }
       history.replaceState({}, "", "/login")
       return paint()
     }
@@ -81,6 +85,29 @@ async function paint() {
   }
   if (!booted) { booted = true; swap(); hideLoader() }
   else await transition(swap)
+}
+
+/** Replace whatever is on screen with a single node, no transition. */
+function swapIn(node) {
+  if (active && typeof active.destroy === "function") { try { active.destroy() } catch (e) { console.error(e) } }
+  active = null
+  clear(outlet)
+  outlet.append(node)
+  if (!booted) { booted = true; hideLoader() }
+  syncNav()
+}
+
+function unreachable() {
+  const wrap = document.createElement("div")
+  wrap.className = "wrap soon"
+  wrap.innerHTML = "<h2>连不上服务器</h2><p>档案库没有应答。检查网络后重试。</p>"
+  const again = document.createElement("button")
+  again.className = "btn btn--red"
+  again.style.marginTop = "22px"
+  again.textContent = "重试 / RETRY"
+  again.addEventListener("click", () => location.reload())
+  wrap.append(again)
+  return wrap
 }
 
 function notFound() {

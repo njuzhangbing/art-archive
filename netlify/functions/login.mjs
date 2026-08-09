@@ -1,6 +1,6 @@
 import { json, oops, bakeCookie, isNative } from "./_lib/respond.mjs"
 import { store } from "./_lib/store.mjs"
-import { checkPass, signSession, shareable, rateGate, clearRate } from "./_lib/auth.mjs"
+import { checkPass, signSession, shareable, settle, rateGate, clearRate } from "./_lib/auth.mjs"
 
 export default async (req) => {
   if (req.method !== "POST") return oops("方法不允许", 405)
@@ -22,6 +22,9 @@ export default async (req) => {
   if (user.status === "blocked") return oops("账号已被停用", 403)
 
   await clearRate(bucket)
+  // Settle the role before signing, so the token and the answer agree with what
+  // /api/me will say a moment later.
+  await settle(user)
   const tok = await signSession(user)
   // Only the app is told the token; a script injected into the website sends
   // the site's own Origin and gets the cookie alone, as before.
