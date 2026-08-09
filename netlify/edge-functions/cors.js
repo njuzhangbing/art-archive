@@ -30,18 +30,28 @@ export default async (request, context) => {
   const origin = request.headers.get("origin") || ""
   const ok = ALLOWED.has(origin)
 
-  if (request.method === "OPTIONS") {
-    return ok
-      ? new Response(null, { status: 204, headers: allow(origin) })
-      : new Response(null, { status: 403 })
+  // Only the app's preflight is answered here. Anything else asking OPTIONS is
+  // passed through rather than refused — this layer sits in front of every API
+  // call on the site and is not the place to invent a new way to fail.
+  if (ok && request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: allow(origin) })
   }
 
   const res = await context.next()
   if (!ok) return res
-  const out = new Response(res.body, res)
-  const headers = allow(origin)
-  for (const k in headers) out.headers.set(k, headers[k])
-  return out
+  try {
+    // Headers on a response that has already been produced are sealed, so the
+    // allow has to go onto a copy.
+    const out = new Response(res.body, res)
+    const headers = allow(origin)
+    for (const k in headers) out.headers.set(k, headers[k])
+    return out
+  } catch (err) {
+    // A failure here costs the app its cross-origin access. Taking the whole
+    // API down with it would cost everyone else the site.
+    console.error("cors: could not re-wrap response", err)
+    return res
+  }
 }
 
 export const config = { path: "/api/*" }
