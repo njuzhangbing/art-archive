@@ -70,7 +70,11 @@
 .mast__img { position: absolute; inset: 0; }
 
 .mast__type {
-  font-family: var(--font-mono);
+  /* A real monospace, named outright. The site's --font-mono now leads with a
+   * display face whose Latin is proportional, and an ASCII grid set in a
+   * proportional face is not a grid at all. System mono also means no webfont
+   * to fetch or shape before the opening can run. */
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Space Mono", monospace;
   /* Sized off the container so the grid always spans the masthead exactly:
    * 220 columns at 0.6em of advance each. */
   font-size: calc(100cqw / (var(--cols) * var(--cell)));
@@ -82,14 +86,17 @@
   margin: 0;
   user-select: none;
 }
-.mast__type span {
-  display: block;
-  opacity: 0;
-  /* steps(1) so each row arrives whole, like a line coming off a printer. */
-  animation: lineOn .01s steps(1) forwards;
-  animation-delay: calc(var(--i) * var(--step));
+/* The reveal is one stepped clip over the whole block rather than an animation
+ * per row: same printer cadence, one layer for the compositor to move instead
+ * of a hundred and seventeen. */
+.mast__type {
+  animation: lineOn calc(var(--rows) * var(--step)) steps(var(--rows)) forwards;
+  will-change: clip-path;
 }
-@keyframes lineOn { to { opacity: 1; } }
+@keyframes lineOn {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
 
 .mast__img {
   width: 100%; height: 100%; object-fit: contain; object-position: center;
@@ -181,7 +188,7 @@
   .toc__en { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mast__type span { animation: none; opacity: 1; }
+  .mast__type { animation: none; clip-path: none; }
   .mast__img, .mast.is-plate .mast__type { transition: none; }
 }
 

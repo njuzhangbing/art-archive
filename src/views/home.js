@@ -37,9 +37,10 @@ function buildMasthead() {
   type.style.setProperty("--rows", HEAD_ROWS)
   type.style.setProperty("--cell", HEAD_CELL)
   type.style.setProperty("--step", STEP_MS + "ms")
-  HEAD_ASCII.forEach((line, i) => {
-    type.append(h("span", { style: "--i:" + i }, line + "\n"))
-  })
+  // One text node, not 117 elements: the reveal is a single stepped clip on
+  // the block, so the phone composites one layer instead of running an
+  // animation per row over sixteen thousand glyphs.
+  type.textContent = HEAD_ASCII.join("\n")
 
   const img = h("img", {
     class: "mast__img", src: PLATE, alt: "长生天计划徽记",

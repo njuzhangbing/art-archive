@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "build:app": "VITE_API_BASE=https://ptrart.netlify.app vite build && node tools/sync-android.mjs",
+    "build:app": "VITE_API_BASE=https://painthub.netlify.app vite build && node tools/sync-android.mjs",
     "apk": "npm run build:app && cd android && ./gradlew assembleDebug"
   },
   "dependencies": {

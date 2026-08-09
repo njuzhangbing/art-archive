@@ -52,7 +52,7 @@ class MainActivity : Activity() {
 
     companion object {
         /** Where the data lives. The pages do not come from here. */
-        const val SITE = "https://ptrart.netlify.app"
+        const val SITE = "https://painthub.netlify.app"
         const val APP_ORIGIN = "https://appassets.androidplatform.net"
         const val APP_HOST = "appassets.androidplatform.net"
         /** Mirrors the key the web bundle writes in `src/lib/net.js`. */

@@ -1,7 +1,7 @@
 # 长生天计划 · 安卓 App
 
 **整站打包进 APK**：页面、样式、字体子集、图版全部随包安装，开机即出画面，弱网也能用。
-只有**数据**走网络——API 与媒体文件都请求线上站 `https://ptrart.netlify.app`。
+只有**数据**走网络——API 与媒体文件都请求线上站 `https://painthub.netlify.app`。
 
 - 兼容 **Android 5.0（API 21）及以上**
 - 本地资源由 `WebViewAssetLoader` 以 `https://appassets.androidplatform.net` 提供
