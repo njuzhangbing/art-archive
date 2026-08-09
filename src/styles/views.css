@@ -1499,3 +1499,55 @@ mark.qhl { position: relative; background: transparent; color: var(--ink); font-
 .pgm__form .secpick button { border-top-color: rgba(200, 214, 255, .2); color: rgba(232, 224, 213, .62); }
 .pgm__form .secpick button[data-on="1"] { color: #F2ECE1; border-top-color: var(--klein-lift); }
 .pgm__form .secpick button .swatch { background: var(--klein-lift); }
+
+/* ---- the app, offered once ---- */
+/* Sits on the page rather than over it: no veil, nothing blocked, and it can be
+ * waved away with one tap. A reader who has just signed in came to read, not to
+ * be interviewed. */
+.appcard {
+  position: fixed; z-index: 8000;
+  left: 50%; bottom: max(16px, env(safe-area-inset-bottom));
+  width: min(420px, calc(100vw - 28px));
+  background: linear-gradient(158deg, #F7F8FB 0%, #EDEFF4 46%, #E4E7EE 100%);
+  box-shadow: 0 24px 60px rgba(6, 10, 22, .34);
+  padding: 16px 16px 14px;
+  transform: translate(-50%, 26px); opacity: 0;
+  transition: transform .42s var(--ease), opacity .3s var(--ease);
+}
+.appcard[data-on="1"] { transform: translate(-50%, 0); opacity: 1; }
+.appcard__in { display: flex; align-items: flex-start; gap: 13px; }
+.appcard__seal {
+  flex: none; width: 34px; height: 34px; display: grid; place-items: center;
+  background: var(--klein); color: #fff;
+  font-family: var(--font-title); font-size: 19px;
+}
+.appcard__body { flex: 1; min-width: 0; }
+.appcard__title { color: #14161C; }
+.appcard__title .bi__zh { font-size: 15px; letter-spacing: .06em; }
+.appcard__note {
+  margin-top: 7px; font-family: var(--font-body); font-size: 12.5px;
+  line-height: 1.65; color: #5A6070;
+}
+.appcard__no {
+  flex: none; width: 26px; height: 26px; margin: -4px -4px 0 0;
+  background: transparent; border: 0; cursor: pointer;
+  font-size: 19px; line-height: 1; color: #8B9099;
+}
+.appcard__no:hover { color: #14161C; }
+.appcard__acts { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+.appcard__get {
+  flex: 1; display: block; text-align: center; text-decoration: none;
+  padding: 11px 14px; background: var(--klein); color: #fff;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: background .22s var(--ease);
+}
+.appcard__get:hover { background: #14161C; }
+.appcard__get .bi__zh { font-size: 13px; letter-spacing: .1em; }
+.appcard__later {
+  flex: none; background: transparent; border: 0; cursor: pointer; padding: 11px 4px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; color: #5A6070;
+}
+.appcard__later:hover { color: var(--klein); }
+@media (prefers-reduced-motion: reduce) {
+  .appcard { transition: none; transform: translate(-50%, 0); opacity: 1; }
+}

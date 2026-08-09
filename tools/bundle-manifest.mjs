@@ -16,7 +16,7 @@ import { createHash } from "node:crypto"
 import path from "node:path"
 
 export const MANIFEST = "app-bundle.json"
-const SERVER_ONLY = new Set(["lexica"])
+const SERVER_ONLY = new Set(["lexica", "app"])
 
 const sha = (buf) => createHash("sha256").update(buf).digest("hex")
 

@@ -6,6 +6,7 @@ import { go } from "../router.js"
 import { tracker } from "../components/tracker.js"
 import { bearer } from "../lib/net.js"
 import { conduit } from "../components/conduit.js"
+import { offerApp } from "../components/appcard.js"
 
 /**
  * The sign-in screen.
@@ -150,6 +151,9 @@ export default function auth(root) {
           toast(isLogin ? "欢迎回来，@" + r.user.handle
             : (r.firstSoul ? "你是长生天第一位管理员" : "注册成功"), "ok")
           go("/projects")
+          // Website, Android, first time asked: mention the app once the page
+          // behind the transition has settled.
+          offerApp()
         })
       } catch (err) {
         refuse(err.message || (isLogin ? "登录失败" : "注册失败"),

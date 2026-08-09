@@ -27,7 +27,7 @@ try {
  * — and putting it in the APK would make the download eight times bigger for
  * something most readers will never open.
  */
-const SERVER_ONLY = new Set(["lexica"])
+const SERVER_ONLY = new Set(["lexica", "app"])
 
 await rm(path.dirname(to), { recursive: true, force: true })
 await mkdir(to, { recursive: true })
