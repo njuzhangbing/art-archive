@@ -4,6 +4,11 @@ on:
   push:
     paths:
       - "android/**"
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "package-lock.json"
+      - "tools/sync-android.mjs"
       - ".github/workflows/android.yml"
   workflow_dispatch:
 
@@ -12,6 +17,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      # The APK carries the whole front end. `webassets/` is generated and never
+      # committed, so without this step the app would ship with no pages in it.
+      - name: Build and bundle the site
+        run: |
+          npm ci
+          npm run build:app
 
       - uses: actions/setup-java@v4
         with:

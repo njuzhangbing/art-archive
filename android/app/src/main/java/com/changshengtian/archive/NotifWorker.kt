@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.webkit.CookieManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
@@ -17,15 +16,19 @@ import java.net.URL
 
 class NotifWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
 
-    private val base = "https://ptrart.netlify.app"
+    private val base = MainActivity.SITE
 
     override fun doWork(): Result {
-        val cookie = CookieManager.getInstance().getCookie(base) ?: return Result.success()
-        if (!cookie.contains("sess=")) return Result.success()
+        val prefs0 = applicationContext.getSharedPreferences("notif", Context.MODE_PRIVATE)
+        // The app signs in with a bearer token, not a cookie; the activity lifts
+        // it out of the page's storage after every load. No token means nobody
+        // has signed in on this device yet.
+        val token = prefs0.getString("token", null) ?: return Result.success()
         try {
             val conn = (URL("$base/api/notifications").openConnection() as HttpURLConnection).apply {
                 requestMethod = "GET"
-                setRequestProperty("Cookie", cookie)
+                setRequestProperty("Authorization", "Bearer $token")
+                setRequestProperty("Origin", MainActivity.APP_ORIGIN)
                 setRequestProperty("Accept", "application/json")
                 connectTimeout = 15000
                 readTimeout = 15000
@@ -34,7 +37,7 @@ class NotifWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) 
             val body = conn.inputStream.bufferedReader().use { it.readText() }
             val arr = JSONObject(body).optJSONArray("notifications") ?: return Result.success()
 
-            val prefs = applicationContext.getSharedPreferences("notif", Context.MODE_PRIVATE)
+            val prefs = prefs0
             val lastId = prefs.getString("lastId", "") ?: ""
             var newestId = lastId
             val fresh = ArrayList<String>()

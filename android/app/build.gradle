@@ -21,6 +21,20 @@ android {
         }
     }
 
+    // The web bundle is copied in by `npm run build:app`; it is generated, so it
+    // lives outside src/main/assets and is never committed.
+    sourceSets {
+        main {
+            assets.srcDirs += ["src/main/webassets"]
+        }
+    }
+
+    // These are already compressed; packing them again costs build time and
+    // gains nothing, and leaving them stored lets the WebView mmap them.
+    androidResources {
+        noCompress += ["woff2", "webp", "png", "jpg"]
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -33,4 +47,7 @@ android {
 dependencies {
     implementation "androidx.core:core:1.13.1"
     implementation "androidx.work:work-runtime:2.9.1"
+    // Serves the bundled site over a real https origin instead of file://,
+    // which is what makes localStorage, fetch and history work at all.
+    implementation "androidx.webkit:webkit:1.11.0"
 }

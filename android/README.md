@@ -1,38 +1,62 @@
 # 长生天计划 · 安卓 App
 
-一个极薄的 **WebView 壳**：打开即加载线上站点 `https://ptrart.netlify.app/`。
-所有页面、功能、数据都来自网站本身——**网站更新，App 内容就跟着更新，永远不用重装 App**。
+**整站打包进 APK**：页面、样式、字体子集、图版全部随包安装，开机即出画面，弱网也能用。
+只有**数据**走网络——API 与媒体文件都请求线上站 `https://ptrart.netlify.app`。
 
-- 兼容 **Android 5.0（API 21）及以上**，覆盖绝大多数设备
-- 系统 WebView 渲染，等同"直连网站"
-- 支持站内导航、登录态 Cookie、**文件上传**（图片 / 视频 / PSD，含多选）、外链跳浏览器、下载交给浏览器
+- 兼容 **Android 5.0（API 21）及以上**
+- 本地资源由 `WebViewAssetLoader` 以 `https://appassets.androidplatform.net` 提供
+  （不是 `file://`，所以 localStorage / fetch / history 都正常，服务器也只需放行这一个来源）
+- 支持双指缩放、站内导航、文件上传（图片 / 视频 / PSD，多选）、外链跳浏览器
 - 返回键 = 网页后退；旋转不重载；断网显示重试页
 
-## 拿到 APK 的两种方式
+## 登录态
 
-### A. 云端自动编译（推荐，本机不用装任何东西）
-1. 把本仓库（含 `android/` 和 `.github/workflows/android.yml`）推到 GitHub
-2. 进 GitHub 仓库 → **Actions** → 选 “Build Android APK” 这次运行（push 后会自动跑；也可点 “Run workflow” 手动触发）
-3. 跑完后在该运行页面底部 **Artifacts** 里下载 `changshengtian-app`，解压得到 `app-debug.apk`
-4. 传到手机安装（需在系统里允许“安装未知来源应用”）
+网页版用 HttpOnly Cookie。App 里页面来自另一个来源，安卓 WebView 会把站点 Cookie 当第三方
+丢掉，所以 App 改用 **Bearer Token**：
 
-> 这是 **debug 签名** 的 APK，自用/小圈子直接装即可。要上架或长期分发再配 release 签名。
+- 服务器只在请求 `Origin` 是 `https://appassets.androidplatform.net` 时才在登录/注册响应里附带 token
+  （网页版永远拿不到，站点上被注入的脚本也拿不到）
+- token 存在页面自己的 localStorage 里，其他进程读不到
+- 后台通知轮询由 `MainActivity.keepToken()` 把它同步进 SharedPreferences 给 `NotifWorker` 用
 
-### B. 本地用 Android Studio
-1. Android Studio 打开 `android/` 目录，等待 Gradle 同步（会自动补全 Gradle Wrapper 与 SDK）
-2. Run ▶ 直接装到手机，或 Build → Build APK(s)
+## 编译
 
-## 手机通知（网站通知 → 系统通知栏）
-App 在后台**每约 15 分钟**轮询一次你的 `/api/notifications`（复用 WebView 登录态），有新未读就弹本地系统通知，点开直达站内 `/notifications`。
-- 需要：先在 App 里登录过一次；首次启动同意「通知」权限（安卓 13+ 会弹）
-- 安卓省电后台任务的最小周期约 15 分钟，**不是秒推**
-- 要秒推：得改成**常驻前台服务**（托盘常驻一条「运行中」、~1 分钟轮询）或接 **FCM**（需 Firebase 外部账号）——按需再加
+### A. 本机
+
+    npm run apk
+
+等价于 `npm run build:app`（构建站点 + 拷进 `android/app/src/main/webassets/www`）再
+`cd android && ./gradlew assembleDebug`。产物：
+
+    android/app/build/outputs/apk/debug/app-debug.apk
+
+首次需要 JDK 17 与 Android SDK（`platforms;android-34`、`build-tools;34.0.0`），
+并在 `android/local.properties` 写 `sdk.dir=<SDK 路径>`（该文件已被 gitignore）。
+
+### B. 云端自动编译
+
+推到 GitHub → **Actions** → “Build Android APK” → 跑完在 **Artifacts** 下载
+`changshengtian-app`。工作流已包含 `npm ci && npm run build:app`，会连站点一起打包。
+
+> 这是 **debug 签名** 的 APK，自用直接装即可（需允许“安装未知来源应用”）。
+> 要上架或长期分发再配 release 签名。
+
+## 手机通知
+
+后台每约 15 分钟轮询一次 `/api/notifications`，有新未读就弹系统通知，点开直达站内
+`/notifications`。需要先在 App 里登录过一次；安卓 13+ 首次启动会请求通知权限。
+省电策略下最小周期约 15 分钟，**不是秒推**。
 
 ## 改东西
-- **换网址**（比如以后绑了自定义域名）：改 `app/src/main/java/com/changshengtian/archive/MainActivity.kt` 里的 `startUrl` 和 `host`
+
+- **换网址**：`package.json` 的 `build:app`（`VITE_API_BASE`）和
+  `MainActivity.SITE` 两处要一起改
 - **改名**：`app/src/main/res/values/strings.xml` 的 `app_name`
-- **换图标**：替换 `res/drawable/ic_launcher_*.xml` / `res/mipmap*/ic_launcher.xml`（现为红底白菱形矢量图）
+- **换图标**：`res/drawable/ic_launcher_*.xml` / `res/mipmap*/ic_launcher.xml`
 - **包名 / 版本**：`app/build.gradle` 的 `applicationId` / `versionCode` / `versionName`
 
-## 为什么不用 TWA / 不打包网页
-你要“高兼容 + 不用定期更新 + 像直连网站”。WebView 壳最契合：它不内置任何网页资源，只是个浏览器窗口指向你的线上站，因此功能迭代全在服务端完成，App 本体几乎永不需要更新。
+## 为什么不是纯 WebView 壳了
+
+壳的好处是"网站更新 App 就更新"，代价是每次打开都要等网络下发整站资源。现在改成
+**壳装资源、数据联网**：界面随包走本地，内容仍旧实时。站点改版时重新出一版 APK 即可；
+只改数据不用动 App。
