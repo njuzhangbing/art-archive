@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.CookieManager
+import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -52,6 +53,9 @@ class MainActivity : Activity() {
     private var fileCallback: ValueCallback<Array<Uri>>? = null
 
     private val pickRequest = 1001
+    private val CAMERA_REQ = 1002
+    /** A WebView camera request waiting on the system's answer. */
+    private var pendingCamera: PermissionRequest? = null
 
     companion object {
         /** Where the data lives. The pages do not come from here. */
@@ -182,6 +186,33 @@ class MainActivity : Activity() {
         }
 
         web.webChromeClient = object : WebChromeClient() {
+            /**
+             * getUserMedia asks twice: once of Android, once of the WebView.
+             *
+             * The page can only be granted what the app itself holds, so the
+             * system permission is requested first and the WebView's request is
+             * held until there is an answer. Granting the WebView while the app
+             * lacks the permission produces a stream that opens and delivers
+             * nothing, which looks like a broken camera rather than a refusal.
+             */
+            override fun onPermissionRequest(request: PermissionRequest) {
+                val wanted = request.resources.filter {
+                    it == PermissionRequest.RESOURCE_VIDEO_CAPTURE
+                }.toTypedArray()
+                if (wanted.isEmpty()) { request.deny(); return }
+                if (Build.VERSION.SDK_INT >= 23 &&
+                    checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    pendingCamera = request
+                    requestPermissions(arrayOf(android.Manifest.permission.CAMERA), CAMERA_REQ)
+                    return
+                }
+                runOnUiThread { request.grant(wanted) }
+            }
+
+            override fun onPermissionRequestCanceled(request: PermissionRequest) {
+                if (pendingCamera == request) pendingCamera = null
+            }
+
             override fun onProgressChanged(view: WebView, newProgress: Int) {
                 progress.progress = newProgress
                 progress.visibility = if (newProgress in 1..99) View.VISIBLE else View.GONE
@@ -268,6 +299,17 @@ class MainActivity : Activity() {
             }
             cb.onReceiveValue(results)
             fileCallback = null
+        }
+    }
+
+    override fun onRequestPermissionsResult(code: Int, perms: Array<out String>, granted: IntArray) {
+        super.onRequestPermissionsResult(code, perms, granted)
+        if (code != CAMERA_REQ) return
+        val req = pendingCamera ?: return
+        pendingCamera = null
+        val ok = granted.isNotEmpty() && granted[0] == PackageManager.PERMISSION_GRANTED
+        runOnUiThread {
+            if (ok) req.grant(arrayOf(PermissionRequest.RESOURCE_VIDEO_CAPTURE)) else req.deny()
         }
     }
 

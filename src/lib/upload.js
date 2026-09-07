@@ -52,7 +52,14 @@ async function shove(url, opts, where) {
   throw last || new Error(where + "失败")
 }
 
-async function putBlob(blob, contentType, onDelta) {
+/**
+ * Put one blob in storage and get its key back.
+ *
+ * Exported for the photo roll, which has already compressed its own frames and
+ * wants the retrying, chunking transport without the rest of the asset
+ * pipeline's resizing and preview making.
+ */
+export async function putBlob(blob, contentType, onDelta) {
   const size = blob.size
   const mb = (size / 1048576).toFixed(1)
   if (size <= DIRECT_MAX) {
