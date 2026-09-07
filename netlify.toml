@@ -16,3 +16,41 @@
   targetPort = 5176
   framework = "#custom"
   autoLaunch = false
+
+# ---- caching ----
+# Everything was going out as max-age=0, must-revalidate: every visit
+# revalidated every file, including twelve megabytes of fonts and the entire
+# lexicon. Vite fingerprints what it builds, so those can be kept for good;
+# the rest is given a life proportionate to how often it actually changes.
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    cache-control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    cache-control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/persona/*"
+  [headers.values]
+    cache-control = "public, max-age=604800"
+
+[[headers]]
+  for = "/lexica/*"
+  [headers.values]
+    cache-control = "public, max-age=2592000"
+
+# The app asks this every day to decide whether to update itself. A cached
+# answer would tell it there is nothing new long after there is.
+[[headers]]
+  for = "/app-bundle.json"
+  [headers.values]
+    cache-control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/app/*"
+  [headers.values]
+    cache-control = "public, max-age=3600"

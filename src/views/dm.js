@@ -13,11 +13,27 @@ export default function dm(root, params) {
   const handle = params.handle || null
   let convs = []
   let poll = null
+  let onWake = null
   const rail = h("aside", { class: "talk__rail" }, h("div", { class: "muted mono tiny" }, "加载…"))
   const main = h("section", { class: "talk__main" })
   const view = h("div", { class: "wrap talk" }, rail, main)
   root.append(view)
-  const stopPoll = () => { if (poll) { clearInterval(poll); poll = null } }
+  const stopPoll = () => { if (poll) { clearTimeout(poll); poll = null } }
+
+/**
+ * How often to ask for new messages, by how long it has been quiet.
+ *
+ * A fixed 2.5s loop is a conversation's pace applied to an empty room: eleven
+ * thousand requests a day from one open tab, which is nearly three times the
+ * whole month's free allowance for one reader who forgot to close it. Live
+ * while it is live, then let go.
+ */
+const CADENCE = [
+  [60_000, 3_000],     // spoken in the last minute: keep up
+  [10 * 60_000, 15_000],
+  [60 * 60_000, 60_000]
+]
+const IDLE_MS = 180_000  // beyond an hour quiet, once every three minutes
 
   async function boot() {
     try { const r = await api.get("/api/dm"); convs = r.conversations || [] } catch (e) { convs = [] }
@@ -72,8 +88,24 @@ export default function dm(root, params) {
         else addMsgs(r.messages, true)
       } catch (e) { clear(log); log.append(h("div", { class: "muted mono tiny", style: "padding:16px" }, e.message || "加载失败")) }
     }
+    let lastWord = Date.now()
+
+    function nextIn() {
+      const quiet = Date.now() - lastWord
+      for (const [under, wait] of CADENCE) if (quiet < under) return wait
+      return IDLE_MS
+    }
+
+    /** Ask once, then schedule the next ask from how live the room is. */
     async function tick() {
-      try { const r = await api.get("/api/dm/" + encodeURIComponent(handle) + "?since=" + encodeURIComponent(cursor)); if (r.messages.length) { cursor = r.cursor || cursor; addMsgs(r.messages) } } catch (e) {}
+      poll = null
+      // A hidden tab is not a conversation. The visibility handler restarts it.
+      if (document.hidden) return
+      try {
+        const r = await api.get("/api/dm/" + encodeURIComponent(handle) + "?since=" + encodeURIComponent(cursor))
+        if (r.messages.length) { cursor = r.cursor || cursor; addMsgs(r.messages); lastWord = Date.now() }
+      } catch (e) { /* keep the loop alive; the next tick tries again */ }
+      poll = setTimeout(tick, nextIn())
     }
     async function send() {
       const body = input.value.trim()
@@ -86,9 +118,17 @@ export default function dm(root, params) {
     input.addEventListener("input", () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 120) + "px" })
 
     load()
-    poll = setInterval(tick, 2500)
+    // Sending is speaking: it makes the room live again.
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) lastWord = Date.now() })
+    poll = setTimeout(tick, nextIn())
+    onWake = () => { if (!document.hidden && !poll) { lastWord = Date.now(); tick() } }
+    document.addEventListener("visibilitychange", onWake)
   }
 
   boot()
-  return { destroy: () => { stopPoll(); clearScroll() } }
+  return { destroy: () => {
+    stopPoll()
+    if (onWake) document.removeEventListener("visibilitychange", onWake)
+    clearScroll()
+  } }
 }
