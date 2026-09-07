@@ -2,6 +2,7 @@ import { h, clear, frag } from "../lib/dom.js"
 import { session } from "../lib/store.js"
 import { api } from "../lib/api.js"
 import { openSearch } from "./search.js"
+import { isOpen } from "../lib/gate.js"
 import { asset } from "../lib/net.js"
 
 const LINKS = [
@@ -10,7 +11,8 @@ const LINKS = [
   { path: "/programmes", i: "02", label: "企划" },
   { path: "/characters", i: "03", label: "角色" },
   { path: "/blog", i: "04", label: "博客" },
-  { path: "/talk", i: "05", label: "讨论" }
+  { path: "/talk", i: "05", label: "讨论" },
+  { path: "/tools", i: "06", label: "工具" }
 ]
 
 /**
@@ -28,11 +30,15 @@ const DOORS = [
     ]
   },
   {
-    key: "note", zh: "记事", en: "RECORD", at: ["/programmes", "/blog", "/talk"],
+    key: "note", zh: "记事", en: "RECORD", at: ["/programmes", "/blog", "/talk", "/tools", "/roll", "/photos", "/card"],
     items: [
       { p: "/programmes", zh: "企划", en: "PROGRAMMES" },
       { p: "/blog", zh: "博客", en: "JOURNAL" },
-      { p: "/talk", zh: "讨论", en: "FORUM" }
+      { p: "/talk", zh: "讨论", en: "FORUM" },
+      { p: "/tools", zh: "工具", en: "WORKSHOP" },
+      { p: "/roll", zh: "照片带", en: "PHOTO ROLL" },
+      { p: "/photos", zh: "相册", en: "PHOTOS" },
+      { p: "/card", zh: "透卡", en: "CARD" }
     ]
   },
   {
@@ -57,7 +63,9 @@ export function buildNav() {
 
   const me = h("div", { class: "topbar__me" })
   const pollNotif = () => {
-    if (!session.me) return
+    // Closing a section stops its traffic too: there is no point keeping a dot
+    // accurate for a page nobody can open.
+    if (!session.me || !isOpen("/notifications")) return
     api.get("/api/notifications").then((r) => { const dot = me.querySelector(".navdot"); if (dot) dot.classList.toggle("on", (r.unread || 0) > 0) }).catch(() => {})
   }
   const drawMe = (u) => {
@@ -77,7 +85,24 @@ export function buildNav() {
   }
   session.sub(drawMe)
   drawMe(session.me)
-  setInterval(pollNotif, 30000)
+
+  /**
+   * The unread dot, checked rarely and never behind your back.
+   *
+   * Every thirty seconds came to twenty-nine thousand requests a month from one
+   * tab left open — a quarter of the month's whole allowance to keep one dot
+   * accurate. Five minutes is well inside how fast anyone notices, and a hidden
+   * tab is not asked at all; it catches up the moment it is looked at again.
+   */
+  const NOTIF_MS = 5 * 60_000
+  let notifTimer = null
+  const tickNotif = () => {
+    notifTimer = null
+    if (!document.hidden) pollNotif()
+    notifTimer = setTimeout(tickNotif, NOTIF_MS)
+  }
+  notifTimer = setTimeout(tickNotif, NOTIF_MS)
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) pollNotif() })
 
   addEventListener("keydown", (e) => {
     if (!session.me) return

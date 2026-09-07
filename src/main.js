@@ -8,7 +8,7 @@ import { h, bi } from "./lib/dom.js"
 import { defineRoutes, mountOutlet, startRouter, gateOn } from "./router.js"
 import { buildNav } from "./components/nav.js"
 import { mountToasts } from "./components/toast.js"
-import { session } from "./lib/store.js"
+import { session, recall } from "./lib/store.js"
 import { api, ApiError } from "./lib/api.js"
 import { loadDirectory } from "./lib/directory.js"
 import { initCursor } from "./lib/cursor.js"
@@ -30,6 +30,11 @@ defineRoutes([
   { p: "/projects/:id", tag: "档案", guard: true, view: () => import("./views/project-detail.js") },
   { p: "/programmes", tag: "企划", guard: true, view: () => import("./views/programmes.js") },
   { p: "/activity", tag: "活动", guard: true, view: () => import("./views/stats.js") },
+  { p: "/tools", tag: "工具", guard: true, view: () => import("./views/tools.js") },
+  { p: "/tools/image", tag: "工作台", guard: true, view: () => import("./views/tools-image.js") },
+  { p: "/roll", tag: "照片带", guard: true, view: () => import("./views/roll.js") },
+  { p: "/photos", tag: "相册", guard: true, view: () => import("./views/photos.js") },
+  { p: "/card", tag: "透卡", guard: true, view: () => import("./views/card.js") },
   { p: "/characters", tag: "角色", guard: true, view: () => import("./views/characters.js") },
   { p: "/characters/:id", tag: "档案", guard: true, view: () => import("./views/character-detail.js") },
   { p: "/blog", tag: "博客", guard: true, view: () => import("./views/blog.js") },
@@ -62,16 +67,54 @@ app.setAttribute("data-boot", "1")
  * a null session and bounced to the sign-in page, and it stayed that way until
  * the page was reloaded at a luckier moment.
  */
+/**
+ * Establish who is reading — without making the site wait on it.
+ *
+ * A remembered identity is used immediately, so a page load paints from local
+ * knowledge and every guarded route works even while the network is being
+ * difficult. The server is then asked in the background, and only its answer
+ * changes anything:
+ *
+ *   it says who you are   →  the memory is corrected
+ *   it says nobody        →  the memory is dropped, you are signed out
+ *   it cannot be reached  →  nothing happens; you carry on as you were
+ *
+ * That last line is the whole point. Before, an unreachable archive and an
+ * empty one were the same event, and a moment of bad signal took the site down
+ * for the reader until they reloaded at a luckier moment.
+ */
 async function probe() {
+  const known = recall()
+  if (known) { session.set(known); loadDirectory() }
+
   for (let attempt = 0; ; attempt++) {
     try {
       const me = await api.get("/api/me")
-      session.set(me && me.user)
-      if (me && me.user) loadDirectory()
+      // Only a JSON body is an answer about who this is. A 200 carrying the
+      // page shell is what Netlify serves when a function is missing or a
+      // redirect swallows the path — trusting it would sign everybody out the
+      // moment a deploy went wrong.
+      if (!me || typeof me !== "object" || Array.isArray(me)) throw new TypeError("非 JSON 应答")
+      const who = me.user
+      // Only announce a change; re-setting the same identity would churn every
+      // subscriber on every load for nothing.
+      if (!known || !who || who.id !== known.id || who.role !== known.role) session.set(who)
+      if (who && !known) loadDirectory()
       return
     } catch (err) {
-      if (err instanceof ApiError) { session.set(null); return }
-      if (attempt >= 2) { session.set(null, { offline: true }); return }
+      // Only a refusal is an answer about identity. A 404 means the endpoint
+      // is not where it should be, a 502 means the function did not come up —
+      // both are the archive being broken, not the reader being unwelcome, and
+      // treating them as a sign-out is how one bad deploy logs everybody out.
+      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+        session.set(null)
+        return
+      }
+      if (attempt >= 2) {
+        // Could not ask. If we already know who this is, that stands.
+        if (!known) session.set(null, { offline: true })
+        return
+      }
       await new Promise((done) => setTimeout(done, 400 * 2 ** attempt))
     }
   }

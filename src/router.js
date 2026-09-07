@@ -2,6 +2,7 @@ import { clear } from "./lib/dom.js"
 import { hideLoader } from "./components/loader.js"
 import { syncNav } from "./components/nav.js"
 import { session } from "./lib/store.js"
+import { isOpen } from "./lib/gate.js"
 
 let table = []
 let outlet = null
@@ -61,6 +62,10 @@ function match() {
 
 async function paint() {
   const hit = match()
+  // Checked first, and deliberately: a closed section should cost nothing —
+  // no session round trip, no view module fetched, no request from a page that
+  // is not going to be shown.
+  if (!isOpen(location.pathname)) { swapIn(shuttered()); return }
   if (hit && hit.r.guard) {
     if (!session.ready) await ready
     if (!session.me) {
@@ -95,6 +100,20 @@ function swapIn(node) {
   outlet.append(node)
   if (!booted) { booted = true; hideLoader() }
   syncNav()
+}
+
+function shuttered() {
+  const wrap = document.createElement("div")
+  wrap.className = "wrap soon"
+  wrap.innerHTML = "<h2>权限不足</h2><p>该板块暂未开放。</p>"
+  const back = document.createElement("a")
+  back.className = "btn btn--red"
+  back.style.marginTop = "22px"
+  back.href = "/blog"
+  back.setAttribute("data-link", "1")
+  back.textContent = "去博客 / JOURNAL"
+  wrap.append(back)
+  return wrap
 }
 
 function unreachable() {
